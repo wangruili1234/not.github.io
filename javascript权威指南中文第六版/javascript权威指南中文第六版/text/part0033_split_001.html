@@ -1,0 +1,3046 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>第四部分　客户端JavaScript参考</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+<h2 class="p4" id="heading_id_3"><a id="bw1" class="pcalibre calibre1"></a>客户端JavaScript参考</h2>
+
+  <h3 class="p1" id="heading_id_4">ApplicationCache</h3>
+
+  <p class="ziti3">应用缓存管理API</p>
+
+  <p class="ziti3">EventTarget</p>
+
+  <p class="ziti3">ApplicationCache对象是Windows对象的applicationCache属性的值，它定义一个API，用于管理已缓存应用的更新。简单的缓存应用可不必使用这个API，如同20.4节描述的，创建（以及更新，如果有必要的话）一个合适的缓存清单就足够了。那些需要更主动地管理更新的复杂缓存应用可以使用下面列举的属性、方法以及事件处理程序。更多细节见20.4.2节。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">status属性可以取以下值。</p>
+
+  <p class="ziti3">unsigned short UNCACHED=0</p>
+
+  <p class="ziti3">当前应用没有manifest属性：未缓存。</p>
+
+  <p class="ziti3">unsigned short IDLE=1</p>
+
+  <p class="ziti3">清单已检查，当前应用已缓存并为最新。</p>
+
+  <p class="ziti3">unsigned short CHECKING=2</p>
+
+  <p class="ziti3">浏览器正在检查清单文件。</p>
+
+  <p class="ziti3">unsigned short DOWNLOADING=3</p>
+
+  <p class="ziti3">浏览器正在下载并缓存清单中的文件。</p>
+
+  <p class="ziti3">unsigned short UPDATEREADY=4</p>
+
+  <p class="ziti3">当前应用的一个新版本已下载并缓存。</p>
+
+  <p class="ziti3">unsigned short OBSOLETE=5</p>
+
+  <p class="ziti3">清单已不存在，缓存将删除。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned short status</p>
+
+  <p class="ziti3">这个属性描述当前文档的缓存状态，它可以取上面列出的某个常数。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void swapCache()</p>
+
+  <p class="ziti3">当status属性的值为UPDATEREADY时，浏览器正维护当前应用的两个缓存版本：当前正在使用的文件来自老版本缓存，新版本的文件刚下载完成并将在应用下次重新加载时使用。可以调用swapCache()来让浏览器马上丢弃老缓存并使用新缓存中的文件。需要注意的是，这种方式可能导致版本偏差的问题，从老缓存切换为新缓存的较安全的方式是使用Location.reload()方法重新加载当前应用。</p>
+
+  <p class="ziti3">void update()</p>
+
+  <p class="ziti3">一般情况下，每次加载已缓存的应用时，浏览器都会检查该应用的清单文件是否有更新。页面长期不刷新的Web应用可以使用这个方法来更频繁地检查更新。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">在检查清单以及更新缓存的过程中，浏览器会在ApplicationCache上触发一个事件序列。可使用下面的ApplicationCache对象的事件处理程序属性来注册事件处理程序，或者使用ApplicationCache对象实现的EventTarget()方法。这些事件的大多数处理程序都传入一个简单的Event对象，但进度事件的处理程序例外，它传入一个ProgressEvent对象，此对象可用于跟踪当前已下载的字节数。</p>
+
+  <p class="ziti3">oncached</p>
+
+  <p class="ziti3">在应用首次缓存时触发。这是事件序列中的最后一个事件。</p>
+
+  <p class="ziti3">onchecking</p>
+
+  <p class="ziti3">当浏览器开始检查清单文件是否有更新时触发。在所有的应用缓存事件序列中，这都是第一个事件。</p>
+
+  <p class="ziti3">ondownloading</p>
+
+  <p class="ziti3">当浏览器开始下载清单文件中列出的资源时触发，无论这是该应用首次缓存还是一次更新。这个事件后面通常会跟着一个或多个进度事件。</p>
+
+  <p class="ziti3">onerror</p>
+
+  <p class="ziti3">当缓存更新过程中出现错误时触发。比如，如果浏览器掉线，或者一个未缓存的应用引用一个不存在的清单文件时，就会触发这个事件。</p>
+
+  <p class="ziti3">onnoupdate</p>
+
+  <p class="ziti3">当浏览器认为清单没有变化并且缓存的应用就是当前应用时触发。这是事件序列的最后一个事件。</p>
+
+  <p class="ziti3">onobsolete</p>
+
+  <p class="ziti3">当已缓存应用的清单文件不复存在时触发。这会引发缓存被删除。这是事件序列的最后一个事件。</p>
+
+  <p class="ziti3">onprogress</p>
+
+  <p class="ziti3">当应用的文件正在被下载并缓存时周期性地触发。与这个事件关联的事件对象是一个ProgressEvent。</p>
+
+  <p class="ziti3">onupdateready</p>
+
+  <p class="ziti3">当应用的一个新版本下载完成并缓存（将在应用下次加载时使用）时触发。这是事件序列的最后一个事件。</p>
+
+  <h3 class="p1" id="heading_id_5">ArrayBuffer</h3>
+
+  <p class="ziti3">固定长度的字节序列</p>
+
+  <p class="ziti3">ArrayBuffer表现为内存中的一个固定长度的序列，但它没有定义存取这些字节的方法。ArrayBufferViews类似于TypedArray类，提供了访问及解析这些字节的方法。</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">new ArrayBuffer(unsigned long length)</p>
+
+  <p class="ziti3">新建一个指定字节数的ArrayBuffer。新ArrayBuffer中的所有字节都初始化为0。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned long byteLength</p>
+
+  <p class="ziti3">ArrayBuffer的长度，单位为字节。</p>
+
+  <h3 class="p1" id="heading_id_6">ArrayBufferView</h3>
+
+  <p class="ziti3">基于ArrayBuffer的类型的通用属性</p>
+
+  <p class="ziti3">ArrayBufferView是一个超类，提供用于访问ArrayBuffer对象字节内容的类型。无法直接创建一个ArrayBufferView：它存在的意义是为了定义如TypedArray、DataView等子类型的通用属性。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly ArrayBuffer buffer</p>
+
+  <p class="ziti3">当前对象的视图所包含的ArrayBuffer。</p>
+
+  <p class="ziti3">readonly unsigned long byteLength</p>
+
+  <p class="ziti3">通过当前视图能访问到的缓存部分的长度，单位为字节。</p>
+
+  <p class="ziti3">readonly unsigned long byteOffset</p>
+
+  <p class="ziti3">通过当前视图能访问的缓存部分的开始位置，单位为字节。</p>
+
+  <h3 class="p1" id="heading_id_7">Attr</h3>
+
+  <p class="ziti3">元素的属性</p>
+
+  <p class="ziti3">Attr对象表示一个Element节点的属性。可通过Node接口的attributes属性取得Attr对象，或者调用Element接口的getAttributeNode()或getAttributeNodeNS()方法。</p>
+
+  <p class="ziti3">由于属性值可以完全由字符串表示，因此通常不需要使用Attr接口。在多数情况下，使用属性最简单的方法是使用Element.getAttribute()以及Element.setAttribute()方法。这些方法使用字符串作为属性值，完全不需要用到Attr对象。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly string localName</p>
+
+  <p class="ziti3">属性的名字，不包含任何命名空间前缀。</p>
+
+  <p class="ziti3">readonly string name</p>
+
+  <p class="ziti3">属性的名字，包含命名空间前缀（如果存在的话）。</p>
+
+  <p class="ziti3">readonly string namespaceURI</p>
+
+  <p class="ziti3">标识属性命名空间的URI，如果不存在的话为空（null）。</p>
+
+  <p class="ziti3">readonly string prefx</p>
+
+  <p class="ziti3">属性的命名空间前缀，如果不存在的话为空（null）。</p>
+
+  <p class="ziti3">string value</p>
+
+  <p class="ziti3">属性的值。</p>
+
+  <h3 class="p1" id="heading_id_8">Audio</h3>
+
+  <p class="ziti3">HTML＜audio＞元素</p>
+
+  <p class="ziti3">Node、Element、MediaElement</p>
+
+  <p class="ziti3">音频（Audio）对象表示一个HTML的＜audio＞元素。除了构造函数外，Audio对象的所有属性、方法及事件处理程序都继承自MediaElement。</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">new Audio([string src])</p>
+
+  <p class="ziti3">构造函数创建一个新的＜audio＞元素，其preload属性为"auto"。如果指定src参数，它将用做src属性的值。</p>
+
+  <h3 class="p1" id="heading_id_9">BeforeUnloadEvent</h3>
+
+  <p class="ziti3">用于卸载事件的Event对象</p>
+
+  <p class="ziti3">Event</p>
+
+  <p class="ziti3">浏览器跳转到一个新的文档之前，Window对象上的卸载事件会被触发，Web应用可在此时询问用户是否真的要离开当前页面。传给卸载事件处理函数的是BeforeUnloadEvent对象。如果你想让用户确认是否真的要离开当前页面，不需要也不应该使用Window.confirm()方法，而应该从事件处理程序返回一个字符串，或者将事件对象的returnValue设置为一个字符串。返回或设置的字符串将以确认对话框的形式展现给用户。</p>
+
+  <p class="ziti3">可参考Event及Window。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">string returnValue</p>
+
+  <p class="ziti3">在离开当前页面之前以确认对话框的形式向用户显示的消息。如果不想显示确认对话框，可保持此属性为未设置。</p>
+
+  <h3 class="p1" id="heading_id_10">Blob</h3>
+
+  <p class="ziti3">一个不透明的数据块，如文件内容等</p>
+
+  <p class="ziti3">Blob是一个不透明的类型，用于在API之间交换数据。Blob可能会非常大，可能表示二进制数据，不过也不一定是这样。Blob通常保存在文件中，不过这只是实现细节。Blob只对外暴露尺寸，有时也有MIME类型（MIME type），只定义一个将Blob的一部分作为一个Blob处理的方法。</p>
+
+  <p class="ziti3">很多API都使用Blob：可参见FileReader中读取Blob内容的方法，BlobBuilder中创建一个新Blob对象的方法，XMLHttpRequest中下载及上传Blob的方法。关于Blob以及用到它的API的讨论，可参考22.6节。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned long size</p>
+
+  <p class="ziti3">Blob的长度，单位为字节。</p>
+
+  <p class="ziti3">readonly string type</p>
+
+  <p class="ziti3">Blob的MIME类型，如果未指定则为空字符串。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">Blob slice(unsigned long start,unsigned long length,[string contentType])</p>
+
+  <p class="ziti3">返回一个新的Blob，表示当前Blob中从start开始，长度为length的字节。如果指定contentType，它将用做返回的Blob的type属性。</p>
+
+  <h3 class="p1" id="heading_id_11">BlobBuilder</h3>
+
+  <p class="ziti3">创建新的Blob</p>
+
+  <p class="ziti3">BlobBuilder对象用于从文本字符串、ArrayBuffer对象的字节内容以及其他Blob创建新的Blob对象。要构建一个Blob，可以创建一个BlobBuilder，调用append()一次或多次，然后调用getBlob()，即可得到一个Blob。</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">new BlobBuilder()</p>
+
+  <p class="ziti3">调用BlobBuilder()构造函数，无需参数，即可创建一个新的BlobBuilder。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void append(string text,[string endings])</p>
+
+  <p class="ziti3">使用UTF-8编码将指定的text追加到正在创建的Blob中。</p>
+
+  <p class="ziti3">void append(Blob data)</p>
+
+  <p class="ziti3">追加指定Blob data的内容到正在创建的Blob中。</p>
+
+  <p class="ziti3">void append(ArrayBuffer data)</p>
+
+  <p class="ziti3">追加ArrayBuffer data的字节内容到正在创建的Blob中。</p>
+
+  <p class="ziti3">Blob getBlob([string contentType])</p>
+
+  <p class="ziti3">返回一个Blob，表示自这个BlobBuilder创建之后追加的所有数据。每次调用这个方法都将返回一个新的Blob。参数contentType对应返回的Blob的type属性的值，如果未指定，返回的Blob的type属性将是一个空字符串。</p>
+
+  <h3 class="p1" id="heading_id_12">Button</h3>
+
+  <p class="ziti3">HTML＜button＞元素</p>
+
+  <p class="ziti3">Node、Element、FormControl</p>
+
+  <p class="ziti3">Button对象表现为HTML＜button＞元素。Button的大多数属性及方法都在FormControl及Element中介绍了。如果一个Button的type属性（见FormControl）是"submit"，下面列出的有关指定表单提交参数的属性将覆盖Button所在表单（见FormControl）上的相似属性。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">以下属性只在＜button＞的type为"submit"时有意义。</p>
+
+  <p class="ziti3">string formAction</p>
+
+  <p class="ziti3">这个属性反映对应的formaction HTML属性。对提交按钮而言，它将覆盖表单的action属性。</p>
+
+  <p class="ziti3">string formEnctype</p>
+
+  <p class="ziti3">这个属性反映对应的formenctype HTML属性。对提交按钮而言，它将覆盖表单的enctype属性，它的合法值与表单的enctype属性的合法值相同。</p>
+
+  <p class="ziti3">string formMethod</p>
+
+  <p class="ziti3">这个属性反映对应的formmethod HTML属性。对提交按钮而言，它将覆盖表单的method属性。</p>
+
+  <p class="ziti3">string formNoValidate</p>
+
+  <p class="ziti3">这个属性反映对应的formnovalidate HTML属性。对提交按钮而言，它将覆盖表单的noValidate属性。</p>
+
+  <p class="ziti3">string formTarget</p>
+
+  <p class="ziti3">这个属性反映对应的formtarget HTML属性。对提交按钮而言，它将覆盖表单的target属性。</p>
+
+  <h3 class="p1" id="heading_id_13">Canvas</h3>
+
+  <p class="ziti3">用于脚本绘图的HTML元素</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">Canvas对象表现为HTML的canvas元素。它自己并不能做什么，但它定义一个支持在客户端使用脚本绘图的API。可以直接为这个对象定义width及height，也可以用toDataURL()方法从画布中导出图片，不过，实际绘图的API是由getContext()方法返回的一个独立“上下文”对象实现的。可参考CanvasRenderingContext2D。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">unsigned long height</p>
+
+  <p class="ziti3">unsigned long width</p>
+
+  <p class="ziti3">这些属性对应＜canvas＞标签的width及height属性，指定canvas坐标空间的维度。width及height的默认值分别为300和150。</p>
+
+  <p class="ziti3">如果canvas元素的尺寸在样式表或内联style属性中都没有另外的定义，则width及height属性也将指定canvas元素在屏幕上的尺寸。</p>
+
+  <p class="ziti3">设置这两个属性中的任意一个（即使设置为它现在的值）都将清空画布为透明黑色（transparent black），并且将它所有的绘图属性重置为默认值。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">object getContext(string contextId,[any args...])</p>
+
+  <p class="ziti3">这个方法返回一个用于在Canvas元素上画图的对象。如果传入字符串"2d"，本方法将返回一个用于2D绘图的CanvasRenderingContext 2D对象，在这种情况下不需要额外的args。</p>
+
+  <p class="ziti3">每一个canvas元素只有一个CanvasRenderingContext 2D对象，所以多次调用getContext("2d")返回的是同一个对象。</p>
+
+  <p class="ziti3">HTML5标准将"2d"作为这个方法的唯一参数。一些独立的标准（如WebGL）正在开发3D绘图。在支持这些标准的浏览器中，可以为这个方法传入字符串"webgl"来获得一个支持3D渲染的对象。需要注意的是，本书中只有关于CanvasRenderingContext 2D对象的绘图上下文的文档。</p>
+
+  <p class="ziti3">string toDataURL([string type],[any args...])</p>
+
+  <p class="ziti3">toDataURL()以data://URL的方式返回canvas位图的内容，这种方式可以很容易地在＜img＞标签中使用或者通过网络传输。例如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//将canvas的内容复制到一个＜img＞中，并将其追加到当前文档中</p>
+
+  <p class="ziti5">var canvas=document.getElementById("my_canvas");</p>
+
+  <p class="ziti5">var image=document.createElement("img");</p>
+
+  <p class="ziti5">image.src=canvas.toDataURL();</p>
+
+  <p class="ziti5">document.body.appendChild(image);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">type参数定义图片格式使用的MIME类型。如果省略该参数，默认值为"image/png"。只有PNG图片格式是要求支持的实现方式。除PNG外的图片格式，可以传入额外的参数来定义编码细节。比如，如果type是"image/jpeg"，第二个参数应该为0～1之间的一个数字，用于定义图片的质量级别。在写这本书的时候，其他参数的讨论还没有形成标准。</p>
+
+  <p class="ziti3">为了防止跨域的信息泄露，在非“同源”（origin-clean）的＜canvas＞标签上toDataURL()将不能工作。如果一个canvas包含一张（直接通过drawImage()或非直接通过CanvasPattern绘制的）图片，且该图片与包含当前canvas的文档不同源，则称这个canvas是非同源的。同样，如果一个canvas在绘制文本中使用了来自另一个源的Web字体，也称它为非同源的。</p>
+
+  <h3 class="p1" id="heading_id_14">CanvasGradient</h3>
+
+  <p class="ziti3">用于Canvas的颜色渐变</p>
+
+  <p class="ziti3">CanvasGradient对象表示一种颜色渐变，可指派给CanvasRenderingContext2D对象的strokeStyle或fillStyle属性。CanvasRenderingContext2D对象的createLinerGradient()及createRadialGradient()方法都返回CanvasGradient对象。</p>
+
+  <p class="ziti3">创建CanvasGradient对象后，就可以使用addColorStop()来定义渐变中什么颜色在什么位置出现。颜色将在定义的位置插入并产生平滑的渐变或淡出（淡入）。如果没有定义色标（color stop），渐变将全是清一色的透明黑色。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void addColorStop(double offset,string color)</p>
+
+  <p class="ziti3">addColorStop()定义一种渐变中的固定颜色。参数color的值为一个CSS颜色字符串，参数offset是0.0～1.0之间的一个浮点数，对应从渐变的起点到终点的位置。offset为0相当于起始点，offset为1相当于终点。</p>
+
+  <p class="ziti3">如果定义两个或多个色标，各种颜色之间将平滑地过渡。在第一个色标之前，渐变将显示第一个色标的颜色，在最后一个色标之后，渐变将显示最后一个色标的颜色。如果只定义一种色标，渐变将显示一种固定的颜色。如果没有设置色标，渐变将全是清一色的透明黑色。</p>
+
+  <h3 class="p1" id="heading_id_15">CanvasPattern</h3>
+
+  <p class="ziti3">用于Canvas的基于图片的模式</p>
+
+  <p class="ziti3">CanvasPattern对象是不透明对象，由CanvasRenderingContext2D对象的CreatePattern()方法返回。CanvasPattern对象可用做CanvasRenderingContext2D对象的strokeStyle及fillStyle属性的值。</p>
+
+  <h3 class="p1" id="heading_id_16">CanvasRenderingContext2D</h3>
+
+  <p class="ziti3">用于在Canvas上画图的对象</p>
+
+  <p class="ziti3">CanvasRenderingContext2D对象提供用于绘制二维图形的属性及方法，下面几节是一个概览。更多细节请参考21.4节、Canvas、CanvasGradient、CanvasPattern、ImageData及TextMetrics。</p>
+
+  <p class="ziti3">创建并渲染路径</p>
+
+  <p class="ziti3">画布的一个强大特性是可以通过基本的绘制操作来生成各种形状，然后可以给它们描边（stroke）或填充（fill）。多个操作的结果统称为当前路径。一张画布只维护一条当前路径。</p>
+
+  <p class="ziti3">为了将多个片断连接成一个形状，绘图操作之间需要一个连接点。为了实现这点，画布维护一个当前位置，画布的绘图操作将显式把这个位置作为起点，并不断更新，直到达到终点。可以把这个过程想象为用一支钢笔在纸上画画：画完一条直线或曲线时，当前位置就是操作完成后钢笔所在的位置。</p>
+
+  <p class="ziti3">可以使用当前路径创建一系列断开的形状，这些形状会一起使用相同的绘图参数进行渲染。可以使用moveTo()方法来分开形状，这个方法会在不添加连接线的情况下将当前点移动到一个新的位置。这个操作会生成一条新的子路径（subpath），这是一个用于关联操作集合的画布专用术语。</p>
+
+  <p class="ziti3">可用的方法有：lineTo()绘制直线，rect()绘制矩形，arc()及arcTo()绘制扇形，bezierCurveTo()及quadraticCurveTo()绘制曲线。</p>
+
+  <p class="ziti3">路径完成之后，就可以使用stroke()对它描边，使用fill()进行填充，也可以同时描边及填充。</p>
+
+  <p class="ziti3">在描边及填充之外，也可以使用当前路径来定义一个当前画布渲染时使用的裁剪区域（clipping region）。在这个区域中的像素会显示，之外的则不显示。裁剪区域是可累加的，可以在当前路径的当前裁剪区域中再次调用clip()来生成一个新的区域。</p>
+
+  <p class="ziti3">如果所有子路径中的片断都没有能形成一个闭合形状，fill()及clip()操作会在子路径的起点到终点之间添加一条虚拟的线（描边时不可见）来隐式地闭合形状，也可以调用closePath()来显式地添加这条线。</p>
+
+  <p class="ziti3">可以使用isPointInPath()来测试一个点是否包含在当前路径之中（或在路径边界线上）。如果一条路径与自身相交，或者由多条重叠的子路径组成，那么“包含”的定义取决于非零缠绕规则（nonzero winding rule）。如果在一个圆里面画了另一个圆，并且两个圆绘制的方向相同，那么在大圆里的所有点都被认为是包含在这条路径中。否则，如果一个圆按顺时针方向画，另一个按逆时针方向画，定义的就是一个圆环的形状，小圆内部的点则在路径之外。fill()和clip()对包含的定义也是这样。</p>
+
+  <p class="ziti3">颜色、渐变以及图案</p>
+
+  <p class="ziti3">对一条路径填充或描边时，可以通过strokeStyle及fillStyle属性来定义线条或填充区域的渲染方式。这两个属性以及定义渐变及图案的CanvasGradient及CanvasPattern对象都支持CSS格式的颜色字符串。创建渐变可以使用createLinearGradient()或createRadialGradient()方法，创建图案可以使用createPattern()。</p>
+
+  <p class="ziti3">要用CSS符号定义一种不透明的颜色，可以使用"#RRGGBB"格式的字符串，其中RR、GG和BB是十六进制数字，定义颜色的红、绿、蓝分量，取值在00～FF之间。例如，亮红色是"#FF0000"。要定义部分透明的颜色，可使用"rgba(R,G,B,A)"格式的字符串。在这种格式中，R、G以及B定义颜色的红、绿、蓝分量，采用十进制，值在0～255之间，A为一个浮点数，定义alpha（透明度）分量，值在0.0（完全透明）～1（完全不透明）之间。比如，半透明的亮红色是"rgba(255,0,0,0.5)"。</p>
+
+  <p class="ziti3">线宽、线帽以及线的连接</p>
+
+  <p class="ziti3">画布有几个属性用于定义线条如何绘制。可以使用lineWidth属性定义线条的宽度，用lineCap属性定义线条端点的样式，以及用lineJoin属性来定义多条线条之间如何连接。</p>
+
+  <p class="ziti3">画矩形</p>
+
+  <p class="ziti3">可以使用strokeRect()或fillRect()来给一个矩形描边或填充，另外，也可以使用clearRect()来清空一个矩形区域。</p>
+
+  <p class="ziti3">画图像</p>
+
+  <p class="ziti3">在画布API中，可以使用HTML＜img＞元素或Image()构造函数来定义图像。（更多细节请参考Image的参考页面。）＜canvas＞元素或＜video＞元素也可以用做图像资源。</p>
+
+  <p class="ziti3">可以使用drawImage()方法来将一幅图像绘制到画布中，在大多数通用形式下，这个方法允许从源图像中任意选取一个矩形区域，经过缩放之后绘制到画布中。</p>
+
+  <p class="ziti3">画文字</p>
+
+  <p class="ziti3">fillText()方法绘制一段文字，strokeText()方法绘制一段描边的文字。font属性定义使用的字体，它的值应该是一个CSS字体说明字符串。textAlign属性定义文字在传入的水平方向上是左对齐、居中还是右对齐，textBaseline属性定义文字在传入的垂直方向上的位置。</p>
+
+  <p class="ziti3">坐标空间与转换</p>
+
+  <p class="ziti3">默认情况下，画布的坐标空间的原点（0,0）位于画布的左上角，x的值向右递增，y的值向下递增。画布的width及height属性定义X与Y的最大坐标值，这个坐标空间中的基本单位一般对应屏幕上的一个像素。</p>
+
+  <p class="ziti3">可以定义自己的坐标空间，之后，为画布的绘图方法传入的坐标会自动转换。自定义坐标空间的方法有translate()、scale()以及rotate()，它们将影响画面的转换矩阵（transformation matrix）。由于坐标空间可以像这样转换，因此为像lineTo()这样的方法传入的坐标不能用像素来度量，并且画布API使用浮点数来代替整数。</p>
+
+  <p class="ziti3">阴影</p>
+
+  <p class="ziti3">CanvasRenderingContext 2D可以给画的任何东西自动添加阴影。阴影的颜色由shadowColor定义，偏移量由shadowOffsetX和shadowOffsetY定义。另外，阴影边缘的羽化程度可以由shadowBlur来设置。</p>
+
+  <p class="ziti3">影像合成</p>
+
+  <p class="ziti3">通常情况下，当在画布上绘图时，新画的图像会出现在之前绘制的内容的上面，并根据其透明度，部分或全部遮住旧的内容。处理新像素与旧像素的混合的过程称为“影像合成”，可以通过为globalCompositeOperation属性指定不同的值来改变画布合成像素的方式。比如，可以设置这个值让新画的图像出现在现有图像之下。</p>
+
+  <p class="ziti3">下表列出了globalCompositeOperation属性允许的值及其含义。表格中“源”（source）指的是正要画到画布上的像素，“目标”（destination）指画布上现有的像素，“结果”（result）指源与目标混合之后的像素。在公式中，字母S代表源像素，D代表目标像素，R代表结果像素，α<sub class="calibre6">s</sub>代表源像素的阿尔法通道（透明度），α<sub class="calibre6">d</sub>代表目标像素的阿尔法通道：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00092.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="pic">
+    <img alt="" src="../images/00093.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">保存绘图状态</p>
+
+  <p class="ziti3">可以通过save()和restore()方法来保存或还原一个CanvasRenderingContext 2D对象的状态。save()将当前状态压入栈中，restore()从栈的顶部弹出最近保存的状态，并将根据它的值设置当前绘图状态。</p>
+
+  <p class="ziti3">CanvasRenderingContext 2D对象的所有属性（canvas属性除外，它是一个常量）都可在绘图状态中保存。转换矩阵和裁剪区域也是状态的一部分，但当前路径和当前点不是。</p>
+
+  <p class="ziti3">像素操作</p>
+
+  <p class="ziti3">getImageData()方法允许查询画布的原始像素，putImageData()允许设置单个像素的值。如果你想通过JavaScript进行图像处理，这两个方法将非常有用。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly Canvas canvas</p>
+
+  <p class="ziti3">用于绘图的Canvas元素。</p>
+
+  <p class="ziti3">any fllStyle</p>
+
+  <p class="ziti3">当前用于填充路径的颜色、图案或渐变。这个属性的值可以是CSS颜色字符串，也可以是一个CanvasGradient或CanvasPattern对象。默认的填充样式是纯黑色。</p>
+
+  <p class="ziti3">string font</p>
+
+  <p class="ziti3">绘制文本时使用的字体，值为一段字符串，格式与CSSfont属性格式相同。默认值为"10px sans-serif"。如果字体尺寸使用"em"、"ex"等单位或"larger"、"smaller"、"bolder"、"lighter"等相对关键字，它们将相对当前＜canvas＞元素的实际CSS字体样式进行转换。</p>
+
+  <p class="ziti3">double globalAlpha</p>
+
+  <p class="ziti3">为画布上的所有内容定义一个额外的透明度。画布上的所有像素的alpha值将乘以这个值。这个值只能为0.0（所有内容完全透明）～1.0（默认值，没有额外透明度）之间的一个数字。</p>
+
+  <p class="ziti3">string globalCompositeOperation</p>
+
+  <p class="ziti3">这个属性指定绘制到画布上的源像素与画布上已经存在的目标像素之间如何结合（或合成）。一般只有在处理部分透明的颜色或设置globalAlpha属性后这个属性才有用。它的默认值为"source-over"，其他常用值为"destination-over"和"copy"。可参考上面的合法值表格。注意，在编写本书时，不同的浏览器对特定的合成模式有不同的实现：一些合成是局部的，一些是全局的。更多细节请参考21.4.13节。</p>
+
+  <p class="ziti3">string lineCap</p>
+
+  <p class="ziti3">lineCap属性定义线条末端的样式。只有在画粗线条时这个属性才有用。它可用的值在下面的表格中列出了，默认值为"butt"。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00094.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">string lineJoin</p>
+
+  <p class="ziti3">如果路径中有线段和/或曲线的顶点相交，这些交点的绘制方式由lineJoin属性定义。这个属性仅当绘制的是宽线条时才有效果。</p>
+
+  <p class="ziti3">这个属性的默认值是"miter"，表示两根线条的外部边缘将延伸直到它们相交。如果两条线条以一个锐角斜接，它们的交合部分可能就会很长，miterLimit属性定义这个交合部分的长度上限，如果交合部分长于这个限制，它将转化为一个斜面。</p>
+
+  <p class="ziti3">属性值"round"定义交合部分顶点的外边缘为一段实心圆弧，直径与线条的宽度相等。属性值"bevel"定义交合部分顶点的外边缘为一个实心的三角形。</p>
+
+  <p class="ziti3">double lineWidth</p>
+
+  <p class="ziti3">定义描边（或画线）操作时的线条宽度。默认值为1。线条的中心在路径上，路径两边各占一半宽度。</p>
+
+  <p class="ziti3">double miterLimit</p>
+
+  <p class="ziti3">如果lineJoin属性值为"miter"，并且两条线以一个锐角斜交，那么它们的交合部分可能会很长。如果这个斜交的部分太长，看起来就会很不谐调。miterLimit属性设置斜交部分长度的上限。这个值定义斜交部分长度与线条宽度的一半之间的比例，默认值是10，即斜交部分的长度不会超过线条宽度的5倍。如果两条线条的斜交部分的长度比miterLimit允许的最大值要长，这两条线条将以斜面而不是斜接的方式连接。</p>
+
+  <p class="ziti3">double shadowBlur</p>
+
+  <p class="ziti3">定义阴影的模糊程度。默认值为0，将生成边缘清晰的阴影。取值越大模糊程度也越大，不过需要注意，这个值的单位不是像素，也不受当前变换的影响。</p>
+
+  <p class="ziti3">string shadowColor</p>
+
+  <p class="ziti3">定义阴影的颜色，格式同CSS颜色格式。默认情况下是透明的黑色。</p>
+
+  <p class="ziti3">double shadowOffsetX</p>
+
+  <p class="ziti3">double shadowOffsetY</p>
+
+  <p class="ziti3">定义阴影的横向和纵向偏移量。取值越大，产生阴影的对象看起来就像在背景上漂得越高。默认值为0。这两个值与坐标空间的单位相同，依赖于当前变换。</p>
+
+  <p class="ziti3">any strokeStyle</p>
+
+  <p class="ziti3">定义描边（或绘制）路径的颜色、图案或渐变。这个属性的值可以是一个CSS颜色字符串，也可以是一个CanvasGradient或CanvasPattern对象。</p>
+
+  <p class="ziti3">string textAlign</p>
+
+  <p class="ziti3">定义文本的水平对齐方式，其对应的X坐标值会传递给fillText()及strokeText()。允许的值有"left"、"center"、"right"、"start"以及"end"。"start"和"end"的含义取决于当前＜canvas＞标签的dir（文字方向）属性。默认值为"start"。</p>
+
+  <p class="ziti3">string textBaseline</p>
+
+  <p class="ziti3">定义文本的垂直对齐方式，其对应的Y坐标值会传递给fillText()及strokeText()。允许的值有"top"、"middle"、"bottom"、"alphabetic"、"hanging"以及"ideographic"。默认值为"alphabetic"。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void arc(double x,y,radius,startAngle,endAngle,[boolean anticlockwise])</p>
+
+  <p class="ziti3">这个方法根据指定的圆心及半径在画布的当前子路径上绘制一段圆弧。该方法的前三个参数指定一个圆的圆心及半径，接下来两个参数定义这个圆上的一段圆弧的起点及终点的角度，角度的单位为弧度制。沿着X轴正向的3点钟方向是0<sup class="calibre2">o</sup>，沿顺时针方向角度增加。最后一个参数定义是角度是沿圆周的逆时针方向（true）还是顺时针方向（false或省略）。</p>
+
+  <p class="ziti3">调用这个方法会在先在当前路径中的当前点与圆弧起点之间添加一条直线，然后再添加圆弧本身。</p>
+
+  <p class="ziti3">void arcTo(double x1,y1,x2,y2,radius)</p>
+
+  <p class="ziti3">这个方法在当前子路径中添加一条直线和一个圆弧，并以某种方式描述圆弧，从而使它在为多边形添加圆角时特别有用。参数x1、y1定义点P1，参数x2、y2定义点P2，添加到路径中的圆弧是一个半径为radius的圆的一部分。圆弧上有一点与当前点到P1之间的连线相切，一点与P1、P2之间的连线相切。这两个相切点也是圆弧的起点及终点，绘制的圆弧为连接这两个点的最短圆弧。在添加圆弧到路径中之前，这个方法先从当前点到圆弧的起点添加一条直线。调用这个方法后，当前点将位于圆弧的终点位置，在P1和P2之间的连线上。</p>
+
+  <p class="ziti3">给定一个上下文对象c，可以用类似下面的代码来绘制一个100×100的圆角（多个半径）矩形：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">c.beginPath();</p>
+
+  <p class="ziti5">c.moveTo(150,100);//在顶部边线的中间开始</p>
+
+  <p class="ziti5">c.arcTo(200,100,200,200,40);//画顶部的边线以及右上角圆角</p>
+
+  <p class="ziti5">c.arcTo(200,200,100,200,30);//画右部的边线以及右下角圆角（小一点）</p>
+
+  <p class="ziti5">c.arcTo(100,200,100,100,20);//画底部的边线以及左下角圆角</p>
+
+  <p class="ziti5">c.arcTo(100,100,200,100,10);//画左部的边线以及左上角圆角</p>
+
+  <p class="ziti5">c.closePath();//回到起点</p>
+
+  <p class="ziti5">c.stroke();//绘制路径</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">void beginPath()</p>
+
+  <p class="ziti3">beginPath()丢弃当前定义的路径并开始一条新的路径。调用beginPath()之后没有当前点。</p>
+
+  <p class="ziti3">首次创建画布的上下文时，beginPath()会隐含地调用。</p>
+
+  <p class="ziti3">void bezierCurveTo(double cpx1,cpy1,cpx2,cpy2,x,y)</p>
+
+  <p class="ziti3">bezierCurveTo()添加一条三次贝塞尔曲线到画布的当前子路径中。曲线的起点是画布的当前点，终点是(x,y)，两个贝塞尔控制点(cpX1,cpY1)及(cpX2,cpY2)定义曲线的形状。当这个方法返回时，当前点是(x,y)。</p>
+
+  <p class="ziti3">void clearRect(double x,y,width,height)</p>
+
+  <p class="ziti3">clearRect()使用透明黑色填充指定的矩形区域。不像rect()，它不会影响当前点或当前路径。</p>
+
+  <p class="ziti3">void clip()</p>
+
+  <p class="ziti3">这个方法计算当前路径和当前裁剪区域中的相交部分，并将这个较小的区域作为新的裁剪区域返回。注意裁剪区域是没法扩大的，如果你只是想要一个临时的裁剪区域，你应该先调用save()保存当前状态，以便迟些调用restore()恢复为之前的状态。画布默认的裁剪区域为画布自身的矩形区域。</p>
+
+  <p class="ziti3">类似于fill()方法，clip()将所有子路径视为关闭，并使用非零环绕规则来判定路径的内部与外部。</p>
+
+  <p class="ziti3">void closePath()</p>
+
+  <p class="ziti3">如果当前画布的子路径未闭合，closePath()会通过在当前点与这条子路径的第一个点之间添加一条连线来闭合它，并（就像调用moveTo()一样）在同一个点开始一条新的子路径。</p>
+
+  <p class="ziti3">fill()和clip()总是将子路径当做闭合的来处理，所以，只有在想为一条封闭路径描边（通过stroke()）时才需要显式调用closePath()。</p>
+
+  <p class="ziti3">ImageData createImageData(ImageData imagedata)</p>
+
+  <p class="ziti3">返回一个和传入的imagedata尺寸相同的新的ImageData对象。</p>
+
+  <p class="ziti3">ImageData createImageData(double w,double h)</p>
+
+  <p class="ziti3">返回一个指定宽度和高度的新ImageData对象。这个新ImageData对象中的所有像素都初始化为透明黑色（所有颜色和alpha值都为0）。</p>
+
+  <p class="ziti3">参数w和h定义图片的尺寸，单位为CSS像素。在实际实现中，允许一个CSS像素映射到多个底层设备的像素。返回的ImageData对象的width和height属性指定设备像素的图像尺寸，这两个值与参数w和h可能不一致。</p>
+
+  <p class="ziti3">CanvasGradient createLinearGradient(double x0,y0,x1,y1)</p>
+
+  <p class="ziti3">这个方法生成并返回一个新的CanvasGradient对象，其中颜色从起点(x0,y0)到终点(x1,y1)之间线性渐变。注意，这个方法并没有指定渐变的颜色，如果要指定颜色，使用它返回对象的addColorStop()方法。如要绘制渐变描边或填充区域，只须将一个CanvasGradient对象赋值给strokeStyle或fillStyle属性。</p>
+
+  <p class="ziti3">CanvasPattern createPattern(Element image,string repetition)</p>
+
+  <p class="ziti3">这个方法生成并返回一个CanvasPattern对象，这个对象表示由一幅平铺图像定义的图案。参数image必须是一个＜img＞、＜canvas＞或＜video＞元素，包含图案中要使用的图像。参数repetition定义图片如何平铺。可能的值有：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00095.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">如要使用图案来描边或填充一个区域，可将CanvasPattern对象作为strokeStyle或fillStyle属性的值。</p>
+
+  <p class="ziti3">CanvasGradient createRadialGradient(double x0,y0,r0,x1,y1,r1)</p>
+
+  <p class="ziti3">这个方法创建并返回一个新的CanvasGradient对象，其中颜色在两个指定的圆的圆周之间辐射渐变。注意，这个方法并没有指定渐变的颜色，如果要指定颜色，使用它返回对象的addColorStop()方法。如要绘制渐变描边或填充区域，只须将一个CanvasGradient对象赋值给strokeStyle或fillStyle属性。</p>
+
+  <p class="ziti3">辐射渐变的渲染方式如下：在第一个圆的圆周处颜色偏移量为0，在第二个圆周处颜色偏移量为1，两个圆之间为渐变的中间色。</p>
+
+  <p class="ziti3">void drawImage(Element image,double dx,dy,[dw,dh])</p>
+
+  <p class="ziti3">复制指定image（这幅图像必须是一个＜img＞、＜canvas＞或＜video＞元素）到画布中，图像的左上角位置为(dx,dy)。如果指定dw和dh，图像的宽度和高度会缩放到dw像素宽和dh像素高。</p>
+
+  <p class="ziti3">void drawImage(Element image,double sx,sy,sw,sh,dx,dy,dw,dh)</p>
+
+  <p class="ziti3">这个版本的drawImage()方法复制指定image的一个源矩形区域的内容到画布的目标矩形区域。image必须是一个＜img＞、＜canvas＞或＜video＞元素。(sx,sy)定义图像的源矩形区域的左上角，sw和sh定义源矩形区域的宽度和高度。注意这些参数的单位为CSS像素并和画布的变换无关。其余的参数指定图像要复制到的目标矩形区域：细节可参考5个参数版的drawImage()。注意目标矩形区域的参数会根据当前转换矩形转换。</p>
+
+  <p class="ziti3">void fill()</p>
+
+  <p class="ziti3">fill()方法使用fillStyle属性定义的颜色、渐变或图案对当前路径进行填充。没有闭合的子路径在填充时将表现得如同调用过closePath()方法一样。（注意，这并不会让这些子路径真的闭合。）</p>
+
+  <p class="ziti3">填充一条路径并不会清除掉这条路径，在调用fill()之后，仍然可以调用stroke()而不需重定义这条路径。</p>
+
+  <p class="ziti3">如果路径与自身相交或者与子路径重叠，填充（使用fill()）画布将使用非零环绕规则来判断一个点是在路径的内部还是外部。这意味着，举例来说，如果你的路径定义了一个圆和正方形，正方形在圆的内部并且正方形的路径的绘制方向与圆的路径的绘制方向相反，那么正方形内部的点将在路径的外面，不会被填充。</p>
+
+  <p class="ziti3">void fillRect(double x,y,width,height)</p>
+
+  <p class="ziti3">fillRect()使用fillStyle属性定义的颜色、渐变或图案对指定的矩形进行填充。</p>
+
+  <p class="ziti3">和rect()方法不同，fillRect()对当前点和当前路径没有影响。</p>
+
+  <p class="ziti3">void fillText(string text,double x,y,[double maxWidth])</p>
+
+  <p class="ziti3">fillText()使用当前字体及fillStyle属性绘制text。参数x和y定义文本应该画在画布的什么位置，但这两个参数的实际值分别受到textAlign和textBaseline属性的影响。</p>
+
+  <p class="ziti3">如果textAlign的值为left或start（默认值）并且画布使用自左向右的文本排版（默认情况），或者如果textAlign的值为end并且画面使用自右向左的文本排版，文本将绘制在指定的X坐标的右边。如果textAlign的值为center，文本将在指定的X坐标处水平居中。在其他情况下（如果textAlign的值为"right"，或值为"end"同时画布使用自左向右的文本排版，或值为"start"同时画布使用自右向左的文本排版），文字将绘制在指定的X坐标的左边。</p>
+
+  <p class="ziti3">如果textBaseline的值为"alphabetic"（默认值）、"bottom"或"ideographic"，大多数字形都将显示在指定的Y坐标上方。如果textBaseline是"center"，文本将在指定的Y坐标处大致和垂直居中。如果textBaseline的值为"top"或"hanging"，大多数字形都将显示在指定的Y坐标下方。</p>
+
+  <p class="ziti3">可选参数maxwidth定义文本的最大宽度。如果text的宽度有可能超过maxWidth，文本将使用更小或压缩版的字体来绘制。</p>
+
+  <p class="ziti3">ImageData getImageData(double sx,sy,sw,sh)</p>
+
+  <p class="ziti3">这个方法的参数为未转换的坐标，定义画布中的一个矩形区域，它将这个矩形区域的像素数据复制到一个新的ImageData对象中并返回该对象。如何获取一个像素的红、绿、蓝分量以及alpha分量请参考ImagData部分。</p>
+
+  <p class="ziti3">返回像素的RGB颜色分量没有预乘alpha值。如果请求的矩形的某个区域在画布之外，ImageData对象中这部分像素的值为透明黑色（全为0）。如果该实现对于每一个CSS像素使用多个设备像素，则返回的ImageData对象的width和height属性将与参数sw和sh不同。类似于Canvas.toDataURL()，这个方法也会进行安全检验，以避免跨域信息泄露。只有当画布是“同源”时，getImageData()才会返回一个ImageData对象；否则，它将抛出一个错误。如果一张画布上包含一幅图片（直接用drawImage()或间接地通过CanvasPattern绘制），并且这幅图片与包含当前画布的文档的源不同，则这张画布是“非同源”的。同样，如果画布上绘制的文字使用了来自不同源的Web字体，它是“非同源”的。</p>
+
+  <p class="ziti3">boolean isPointInPath(double x,y)</p>
+
+  <p class="ziti3">如果指定的点在当前路径的边缘之内或之上，isPointInPath()返回true；否则返回false。指定的点没有根据当前转换矩阵转换。x取值应该在0～canvas.width之间，y取值应该在0～canvas.height之间。</p>
+
+  <p class="ziti3">isPointInPath()测试的是未转换的点，因为它的设计目的是做“命中测试”（hit-testing）：比如判断用户的鼠标单击是否在画布上当前路径描述的某个部分之上。为了实现“命中测试”，鼠标坐标先要先从相对于窗口转换为相对于画布。如果屏幕上画布的尺寸和width及height属性定义的不一样（比如可能设置了style.width和style.height），鼠标坐标还需要缩放到与画布坐标一致。下面这个函数是一个＜canvas＞对象的onclick处理程序的示例，它做了必要的转换以便鼠标坐标与画布坐标一致。</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//一个canvas标签的onclick处理程序，假设当前已定义一条路径</p>
+
+  <p class="ziti5">function hittest(event){</p>
+
+  <p class="ziti5">var canvas=this;//在画布上下文中调用</p>
+
+  <p class="ziti5">var c=canvas.getContext("2d");//取得画布的绘图上下文</p>
+
+  <p class="ziti5">//取得画布的尺寸与位置</p>
+
+  <p class="ziti5">var bb=canvas.getBoundingClientRect();//将鼠标事件的坐标转换为画布坐标</p>
+
+  <p class="ziti5">var x=(event.clientX-bb.left)*(canvas.width/bb.width);</p>
+
+  <p class="ziti5">var y=(event.clientY-bb.top)*(canvas.height/bb.height);//如果用户在指定路径上单击，将其填充</p>
+
+  <p class="ziti5">if(c.isPointInPath(x,y))c.fill();</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">void lineTo(double x,double y)</p>
+
+  <p class="ziti3">lineTo()方法在当前子路径中添加一条直线，直线从当前点开始，到(x,y)结束。这个方法返回后，当前点是(x,y)。</p>
+
+  <p class="ziti3">TextMetrics measureText(string text)</p>
+
+  <p class="ziti3">measureText()测量在当前字体下指定text将占据多大的宽度，返回一个包含测量结果的TextMetrics对象。在写这本书的时候，返回对象只有一个width属性，文本的高度和边框都还没有测量。</p>
+
+  <p class="ziti3">void moveTo(double x,double y)</p>
+
+  <p class="ziti3">moveTo()将当前点设置为(x,y)，并以这个点作为第一个点，开始一条新的子路径。如果之前有一条子路径，并且这条子路径只包含一个点，那么这条空子路径将会从路径中移除。</p>
+
+  <p class="ziti3">void putImageData(ImageData imagedata,double dx,dy,[sx,sy,sw,sh])</p>
+
+  <p class="ziti3">putImageData()方法从一个ImageData对象中复制一个矩形像素块到当前画布中。这是一个低级的像素复制操作：globalCompositeOperation和globalAlpha属性被忽略，同样被忽略的还有剪切区域、转换矩阵以及阴影绘制属性。</p>
+
+  <p class="ziti3">参数dx、dy定义画布上的目标点，data中的像素复制到画布中后会从这个点开始绘制。这两个参数不会被当前转换矩阵转换。</p>
+
+  <p class="ziti3">最后4个参数定义ImageData中的一个源矩形区域。如果指定，则只有这个矩形之内的像素才会复制到画布中。如果这4个参数省略，则ImageData中的所有像素都会复制。如果这4个参数定义的矩形区域大于ImageData的范围，则矩形区域会裁剪至这个范围。参数sx及sy的值可以为负数。</p>
+
+  <p class="ziti3">ImageData对象的用途之一是将它用做画布的“备份存储器”——保存画布像素的一份副本到一个ImageData（使用getImageData()）对象中，在画布上临时绘画，然后使用putImageData()方法将它恢复到初始状态。</p>
+
+  <p class="ziti3">void quadraticCurveTo(double cpx,cpy,x,y)</p>
+
+  <p class="ziti3">这个方法添加一条二次贝塞尔曲线段到当前子路径中。曲线从当前点开始，到(x,y)结束。控制点(cpX,cpY)指定起点与终点间的曲线的形状。（不过，贝塞尔曲线的数学知识超出了本书的范围。）这个方法返回时，当前点为(x,y)。也可以参考bezierCurveTo()方法。</p>
+
+  <p class="ziti3">void rect(double x,y,w,h)</p>
+
+  <p class="ziti3">这个方法添加一个矩形到当前路径中。这个矩形在自己的子路径中，与当前路径的其他子路径都不相连。这个方法返回时，当前点是(x,y)。这个方法与下面的调用序列等价：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">c.moveTo(x,y);</p>
+
+  <p class="ziti5">c.lineTo(x+w,y);</p>
+
+  <p class="ziti5">c.lineTo(x+w,y+h);</p>
+
+  <p class="ziti5">c.lineTo(x,y+h);</p>
+
+  <p class="ziti5">c.closePath();</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">void restore()</p>
+
+  <p class="ziti3">这个方法从已保存的绘图状态的栈中弹出最后一个保存状态，并根据这个状态重置CanvasRenderingContext2D的各项属性、裁剪路径以及转换矩阵。更多信息请参考save()方法。</p>
+
+  <p class="ziti3">void rotate(double angle)</p>
+
+  <p class="ziti3">这个方法改变当前转换矩阵，接下来这张画布上绘制的任何对象都将旋转指定的角度。＜canvas＞元素本身并没有旋转。注意角度的单位是弧度制。角度转换为弧度的方法为：乘以Math.PI，再除以180。</p>
+
+  <p class="ziti3">void save()</p>
+
+  <p class="ziti3">save()将复制当前绘图状态，并将这个副本压入已保存的绘图状态栈中。这样，就可以临时改变绘图状态，然后再调用restore()恢复到之前的值。</p>
+
+  <p class="ziti3">画布的绘图状态包含CanvasRenderingContext2D对象的所有属性（除了只读的canvas属性）。它也包含由于调用rotate()、scale()及translate()会影响到的转换矩阵，以及由clip()方法定义的裁剪路径。但是，需要注意的是，当前路径与当前位置不是绘图状态的一部分，不会被这个方法保存。</p>
+
+  <p class="ziti3">void scale(double sx,double sy)</p>
+
+  <p class="ziti3">scale()添加一个缩放转换到画布的当前转换矩阵中。缩放在水平方向与垂直方向上是相互独立的。例如，传入参数2.0、0.5，在接下来的绘画中，路径的宽度将变成原来的两倍，高度变为原来的一半。如果参数s x为负数，X轴将水平翻转；如果参数s y为负数，Y轴将垂直翻转。</p>
+
+  <p class="ziti3">void setTransform(double a,b,c,d,e,f)</p>
+
+  <p class="ziti3">这个方法允许直接设置当前转换矩阵，而无须多次调用translate()、scale()及rotate()。调用这个方法后，新的转换如下：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00096.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">void stroke()</p>
+
+  <p class="ziti3">stroke()方法为当前路径描边。定义线条的几何形态的路径将会显现出来，但线条的视觉效果取决于strokeStyle、lineWidth、lineCap、lineJoin以及miterLimit属性。</p>
+
+  <p class="ziti3">术语描边（stroke）指钢笔或刷子描边，它的意思是“绘制……的外边线”。与stroke()对应的是fill()方法，这个方法对路径的内部进行填充，而不是绘制它的外边线。</p>
+
+  <p class="ziti3">void strokeRect(double x,y,w,h)</p>
+
+  <p class="ziti3">这个方法根据指定的位置及尺寸，绘制一个矩形边框（但不对其内部填充）。线条颜色及宽度由strokeStyle及lineWidth属性定义，矩形边角的外观由lineJoin属性定义。</p>
+
+  <p class="ziti3">和rect()方法不同，stokreRect()不会影响当前路径和当前点。</p>
+
+  <p class="ziti3">void strokeText(string text,double x,y,[maxWidth])</p>
+
+  <p class="ziti3">strokeText()和fillText()很类似，除了它不是根据fillStyle填充每一个字形，而是根据strokeStyle对每一个字形进行描边。当使用大号字体时，strokeText()会生成一些有趣的图形效果，不过在实际应用中，fillText()更常用。</p>
+
+  <p class="ziti3">void transform(double a,b,c,d,e,f)</p>
+
+  <p class="ziti3">这个方法的参数定义一个3×3仿射转换矩阵T的6个重要元素：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00097.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">transform()方法将当前转换矩阵的值设置为这个转换矩阵与T的积：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">CTM'=CTM×T</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">平移（translation）、缩放以及旋转都可以通过这个通用的transform()方法实现。对于平移来说，调用transform(1,0,0,1,dx,dy)即可。对于缩放来说，调用transform(sx,0,0,sy,0,0)即可。对于以原点为中心顺时针旋转角度x的操作来说，可以使用：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">transform(cos(x),sin(x),-sin(x),cos(x),0,0)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">对于以平行于X轴的因子k进行的裁剪来说，调用transform(1,0,k,1,0,0)即可。对于以平行于Y轴的裁剪，调用transform(1,k,0,1,0,0)即可。</p>
+
+  <p class="ziti3">void translate(double x,double y)</p>
+
+  <p class="ziti3">translate()方法为当前画布的转换矩阵添加水平和垂直的偏移量。参数dx、dy将添加到所有随后定义的路径的每一个点上。</p>
+
+  <h3 class="p1" id="heading_id_17">ClientRect</h3>
+
+  <p class="ziti3">元素边框</p>
+
+  <p class="ziti3">ClientRect对象定义一个矩形，使用窗口或视口（viewport）坐标。Element对象的getBoundingClientRect()方法返回这类对象，用于描述元素在屏幕上的边框。ClientRect对象是在x方向上静态的（x static）：当它描述的元素发生改变时，它不会发生变化。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly float bottom</p>
+
+  <p class="ziti3">视口坐标中矩形底边的Y坐标。</p>
+
+  <p class="ziti3">readonly float height</p>
+
+  <p class="ziti3">矩形的高度，单位为像素。在IE8及更早的版本中，这个属性未定义，在这些版本中可使用bottom-top代替。</p>
+
+  <p class="ziti3">readonly float left</p>
+
+  <p class="ziti3">视口坐标中矩形左边的X坐标。</p>
+
+  <p class="ziti3">readonly float right</p>
+
+  <p class="ziti3">视口坐标中矩形右边的X坐标。</p>
+
+  <p class="ziti3">readonly float top</p>
+
+  <p class="ziti3">视口坐标中矩形顶边的Y坐标。</p>
+
+  <p class="ziti3">readonly float width</p>
+
+  <p class="ziti3">矩形的宽度，单位为像素。在IE8及更早的版本中，这个属性未定义，在这些版本中可使用right-left代替。</p>
+
+  <h3 class="p1" id="heading_id_18">CloseEvent</h3>
+
+  <p class="ziti3">说明一个WebSocket是否干净地关闭了</p>
+
+  <p class="ziti3">Event</p>
+
+  <p class="ziti3">当一个WebSocket连接关闭时，一个不冒泡的、不可取消的关闭事件会在这个WebSocket对象上触发，对应的CloseEvent对象会传入所有注册的事件处理程序。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly boolean wasClean</p>
+
+  <p class="ziti3">如果WebSocket连接在WebSocket协议的控制下关闭，并且服务器及客户端都成功确认，则这个关闭称为干净的，这个属性值为true。如果属性值为false，WebSocket可能是由于某种网络错误而关闭。</p>
+
+  <h3 class="p1" id="heading_id_19">Comment</h3>
+
+  <p class="ziti3">HTML或XML注释</p>
+
+  <p class="ziti3">Node</p>
+
+  <p class="ziti3">Comment节点表示HTML或XML文档中的注释。注释的内容（即“＜!--”与“--＞”之间的文本）可以通过data属性或者从Node继承而来的nodeValue属性获取。可通过Document.createComment()方法创建一个注释对象。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">string data</p>
+
+  <p class="ziti3">注释的文本内容。</p>
+
+  <p class="ziti3">readonly unsigned long length</p>
+
+  <p class="ziti3">注释包含的字符个数。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void appendData(string data)</p>
+
+  <p class="ziti3">void deleteData(unsigned long offset,unsigned long count)</p>
+
+  <p class="ziti3">void insertData(unsigned long offset,string data)</p>
+
+  <p class="ziti3">void replaceData(unsigned long offset,unsigned long count,string data)</p>
+
+  <p class="ziti3">string substringData(unsigned long offset,unsigned long count)</p>
+
+  <p class="ziti3">Comment节点有Text节点的大部分方法，这些方法和Text节点中的效果也一样。它们列在这儿，不过相关文档请参考Text。</p>
+
+  <h3 class="p1" id="heading_id_20">Console</h3>
+
+  <p class="ziti3">调试输出</p>
+
+  <p class="ziti3">现代浏览器（以及一些装了Firebug等调试器扩展的老浏览器）定义一个全局的console属性，对应一个Console对象。这个对象的方法定义一些简单调试任务的API，比如将消息输出到一个控制台窗口（这个控制台可能有"Developer Tools"或"Web Inspector"等名字）中。</p>
+
+  <p class="ziti3">Console API还没有一个正式的标准，不过，Firefox的Firebug调试器扩展已经建立了一个事实标准，浏览器厂商看起来正在实现Firebug的API，有关文档在下面。基本的console.log()函数在几乎所有浏览器中都支持，但其他函数在各浏览器中的支持情况就没这么好。</p>
+
+  <p class="ziti3">注意，在一些较老的浏览器中，只有在控制台窗口打开时console属性才有定义，如果在控制台关闭的情况下运行那些使用Console API的脚本会导致错误。</p>
+
+  <p class="ziti3">也可以参考ConsoleCommandLine。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void assert(any expression,string message)</p>
+
+  <p class="ziti3">如果expression为false或null、undefined、0、空字符串等非真值，这个方法将在控制台中显示错误消息message。</p>
+
+  <p class="ziti3">void count([string title])</p>
+
+  <p class="ziti3">显示指定的title字符串，后面跟着一个计数，表示这个方法以该字符串为参数调用过的次数。</p>
+
+  <p class="ziti3">void debug(any message...)</p>
+
+  <p class="ziti3">类似于console.log()，但将输出标记为调试信息。</p>
+
+  <p class="ziti3">void dir(any object)</p>
+
+  <p class="ziti3">在控制台显示传入的JavaScript object，允许开发者检查这个对象的属性及元素，也可以交互式地浏览嵌套的对象或数组。</p>
+
+  <p class="ziti3">void dirxml(any node)</p>
+
+  <p class="ziti3">在控制台中显示文档对象node的XML或HTML标记。</p>
+
+  <p class="ziti3">void error(any message...)</p>
+
+  <p class="ziti3">类似于console.log()，但将输出标记为错误。</p>
+
+  <p class="ziti3">void group(any message...)</p>
+
+  <p class="ziti3">与log()方法一样显示message消息，但将它显示为一组可折叠的调试消息的标题。接下来所有的控制台输出都会格式化为这个组的一部分，直到一个对应的groupEnd()被调用。</p>
+
+  <p class="ziti3">void groupCollapsed(any message...)</p>
+
+  <p class="ziti3">开始一组新的消息，但以折叠状态开始，这样接下来的调试输出默认都将隐藏。</p>
+
+  <p class="ziti3">void groupEnd()</p>
+
+  <p class="ziti3">结束最近一次由group()或groupCollapsed()开启的调试信息输出组。</p>
+
+  <p class="ziti3">void info(any message...)</p>
+
+  <p class="ziti3">类似于console.log()，但将输出标记为信息消息。</p>
+
+  <p class="ziti3">void log(string format,any message...)</p>
+
+  <p class="ziti3">这个方法将它的参数显示在控制台中。在最简单的情况下，参数format不含有字符%，这个方法将简单地把所有参数转换为字符串，以空格作为间隔，并显示它们。如果传入的是一个对象，显示在控制台中的字符串将是可单击的，单击之后可以看到对象的内容。</p>
+
+  <p class="ziti3">对更复杂的日志消息来说，这个方法支持C语言printf()的格式化功能的一个简单子集。参数message将插入参数format中的"%s"、"%d"、"%I"、"%f"及"%o"等位置，格式化后的字符串将在控制台中显示（后面跟着所有其他没用到的message参数）。替换"%s"的参数将格式化为字符串，替换"%d"或"%I"的将格式化为整数，替换"%f"的将格式化为浮点数，替换"%o"的将格式化为可单击的对象。</p>
+
+  <p class="ziti3">void profle([string title])</p>
+
+  <p class="ziti3">启动JavaScript分析器，在报告的开始处显示标题title。</p>
+
+  <p class="ziti3">void profleEnd()</p>
+
+  <p class="ziti3">停止分析器，显示代码分析报告。</p>
+
+  <p class="ziti3">void time(string name)</p>
+
+  <p class="ziti3">以指定的name开始一个计时器。</p>
+
+  <p class="ziti3">void timeEnd(string name)</p>
+
+  <p class="ziti3">结束指定name的计时器，显示名字及自对应的time()调用以来过去的时间。</p>
+
+  <p class="ziti3">void trace()</p>
+
+  <p class="ziti3">显示一个栈追踪。</p>
+
+  <p class="ziti3">void warn(any message...)</p>
+
+  <p class="ziti3">类似于console.log()，但将输出标记为警告。</p>
+
+  <h3 class="p1" id="heading_id_21">ConsoleCommandLine</h3>
+
+  <p class="ziti3">控制台窗口的全局工具</p>
+
+  <p class="ziti3">大多数Web浏览器都支持JavaScript控制台（可能名为"Developer Tools"或"Web Inspector"），允许输入单独的几行JavaScript代码。除客户端JavaScript所支持的普通的全局变量及方法外，控制台命令行通常也支持下面提到的几种有用的属性及方法。也可以参考Console API。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly Element$0</p>
+
+  <p class="ziti3">最近由调试器的其他功能选中的文档元素。</p>
+
+  <p class="ziti3">readonly Element$1</p>
+
+  <p class="ziti3">在$0之前选中的文档元素。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void cd(Window frame)</p>
+
+  <p class="ziti3">当一个文档包含嵌套的框架页面时，cd()函数允许切换全局对象并在指定的frame的作用域中执行接下来的命令。</p>
+
+  <p class="ziti3">void clear()</p>
+
+  <p class="ziti3">清空当前控制台窗口。</p>
+
+  <p class="ziti3">void dir(object o)</p>
+
+  <p class="ziti3">显示o的属性或元素，类似Console.dir()。</p>
+
+  <p class="ziti3">void dirxml(Element elt)</p>
+
+  <p class="ziti3">以XML或HTML方式重新显示elt，类似Console.dirxml()。</p>
+
+  <p class="ziti3">Element$(string id)</p>
+
+  <p class="ziti3">document.getElementById()的简写。</p>
+
+  <p class="ziti3">NodeList$$(string selector)</p>
+
+  <p class="ziti3">返回一个包含所有匹配指定的CSS选择器selector的元素的类数组对象。这是document.querySelectorAll()的一个简写。在有些控制台中，这个方法返回一个真的数组，而不是一个NodeList。</p>
+
+  <p class="ziti3">void inspect(any object,[string tabname])</p>
+
+  <p class="ziti3">显示对象object，调试器可能会从控制台切换到另一个标签中。第二个参数是可选的，定义你希望对象如何显示，支持的值可能有"html"、"css"、"script"以及"dom"。</p>
+
+  <p class="ziti3">string[]keys(any object)</p>
+
+  <p class="ziti3">以数组的形式返回object的属性名。</p>
+
+  <p class="ziti3">void monitorEvents(Element object,[string type])</p>
+
+  <p class="ziti3">记录分配给object的指定type的事件。type的值可以为"mouse"、"key"、"text"、"load"、"form"、"drag"以及"contextmenu"。如果type省略，关于object的所有事件都将记录。</p>
+
+  <p class="ziti3">void profle(string title)</p>
+
+  <p class="ziti3">开始代码分析。参见Console.profile()。</p>
+
+  <p class="ziti3">void profleEnd()</p>
+
+  <p class="ziti3">结束分析。参见Console.profileEnd()。</p>
+
+  <p class="ziti3">void unmonitorEvents(Element object,[string type])</p>
+
+  <p class="ziti3">停止监视object的指定type的事件。</p>
+
+  <p class="ziti3">any[]values(any object)</p>
+
+  <p class="ziti3">以数组的形式返回object对象的所有属性的值。</p>
+
+  <h3 class="p1" id="heading_id_22">CSS2Properties</h3>
+
+  <p class="ziti3">参见CSSStyleDeclaration</p>
+
+  <h3 class="p1" id="heading_id_23">CSSRule</h3>
+
+  <p class="ziti3">CSS样式表规则</p>
+
+  <p class="ziti3">说明</p>
+
+  <p class="ziti3">CSSRule对象表示一个CSSStyleSheet中的一条规则：它表示应用到一组特定文档元素的样式信息。selectorText为这条规则的元素选择器的字符串表示形式，style为一个CSSStyleDeclaration对象，表示应用到选中元素上的样式属性及值的集合。</p>
+
+  <p class="ziti3">CSS对象模型说明实际上定义一个CSSRule子类型的体系，可用于表示CSS样式表中可能出现的各种规则。这儿列出来的属性是普通的CSSRule类型及其CSSStyleRule子类型的属性。样式规则是样式表中最常见也最重要的规则，可能也是你在脚本中最喜欢使用的规则：</p>
+
+  <p class="ziti3">在IE8及更老的版本中，CSSRule对象只支持selectorText及style属性。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">unsigned short STYLE_RULE=1</p>
+
+  <p class="ziti3">unsigned short IMPORT_RULE=3</p>
+
+  <p class="ziti3">unsigned short MEDIA_RULE=4</p>
+
+  <p class="ziti3">unsigned short FONT_FACE_RULE=5</p>
+
+  <p class="ziti3">unsigned short PAGE_RULE=6</p>
+
+  <p class="ziti3">unsigned short NAMESPACE_RULE=10</p>
+
+  <p class="ziti3">这些是下面的type属性可能的值，它们定义它是哪类规则。如果type的值不是1，CSSRule对象将有这儿没有列出的一些属性。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">string cssText</p>
+
+  <p class="ziti3">当前CSS规则的完整文本。</p>
+
+  <p class="ziti3">readonly CSSRule parentRule</p>
+
+  <p class="ziti3">包含当前规则的规则，如果存在的话。</p>
+
+  <p class="ziti3">readonly CSSStyleSheet parentStyleSheet</p>
+
+  <p class="ziti3">包含当前规则的样式表。</p>
+
+  <p class="ziti3">string selectorText</p>
+
+  <p class="ziti3">如果type为STYLE_RULE，这个属性的值为一个选择器文本，该选择器指定当前规则应用到的文档元素。</p>
+
+  <p class="ziti3">readonly CSSStyleDeclaration style</p>
+
+  <p class="ziti3">如果type为STYLE_RULE，这个属性定义应用到selectorText指定的元素上的样式。注意，虽然style属性本身是只读的，但CSSStyleDeclaration对象对应的属性是可读写的。</p>
+
+  <p class="ziti3">readonly unsigned short type</p>
+
+  <p class="ziti3">当前规则的类型。值可以为上面定义的常量之一。</p>
+
+  <h3 class="p1" id="heading_id_24">CSSStyleDeclaration</h3>
+
+  <p class="ziti3">CSS属性及值的集合</p>
+
+  <p class="ziti3">CSSStyleDeclaration对象表示一个CSS样式属性及其值的集合，可以通过和CSS属性名相似的JavaScript属性名来查询或设置这些样式的值。HTMLElement的style属性是一个可读写的CSS风格声明的对象，CSSRule对象的style属性也是如此。不过，Window.getComputedStyle()的返回值是一个CSSStyleDeclaration对象，其属性是只读的。</p>
+
+  <p class="ziti3">CSSStyleDeclaration对象使得CSS样式属性可以通过JavaScript属性来访问。这些JavaScript属性名与CSS属性名非常接近，只有一些小改变，以避免JavaScript中的语法错误。由连字符连接的多单词的属性，例如"font-family"，在JavaScript中将没有连字符，同时除第一个词外每个词的首字母大写：fontFamily。另外，属性"float"与保留词float冲突，所以它转变为属性cssFloat。注意，如果使用方括号及字符串来访问属性，可以使用未修改的CSS属性名。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除了上面提到的，CSSStyleDeclaration还有两个属性：</p>
+
+  <p class="ziti3">string cssText</p>
+
+  <p class="ziti3">样式属性及值的集合的文本表现形式。文本为CSS样式表的格式，但没有元素选择器及包围着属性及值的花括号。</p>
+
+  <p class="ziti3">readonly unsigned long length</p>
+
+  <p class="ziti3">当前CSSStyleDeclaration包含的属性/值对的数目。CSSStyleDeclaration对象也是一个类数组对象，它的元素为声明的CSS样式的属性值。</p>
+
+  <h3 class="p1" id="heading_id_25">CSSStyleSheet</h3>
+
+  <p class="ziti3">CSS样式表</p>
+
+  <p class="ziti3">这个接口表示CSS样式表。它包含若干用于禁用样式表或查询、插入以及删除CSSRule样式规则的属性及方法。应用于文档的CSSStyleSheet对象是Document对象的styleSheets[]数组的成员，也可以通过定义或链接到这个样式表的＜style＞或＜link＞元素的sheet属性来访问。</p>
+
+  <p class="ziti3">在IE8或更早的版本中，使用rules[]代替cssRules[]，同时，使用addRule()及removeRule()来代替DOM标准的insertRule()及deleteRule()。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly CSSRule[]cssRules</p>
+
+  <p class="ziti3">一个只读的类数组对象，维护组成样式表的CSSRule对象。在IE中对应的属性为rules。</p>
+
+  <p class="ziti3">boolean disabled</p>
+
+  <p class="ziti3">如果为true，样式表将禁用并且不会应用到对应文档中。如果为false，样式表将启用并会应用到文档中。</p>
+
+  <p class="ziti3">readonly string href</p>
+
+  <p class="ziti3">连接到当前文档的样式表的URL，内联样式表的这个属性值为null。</p>
+
+  <p class="ziti3">readonly string media</p>
+
+  <p class="ziti3">这个样式表可应用的媒体列表。可以像处理一个单独的字符串一样查询或设置这个属性，或者将它视为一个带有appendMedium()和deleteMedium()方法的媒体类型的类数组对象。（正式一点说，这个属性的值为一个MediaList对象，但本参考不包含这个类型。）</p>
+
+  <p class="ziti3">readonly Node ownerNode</p>
+
+  <p class="ziti3">“拥有”当前样式表的文档元素，如果不存在则为null。参见Link和Style。</p>
+
+  <p class="ziti3">readonly CSSRule ownerRule</p>
+
+  <p class="ziti3">引入当前样式表的CSSRule（从一个父样式表中），如果当前样式表以其他方式引入则此项值为null。（注意，本参考中的CSSRule条目仅用文档描述样式规则，没有@import规则。）</p>
+
+  <p class="ziti3">readonly CSSStyleSheet parentStyleSheet</p>
+
+  <p class="ziti3">引入当前样式表的样式表，如果当前样式表直接包含在文档中则此属性值为null。</p>
+
+  <p class="ziti3">readonly string title</p>
+
+  <p class="ziti3">样式表的标题，如果指定的话。标题可以通过当前样式表对应的＜style＞或＜link＞元素的title属性来设置。</p>
+
+  <p class="ziti3">readonly string type</p>
+
+  <p class="ziti3">样式表的MIME类型。CSS样式表的类型为"text/css"。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void deleteRule(unsigned long index)</p>
+
+  <p class="ziti3">本方法从cssRule数组中删除指定index的规则。在IE8及更早版本中，相同功能的方法为removeRule()。</p>
+
+  <p class="ziti3">unsigned long insertRule(string rule,unsigned long index)</p>
+
+  <p class="ziti3">本方法在当前样式表的cssRule数组指定index处输入（或追加）一条新的CSS rule（定义选择器和由花括号包着的样式的一个字符串）。在IE8及更早版本中，对应的方法为addRule()，该方法需将选择器及格式字符串（没有花括号）作为两个独立的参数传入，再将索引作为第三个参数传递。</p>
+
+  <h3 class="p1" id="heading_id_26">DataTransfer</h3>
+
+  <p class="ziti3">通过拖放传递数据</p>
+
+  <p class="ziti3">用户进行拖放操作时，拖动源（drag source）或放置目标（drop target）（或两者皆有，如果它们都在浏览器窗口中）将触发一系列事件，这些事件都包含其dataTransfer属性（参见Event）指向一个DataTransfer对象的事件对象。DataTransfer对象是所有拖放操作的中心对象：拖动源将要传输的数据存储在其中，放置目标将传输的数据从中取出。除此之外，DataTransfer对象还管理拖动源与放置目标之间的一个协商，决定当前拖放是一次复制、移动还是链接操作。</p>
+
+  <p class="ziti3">这儿描述的API最初是微软为IE创建的，现在其他浏览器也多少实现了一部分。HTML5将基本的IE API作为标准。在本书准备出版时，HTML5定义了API的一个新版本，其中将items属性作为DataTransferItem对象的一个类数组对象。这个API很吸引人也很合理，但由于现在还没有浏览器实现它，因此这儿没有描述它们的文档。下面是在当前各大浏览器中（基本上）都能工作的特性。关于这个古怪的API的更多讨论可参考17.7节。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">string dropEffect</p>
+
+  <p class="ziti3">这个属性定义当前对象表示的数据传送的类型，它的值必须为"none"、"copy"、"move"、"copy"或"link"之一。一般情况下，放置目标会通过dragenter或dragover事件设置这个属性。用户拖曳时如果按住了辅助键也可能影响到这个属性的值，不过这与平台有关。</p>
+
+  <p class="ziti3">string effectAllowed</p>
+
+  <p class="ziti3">这个属性定义了当前拖放操作允许的复制、移动、链接操作的组合。它通常由拖动源设置并响应dragstart事件。允许的值有"none"、"copy"、"copyLink"、"copyMove"、"link"、"linkMove"、"move"以及"all"。（为便于记忆，注意那些定义两个操作的选项，操作名总是按字母顺序排序。）</p>
+
+  <p class="ziti3">readonly File[]fles</p>
+
+  <p class="ziti3">如果正在拖动的数据是一个或多个文件，这个属性将设置为一个由文件对象组成的数组或类数组对象。</p>
+
+  <p class="ziti3">readonly string[]types</p>
+
+  <p class="ziti3">这是一个类数组对象字符串，指定当前DataTransfer对象中存储的数据（如果拖动源在浏览器中就使用setData()，如果在浏览器之外就使用其他机制）的MIME类型。保存这些类型的类数组对象应该有一个contains()方法，用于测试一个特定的字符串是否存在。有些浏览器仅使这个对象是一个真正的数组，然而，在这样的情况下，也可以使用indexOf()方法代替。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void addElement(Element element)</p>
+
+  <p class="ziti3">这个方法告诉浏览器在生成用户可见的拖动视觉效果时使用element。这个方法一般由拖动源调用，在有些浏览器中它可能没有实现或没有效果。</p>
+
+  <p class="ziti3">void clearData([string format])</p>
+
+  <p class="ziti3">移除之前由setData()设置的指定format的数据。</p>
+
+  <p class="ziti3">string getData(string format)</p>
+
+  <p class="ziti3">以指定的format返回传送的数据。如果format为（忽略大小写的）"text"，则使用"text/plain"代替，如果为（忽略大小写的）"url"，则使用"text/url-list"代替。这个方法在拖放操作结束时由放置目标调用，以响应drop事件。</p>
+
+  <p class="ziti3">void setData(string format,string data)</p>
+
+  <p class="ziti3">定义要传送的data以及数据的MIME类型format。拖动源在拖放操作开始时调用这个方法，以响应dragstart事件。这个方法不能从任何其他事件处理程序调用。如果拖动源的数据在多种格式下可用，那么它可以多次调用这个方法，以便注册每一种支持的格式的值。</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">void setDragImage(Element image,long x,long y)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">这个方法指定一个image（一般为一个＜img＞元素），用于在拖动时向用户显示一种可视效果。x和y坐标给定图片相对于鼠标指针的偏移量。这个方法只能被拖动源调用，以响应dragstart事件。</p>
+
+  <h3 class="p1" id="heading_id_27">DataView</h3>
+
+  <p class="ziti3">从ArrayBuffer中读写内容</p>
+
+  <p class="ziti3">ArrayBufferView</p>
+
+  <p class="ziti3">DataView是包装一个ArrayBuffer（或ArrayBufferr的一个区域）的ArrayBufferView，它定义读或写对应缓冲区的1、2及4个字节的有符号和无符号整数以及4及8个字节的浮点数的方法。这些方法同时支持大端（big-endian）和小端（little-endian）字节顺序。也可参考TypedArray。</p>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new DataView(ArrayBuffer buffer,[unsigned long byteOffset],[unsigned long byteLength])</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">这个构造函数创建一个新的DataView对象，允许读或写访问buffer或buffer的一个区域的字节内容。如果只传入一个参数，它将创建整个缓冲区的视图；传入两个参数，它将创建缓冲区的从字节数byteOffset开始直到结尾的视图；传入三个参数时，它将创建一个从byteOffset开始长度为byteLength字节的视图。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">这些方法或者从基础的ArrayBuffer中读入一个数值，或者写入一个数值。方法名标出了是读或写的类型。所有读或写超过一个字节的方法都接受一个可选的littleEndian参数作为最后一个参数，如果这个参数省略或者为false，将使用大端字节顺序（big-endian byte ordering），优先读或写最高有效字节（most significant byte）。如果参数值为true，将使用小端字节顺序（little-endian byte ordering）。</p>
+
+  <p class="ziti3">float getFloat32(unsigned long byteOffset,[boolean littleEndian])</p>
+
+  <p class="ziti3">将从byteOffset开始的4个字节解释为一个浮点数并返回这个数字。</p>
+
+  <p class="ziti3">double getFloat64(unsigned long byteOffset,[boolean littleEndian])</p>
+
+  <p class="ziti3">将从byteOffset开始的8个字节解释为一个浮点数并返回这个数字。</p>
+
+  <p class="ziti3">short getInt16(unsigned long byteOffset,[boolean littleEndian])</p>
+
+  <p class="ziti3">将从byteOffset开始的两个字节解释为一个有符号整数并返回这个数字。</p>
+
+  <p class="ziti3">long getInt32(unsigned long byteOffset,[boolean littleEndian])</p>
+
+  <p class="ziti3">将从byteOffset开始的4个字节解释为一个有符号整数并返回这个数字。</p>
+
+  <p class="ziti3">byte getInt8(unsigned long byteOffset)</p>
+
+  <p class="ziti3">将位于byteOffset的字节解释为一个有符号整数并返回这个数字。</p>
+
+  <p class="ziti3">unsigned short getUint16(unsigned long byteOffset,[boolean littleEndian])</p>
+
+  <p class="ziti3">将从byteOffset开始的两个字节解释为一个无符号整数并返回这个数字。</p>
+
+  <p class="ziti3">unsigned long getUint32(unsigned long byteOffset,[boolean littleEndian])</p>
+
+  <p class="ziti3">将从byteOffset处开始的4个字节解释为一个无符号整数并返回这个数字。</p>
+
+  <p class="ziti3">unsigned byte getUint8(unsigned long byteOffset)</p>
+
+  <p class="ziti3">将位于byteOffset处的字节解释为一个无符号整数并返回这个数字。</p>
+
+  <p class="ziti3">void setFloat32(unsigned long byteOffset,float value,[boolean littleEndian])</p>
+
+  <p class="ziti3">将value转换为一个4字节的浮点数并将对应字节在byteOffset位置写入。</p>
+
+  <p class="ziti3">void setFloat64(unsigned long byteOffset,double value,[boolean littleEndian])</p>
+
+  <p class="ziti3">将value转换为一个8字节的浮点数并将对应字节在byteOffset位置写入。</p>
+
+  <p class="ziti3">void setInt16(unsigned long byteOffset,short value,[boolean littleEndian])</p>
+
+  <p class="ziti3">将value转换为一个2字节的整数并将对应字节在byteOffset位置写入。</p>
+
+  <p class="ziti3">void setInt32(unsigned long byteOffset,long value,[boolean littleEndian])</p>
+
+  <p class="ziti3">将value转换为一个4字节的整数并将对应字节在byteOffset位置写入。</p>
+
+  <p class="ziti3">void setInt8(unsigned long byteOffset,byte value)</p>
+
+  <p class="ziti3">将value转换为一个1字节的整数并将对应字节在byteOffset位置写入。</p>
+
+  <p class="ziti3">void setUint16(unsigned long byteOffset,unsigned short value,[boolean littleEndian])</p>
+
+  <p class="ziti3">将value转换为一个2字节的无符号整数并将对应字节在byteOffset位置写入。</p>
+
+  <p class="ziti3">void setUint32(unsigned long byteOffset,unsigned long value,[boolean littleEndian])</p>
+
+  <p class="ziti3">将value转换为一个4字节的无符号整数并将对应字节在byteOffset位置写入。</p>
+
+  <p class="ziti3">void setUint8(unsigned long byteOffset,octet value)</p>
+
+  <p class="ziti3">将value转换为一个1字节的无符号整数并将对应字节在byteOffset位置写入。</p>
+
+  <h3 class="p1" id="heading_id_28">Document</h3>
+
+  <p class="ziti3">HTML或XML文档</p>
+
+  <p class="ziti3">Node</p>
+
+  <p class="ziti3">Document对象是文档树的根节点，documentElement属性是文档的根元素。Document节点可以有其他子节点（比如Comment及DocumentType节点），不过它只有一个保存文档所有内容的Element子节点。</p>
+
+  <p class="ziti3">大多数情况下获取一个Document对象的方法是通过窗口的document属性。Document对象也可以通过IFrame元素的contentDocument属性或任意节点的ownerDocument属性获取。</p>
+
+  <p class="ziti3">Document对象的大多数属性提供了对文档元素或其他与文档相关的重要对象的访问，一些Document方法做同样的事：提供一个方法在文档树中查找元素。许多其他Docuemnt方法是创建元素及相关对象的“工厂方法”。</p>
+
+  <p class="ziti3">和包含的元素一样，文档也可以是事件的目标对象。它实现EventTarget定义的方法，也支持不少事件处理程序属性。</p>
+
+  <p class="ziti3">可以使用DOMImplementation的createDocument()和createHTMLDocument()方法来生成一个新的Document对象：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">document.implementation.createHTMLDocument("New Doc");</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">也可以从网络上下载一个HTML或XML文件并将它解析为Document对象。参见XMLHttpRequest对象的responseXML属性。</p>
+
+  <p class="ziti3">本书之前的版本中关于HTMLDocument的参考已经合并到这儿了。注意，这儿列举的一些属性、方法及事件处理程序是HTML特有的，在XML文档下不能工作。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除这儿列出的属性外，也可以使用＜iframe＞、＜form＞及＜img＞元素的name属性的值作为文档属性，这些属性的值是对应名字的元素（Element）或节点列表（NodeList）。但是，对命名的＜iframe＞元素来说，这个属性指代＜iframe＞的Window对象。细节请参考15.2.2节。</p>
+
+  <p class="ziti3">readonly Element activeElement</p>
+
+  <p class="ziti3">当前获得键盘焦点的文档元素。</p>
+
+  <p class="ziti3">Element body</p>
+
+  <p class="ziti3">对HTML文档来说，这个元素指代＜body＞元素。（对定义了窗体集的元素，这个属性指代的是最外层的＜frameset＞。）</p>
+
+  <p class="ziti3">readonly string characterSet</p>
+
+  <p class="ziti3">当前文档的字符编码。</p>
+
+  <p class="ziti3">string charset</p>
+
+  <p class="ziti3">当前文档的字符编码。它和character Set类似，不过可以通过设置它来改变文档编码。</p>
+
+  <p class="ziti3">readonly string compatMode</p>
+
+  <p class="ziti3">如果文档为了兼容非常老的浏览器，使用CSS“怪异模式”（quirks mode）渲染，则这个属性的值为字符串"BackCompat"。在其他情况下，这个属性值为"CSS1Compat"。</p>
+
+  <p class="ziti3">string cookie</p>
+
+  <p class="ziti3">这个属性允许读、新建、修改或删除当前文档应用的cookie。cookie是Web浏览器保存的少量的命名数据，它让浏览器有了“记忆”，这样浏览器就能在一个页面输入数据并在另一个页面使用，或者通过Web浏览会话调出用户的偏好。cookie数据在适当的时候会自动在Web浏览器与Web服务器之间传送，这样服务端的脚本就可以读写cookie的值。客户端的JavaScript代码也可以通过这个属性来读写cookie。注意，这是一个可读写的属性，但是从其中读出的值通常情况下与写的值并不完全一样。细节请参考20.2节。</p>
+
+  <p class="ziti3">readonly string defaultCharset</p>
+
+  <p class="ziti3">浏览器的默认字符集。</p>
+
+  <p class="ziti3">readonly Window defaultView</p>
+
+  <p class="ziti3">Web浏览器在当前文档中显示的Window对象。</p>
+
+  <p class="ziti3">string designMode</p>
+
+  <p class="ziti3">如果这个属性值为"on"，整个文档是可编辑的，如果它的值为"off"，整个文档将不可编辑。（不过，设置了contenteditable属性的元素当然还可能是可编辑的。）参见15.10.4节。</p>
+
+  <p class="ziti3">string dir</p>
+
+  <p class="ziti3">对HTML文档而言，这个属性是＜html＞元素的dir属性的映射。因此，它和documentElement.dir是一样的。</p>
+
+  <p class="ziti3">readonly DocumentType doctype</p>
+
+  <p class="ziti3">DocumentType节点，表示文档的＜!DOCTYPE＞。</p>
+
+  <p class="ziti3">readonly Element documentElement</p>
+
+  <p class="ziti3">文档的根元素。对HTML文档而言，这个属性总是表示＜html＞标签的那个Element对象。这个根元素也可以通过自Node继承的childNodes[]数组获得，不过一般它不是这个数组的第一个元素。也可参考body属性。</p>
+
+  <p class="ziti3">string domain</p>
+
+  <p class="ziti3">当前文档所在服务器的主机名（hostname），如果没有对应主机则为null。可以将这个属性设置为它自己的域名后缀以放宽同源限制，并从获得访问相关域名下的文档的权限。细节请参考13.6.2节。</p>
+
+  <p class="ziti3">readonly HTMLCollection embeds</p>
+
+  <p class="ziti3">文档中的＜embed＞元素组成的类数组对象。</p>
+
+  <p class="ziti3">readonly HTMLCollection forms</p>
+
+  <p class="ziti3">文档中的Form元素组成的类数组对象。</p>
+
+  <p class="ziti3">readonly Element head</p>
+
+  <p class="ziti3">对HTML文档而言，这个属性对应＜head＞元素。</p>
+
+  <p class="ziti3">readonly HTMLCollection images</p>
+
+  <p class="ziti3">文档中所有Image元素组成的类数组对象。</p>
+
+  <p class="ziti3">readonly DOMImplementation implementation</p>
+
+  <p class="ziti3">当前文档的DOMImplementation对象。</p>
+
+  <p class="ziti3">readonly string lastModifed</p>
+
+  <p class="ziti3">定义当前文档最近修改的时间和日期。这个值来自Web服务器可选择性发送的Last-Modified头。</p>
+
+  <p class="ziti3">readonly HTMLCollection links</p>
+
+  <p class="ziti3">文档中所有超链接组成的类数组对象。这个HTMLCollection包含所有带href属性的＜a＞和＜area＞元素，但不包含＜link＞元素。参见Link。</p>
+
+  <p class="ziti3">readonly Location location</p>
+
+  <p class="ziti3">Window.location的同义词。</p>
+
+  <p class="ziti3">readonly HTMLCollection plugins</p>
+
+  <p class="ziti3">embdes属性的同义词。</p>
+
+  <p class="ziti3">readonly string readyState</p>
+
+  <p class="ziti3">如果文档仍在加载中，这个属性值为字符串"loading"；如果文档已经完全加载完成，则值为"complete"。当它的属性改变为"complete"时，浏览器会在Document上触发一个readystatechange事件。</p>
+
+  <p class="ziti3">readonly string referrer</p>
+
+  <p class="ziti3">链接到本文档的文档的URL，如果当前文档不是通过超链接访问的，或者如果Web服务器没有报告来源页面，则此属性值为null。这个属性允许客户端JavaScript访问HTTP referer头信息。注意拼写的不同：HTTP头信息有3个r，而JavaScript属性有4个r。</p>
+
+  <p class="ziti3">readonly HTMLCollection scripts</p>
+
+  <p class="ziti3">文档中所有＜script＞元素组成的类数组对象。</p>
+
+  <p class="ziti3">readonly CSSStyleSheet[]styleSheets</p>
+
+  <p class="ziti3">表示所有嵌入或连接到文档中的样式表对象的集合。在HTML文档中，它包含由＜link＞和＜style＞标签定义的样式表。</p>
+
+  <p class="ziti3">string title</p>
+
+  <p class="ziti3">当前文档的＜title＞标签的纯文本内容。</p>
+
+  <p class="ziti3">readonly string URL</p>
+
+  <p class="ziti3">当前文档加载自的URL。这个值经常与location.href属性的值一样，不过，如果一段脚本改变了片断标识符（fragment identifier）（location.hash属性），location属性和URL属性就可能不再指代同一个URL了。不要混淆Document.URL和Window.URL。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">Node adoptNode(Node node)</p>
+
+  <p class="ziti3">这个方法将node从它目前所在的任何文档中移除，将它的ownerDocument属性改为当前文档，并确保它已做好插入当前文档的准备。与之对照，importNode()从另一个文档中复制节点但不删除它。</p>
+
+  <p class="ziti3">void close()</p>
+
+  <p class="ziti3">关闭由open()方法打开的文档流，强制显示所有缓存的输出。</p>
+
+  <p class="ziti3">Comment createComment(string data)</p>
+
+  <p class="ziti3">根据指定的内容，创建并返回一个新的Comment节点。</p>
+
+  <p class="ziti3">DocumentFragment createDocumentFragment()</p>
+
+  <p class="ziti3">创建并返回一个新的空DocumentFragment节点。</p>
+
+  <p class="ziti3">Element createElement(string localName)</p>
+
+  <p class="ziti3">根据指定标签名，创建并返回一个新的空Element节点。在HTML文档中，标签名会转化为大写。</p>
+
+  <p class="ziti3">Element createElementNS(string namespace,string qualifedName)</p>
+
+  <p class="ziti3">创建并返回一个新的空Element节点。第一个参数指定元素的命名空间URI；第二个参数指定命名空间前缀和元素的标签名，中间用逗号隔开。</p>
+
+  <p class="ziti3">Event createEvent(string eventInterface)</p>
+
+  <p class="ziti3">创建并返回一个未初始化的合成Event对象。该参数必须指定事件的类型，值应该为一个类似"Event"、"UIEvent"、"MouseEvent"、"MessageEvent"之类的字符串。创建Event对象之后，可以对它调用一个合适的事件初始化方法来初始化它的只读属性，这些方法有initEvent()、initUIEvent()、initMouseEvent()等。大多数特定于事件的初始方法本书都没有涉及，不过最简单的一个可以参考Event.initEvent()。创建并初始化一个合成事件对象后，就可以使用EventTarget的dispatchEvent()方法来分发它。合成事件总是有一个值为false的isTrusted属性。</p>
+
+  <p class="ziti3">ProcessingInstruction createProcessingInstruction(string target,string data)</p>
+
+  <p class="ziti3">根据指定的目标和数据字符串，创建并返回一个新的ProcessingInstruction节点。</p>
+
+  <p class="ziti3">Text createTextNode(string data)</p>
+
+  <p class="ziti3">创建并返回一个代表指定文本的新的Text节点。</p>
+
+  <p class="ziti3">Element elementFromPoint(float x,float y)</p>
+
+  <p class="ziti3">返回在窗口坐标(x,y)处嵌套最深的Element。</p>
+
+  <p class="ziti3">boolean execCommand(string commandId,[boolean showUI,[string value]])</p>
+
+  <p class="ziti3">在插入光标所在的可编辑元素上执行参数commandId指定名字的编辑命令。HTML5定义了下面这些命令：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00098.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">有一些方法（比如"createLink"）需要一个参数值。如果execCommand()的第二个参数值为false，则第三个参数将用做命令的参数；否则，浏览器会弹出提示框让用户输入需要的值。更多关于execCommand()的内容请参考15.10.4节。</p>
+
+  <p class="ziti3">Element getElementById(string elementId)</p>
+
+  <p class="ziti3">这个方法在当前文档中搜索id属性值为elementId的Element节点，并返回这个Element，如果没有找到对应的Element，它将返回null。在一个文档中，id属性的值应该是唯一的，不过如果这个方法找到了多个id为elementId的元素，它将返回第一个。这个方法很重要并且很常用，因为它提供了一个简单的方法来获取代表一个指定文档元素的Element对象。注意这个方法的名字以"Id"结尾，而不是"ID"。</p>
+
+  <p class="ziti3">NodeList getElementsByClassName(string classNames)</p>
+
+  <p class="ziti3">返回一个类数组对象，其中的元素的class属性值包含所有classNames定义的类。classNames可以是一个单独的类，也可以是由空格分隔的多个类的列表。返回的NodeList对象是实时的，文档改变后会自动更新。返回的NodeList中的元素的顺序与文档中它们出现的顺序相同。注意这个方法在Element中也定义了。</p>
+
+  <p class="ziti3">NodeList getElementsByName(string elementName)</p>
+
+  <p class="ziti3">这个方法返回一个实时的、只读的类数组对象，包含所有name属性值为elementName的元素。如果没有匹配元素，这个方法返回一个length为0的NodeList。</p>
+
+  <p class="ziti3">NodeList getElementsByTagName(string qualifedName)</p>
+
+  <p class="ziti3">这个方法返回一个只读的类数组对象，包含文档中有指定标签名的所有Element节点，顺序与它们在文档源代码中出现的顺序相同。这个NodeList是“实时的”——文档改变时，如果有必要，它的内容会自动更新。对HTML来说，标签名是不区分大小写的。一个特例是，标签名“*”匹配文档中的所有元素。</p>
+
+  <p class="ziti3">注意Element接口定义了一个同名的方法，该方法仅搜索文档的子树。</p>
+
+  <p class="ziti3">NodeList getElementsByTagNameNS(string namespace,string localName)</p>
+
+  <p class="ziti3">这个方法类似于getElementsByTagName()，但它将取得的标签名定义为命名空间URI和命名空间中的本地名称的组合。</p>
+
+  <p class="ziti3">boolean hasFocus()</p>
+
+  <p class="ziti3">如果当前文档的Window拥有键盘焦点（如果这个窗口不是顶层窗口，则它的所有祖先都拥有焦点），这个方法返回true。</p>
+
+  <p class="ziti3">Node importNode(Node node,boolean deep)</p>
+
+  <p class="ziti3">这个方法传入一个由其他文档定义的节点，并返回这个节点的一份适合插入当前文档的副本。如果deep值为true，这个节点的所有子节点都将复制。原始节点和它的依赖节点不会有任何修改。返回的副本的ownerDocument属性被设置为当前文档，但parentNode属性为null，因为它还没有插入到当前文档中。注册到原始节点或节点树上的事件监听函数不会复制。也可参考adoptNode()。</p>
+
+  <p class="ziti3">Window open(string url,string name,string features,[boolean replace])</p>
+
+  <p class="ziti3">当文档的open()方法以三个或更多参数调用时，它的表现和Window对象的open()方法一样。可参考Window。</p>
+
+  <p class="ziti3">Document open([string type],[string replace])</p>
+
+  <p class="ziti3">只有两个或更少的参数时，这个方法将擦除当前文档并开始一个新的（使用现存的那个Document对象，这也是这个方法的返回值）。调用open()之后，就可以使用write()和writeln()方法将内容以流的形式写到文档中，然后使用close()来结束文档并强制显示它的新内容。细节请参考15.10.2节。</p>
+
+  <p class="ziti3">如果type省略或值为"text/html"，新的文档将是一个HTML文档，在其他情况下，它将是一个纯文本文档。如果参数replace为true，新文档将在浏览历史中取代旧文档。</p>
+
+  <p class="ziti3">这个方法不应该由正要重写的文档中的脚本或事件处理程序调用，因为这个脚本或处理程序自身将被重写。</p>
+
+  <p class="ziti3">boolean queryCommandEnabled(string commandId)</p>
+
+  <p class="ziti3">如果现在传入commandId到execCommand()中是有意义的，这个方法将返回true；否则返回false。比如，如果没有操作可以撤销，那么"undo"命令将不可用。参见15.10.4节。</p>
+
+  <p class="ziti3">boolean queryCommandIndeterm(string commandId)</p>
+
+  <p class="ziti3">如果由于queryCommandState()不能返回一个有意义的值，因此commandId处于一个不确定的状态，则返回true。HTML5定义的命令永远不会处于不确定状态，但特定于浏览器的命令可能会。参见15.10.4节。</p>
+
+  <p class="ziti3">boolean queryCommandState(string commandId)</p>
+
+  <p class="ziti3">返回指定commandId的状态。如果光标或选区正处于斜体中，则一些编辑命令（比如"bold"和"italic"）有状态true；否则为false。不过，大多数命令没有状态，这些方法总是返回false。参见15.10.4节。</p>
+
+  <p class="ziti3">boolean queryCommandSupported(string commandId)</p>
+
+  <p class="ziti3">如果浏览器支持指定的命令则返回true；否则返回false。参见15.10.4节。</p>
+
+  <p class="ziti3">string queryCommandValue(string commandId)</p>
+
+  <p class="ziti3">将指定命令的状态作为字符串返回。参见15.10.4节。</p>
+
+  <p class="ziti3">Element querySelector(string selectors)</p>
+
+  <p class="ziti3">返回当前文档中匹配指定的CSS selector（可能是一个单独的CSS选择器或者一组由逗号隔开的选择器）的第一个元素。</p>
+
+  <p class="ziti3">NodeList querySelectorAll(string selectors)</p>
+
+  <p class="ziti3">返回包含当前文档中匹配指定CSS selector（可能是一个单独的CSS选择器或者一组由逗号隔开的选择器）的所有元素的类数组对象。和getElementsByTagName()及相似方法返回的NodeList不同，这个方法返回的NodeList不是实时的：它只是调用这个方法时匹配元素的一张静态快照。</p>
+
+  <p class="ziti3">void write(string text...)</p>
+
+  <p class="ziti3">这个方法将它的参数追加到文档中。可以在文档正在加载时调用它，以便在对应＜script＞标签的位置插入内容，或者也可以在调用open()方法后使用它。细节参见15.10.2节。</p>
+
+  <p class="ziti3">void writeln(string text...)</p>
+
+  <p class="ziti3">这个方法和HTMLDocument.write()很像，不同之处在于它会在追加的文本后面添加一个换行符。比如，在写＜pre＞标签的内容时，这个方法可能会有用。</p>
+
+  <p class="ziti3">事件</p>
+
+  <p class="ziti3">浏览器不常直接在Document对象上触发事件，不过Element事件会冒泡到包含它们的Document上，因此，Document对象支持所有Element中列出的事件处理程序属性。和Element一样，Docuemnt对象也实现EventTarget方法。</p>
+
+  <p class="ziti3">浏览器确实会在Document对象上触发两个文档就绪事件。当readyState属性改变时，浏览器触发readystatechange事件，可以使用onreadystatechange属性注册这个事件的处理程序。当文档树就绪（但在外部资源下载完之前）时，浏览器也会触发一个DOMContentLoaded事件（参见17.4节），但是注册这个事件只能用EventTarget()方法，因为有一个onDOMContentLoaded属性。</p>
+
+  <h3 class="p1" id="heading_id_29">DocumentFragment</h3>
+
+  <p class="ziti3">相邻的节点及它们的子树</p>
+
+  <p class="ziti3">Node</p>
+
+  <p class="ziti3">DocumentFragment接口表示文档的一个部分或一个碎片，具体一点来说，它是由相邻节点以及每个节点的子孙组成的一个列表，但这些节点没有一个共同的父节点。DocumentFragment节点永远不会是某个文档树的一部分，它继承的parentNode属性总是为null。不过，DocumentFragment节点展现出了一个非常有用的性质：把一个DocumentFragment插入到一个文档树时，插入的不是DocumentFragment节点本身，而是这个DocumentFragment的每一个子节点。这让DocumentFragment可以用做临时占位符，先将希望插入的节点放入其中，然后将它们一次性地插入到文档中。</p>
+
+  <p class="ziti3">可以使用Document.createDocumentFragment()来创建一个新的空DocumentFragment。</p>
+
+  <p class="ziti3">可以在DocumentFragment中使用querySelector()和querySelectorAll()来搜索元素，它们的表现和Document对象的相同方法一样。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">Element querySelector(string selectors)</p>
+
+  <p class="ziti3">参见Document.querySelector()。</p>
+
+  <p class="ziti3">NodeList querySelectorAll(string selectors)</p>
+
+  <p class="ziti3">参见Document.querySelectorAll()。</p>
+
+  <h3 class="p1" id="heading_id_30">DocumentType</h3>
+
+  <p class="ziti3">文档的＜!DOCTYPE＞声明。</p>
+
+  <p class="ziti3">Node</p>
+
+  <p class="ziti3">这个不常用的类型表示文档的＜!DOCTYPE＞声明。Document的doctype属性保存该文档的DocumentType节点。DocumentType节点是不可变的，无法对其进行修改。</p>
+
+  <p class="ziti3">DocumentType节点用于通过DOMImplementation.createDocument()方法创建新的Document对象。可以使用DOMImplementation.createDocumentType()创建新的DocumentType对象。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly string name</p>
+
+  <p class="ziti3">文档类型的名称。这个标识符在文档开头紧跟着＜!DOCTYPE＞，和文档的根元素的标签名相同。对HTML文档而言，这个值是"html"。</p>
+
+  <p class="ziti3">readonly string publicId</p>
+
+  <p class="ziti3">DTD的公共标识符，如果未定义则为空字符串。</p>
+
+  <p class="ziti3">readonly string systemId</p>
+
+  <p class="ziti3">DTD的系统标识符，如果未定义则为空字符串。</p>
+
+  <h3 class="p1" id="heading_id_31">DOMException</h3>
+
+  <p class="ziti3">Web API抛出的异常</p>
+
+  <p class="ziti3">大多数客户端JavaScript API在需要发出错误信号时会抛出DOMException对象。这个对象的code和name属性提供了关于这个错误的更多信息。注意，DOMException可能会在读或写一个对象的属性或调用一个对象的方法时抛出。</p>
+
+  <p class="ziti3">DOMException不是核心JavaScript Error类型的子类，不过两者很相似，一些浏览器包含一个message属性，以便让它与Error兼容。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">unsigned short INDEX_SIZE_ERR=1</p>
+
+  <p class="ziti3">unsigned short HIERARCHY_REQUEST_ERR=3</p>
+
+  <p class="ziti3">unsigned short WRONG_DOCUMENT_ERR=4</p>
+
+  <p class="ziti3">unsigned short INVALID_CHARACTER_ERR=5</p>
+
+  <p class="ziti3">unsigned short NO_MODIFICATION_ALLOWED_ERR=7</p>
+
+  <p class="ziti3">unsigned short NOT_FOUND_ERR=8</p>
+
+  <p class="ziti3">unsigned short NOT_SUPPORTED_ERR=9</p>
+
+  <p class="ziti3">unsigned short INVALID_STATE_ERR=11</p>
+
+  <p class="ziti3">unsigned short SYNTAX_ERR=12</p>
+
+  <p class="ziti3">unsigned short INVALID_MODIFICATION_ERR=13</p>
+
+  <p class="ziti3">unsigned short NAMESPACE_ERR=14</p>
+
+  <p class="ziti3">unsigned short INVALID_ACCESS_ERR=15</p>
+
+  <p class="ziti3">unsigned short TYPE_MISMATCH_ERR=17</p>
+
+  <p class="ziti3">unsigned short SECURITY_ERR=18</p>
+
+  <p class="ziti3">unsigned short NETWORK_ERR=19</p>
+
+  <p class="ziti3">unsigned short ABORT_ERR=20</p>
+
+  <p class="ziti3">unsigned short URL_MISMATCH_ERR=21</p>
+
+  <p class="ziti3">unsigned short QUOTA_EXCEEDED_ERR=22</p>
+
+  <p class="ziti3">unsigned short TIMEOUT_ERR=23</p>
+
+  <p class="ziti3">unsigned short DATA_CLONE_ERR=25</p>
+
+  <p class="ziti3">这些是code属性可能的值。常量的名字已经足以说明抛出异常的大致原因。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">unsigned short code</p>
+
+  <p class="ziti3">上面列出的常量值中的一个，指出发生了什么类型的异常。</p>
+
+  <p class="ziti3">string name</p>
+
+  <p class="ziti3">指定异常类型的名字。上面列出的常量名中的一个，字符串形式。</p>
+
+  <h3 class="p1" id="heading_id_32">DOMImplementation</h3>
+
+  <p class="ziti3">全局DOM方法</p>
+
+  <p class="ziti3">DOMImplementation对象定义一些不与任何特定Document对象相关的“全局”方法，用于DOM的实现。可通过任何Document对象的implementation属性获取DOMImplementation对象的引用。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">Document createDocument(string namespace,string qualifedName,DocumentType doctype)</p>
+
+  <p class="ziti3">这个方法创建并返回一个新的XML Document对象。如果指定qualifiedName，这个方法将以它为名字创建一个根节点，并将作为其documentElement添加到文档中。如果qualifeldName包含一个命名空间前缀和一个逗号，namespace将作为唯一标识命名空间的URI。如果参数doctype不为空，则当前DocumentType对象的ownerDocument属性将设置为这个新创建的文档，DocumentType节点将添加到这个新文档中。</p>
+
+  <p class="ziti3">DocumentType createDocumentType(string qualifedName,publicId,systemId)</p>
+
+  <p class="ziti3">这个方法创建并返回一个新的代表＜!DOCTYPE＞声明的DocumentType节点，可将这个节点传入到createDocument()方法中。</p>
+
+  <p class="ziti3">Document createHTMLDocument(string title)</p>
+
+  <p class="ziti3">这个方法创建一个新的只包含基本文档树结构以及指定标题的HTMLDocument对象。返回的对象的documentElement属性为一个＜html＞元素，这个根元素有子节点＜head＞和＜body＞标签，其中＜head＞元素有一个＜title＞子节点，＜title＞将指定的title字符串作为子节点。</p>
+
+  <h3 class="p1" id="heading_id_33">DOMSettableTokenList</h3>
+
+  <p class="ziti3">带可设置字符串值的记号列表</p>
+
+  <p class="ziti3">DOMTokenList</p>
+
+  <p class="ziti3">DOMSettableTokenList是一个同样带有value属性的DOMTokenList，可以通过这个属性一次性设置整个记号集。</p>
+
+  <p class="ziti3">Element的classList属性是一个DOMTokenList，它通过className属性以字符串的形式来表现记号集。如果想一次性设置所有的classList记号，可以简单地将className属性设置为一个新的字符串。IFrame元素的sandbox属性稍有不同，这个属性以及相关的HTML属性是由HTML5定义的，所以不需要一个老字符串表示和一个新的DOMTokenList表示。在这种情况下，这个属性简单地定义为一个DOMSettableTokenList：可以像字符串一样对它进行读写，也可以使用它的方法并将它作为记号集。Output的htmlFor属性和Video的audio属性也都是DOMSettableTokenList。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">string value</p>
+
+  <p class="ziti3">记号集的字符串表示，以空格分隔。可通过读写这个属性来处理这个集合，就像处理一个单独的字符串值一样。通常不需要显式地使用这个属性：当将一个DOMSettableTokenList用做一个字符串时，返回的就是这个字符串的值。如果对一个DOMSettableTokenList赋值，会隐含地设置这个属性。</p>
+
+  <h3 class="p1" id="heading_id_34">DOMTokenList</h3>
+
+  <p class="ziti3">空格隔开的记号集</p>
+
+  <p class="ziti3">DOMTokenList是由空格分隔的记号字符串经过解析后的表示形式，比如一个Element的className属性。如同名字所暗示的，DOMTokenList是一个列表，它是一个类数组对象，有lenght属性，也可以通过索引它检索特定的记号。但更重要的是，它定义了contains()、add()、remove()以及toggle()方法，以便可以用记号集的方式处理它。如果将DOMTokenList像字符串那样用，它就等同于一个由空格分隔的记号组成的字符串。</p>
+
+  <p class="ziti3">在支持HTML5中Element对象的classList属性的浏览器中，它是一个DOMTokenList，这可能是你唯一经常使用的DOMTokenList。也可参见DOMSettableTokenList。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned long length</p>
+
+  <p class="ziti3">DOMTokenList是一个类数组对象；这个值指定它包含多少个不重复的记号。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void add(string token)</p>
+
+  <p class="ziti3">如果当前DOMTokenList不包含token，则在列表的尾部添加它。</p>
+
+  <p class="ziti3">boolean contains(string token)</p>
+
+  <p class="ziti3">如果当前DOMTokenList包含token则返回true；否则返回false。</p>
+
+  <p class="ziti3">string item(unsigned long index)</p>
+
+  <p class="ziti3">返回指定index处的记号，如果index超出范围则返回null。也可以不调用这个方法，直接对DOMTokenList取索引。</p>
+
+  <p class="ziti3">void remove(string token)</p>
+
+  <p class="ziti3">如果当前DOMTokenList包含token，就移除它；否则什么也不做。</p>
+
+  <p class="ziti3">boolean toggle(string token)</p>
+
+  <p class="ziti3">如果当前DOMTokenList包含token，就移除它；否则添加它。</p>
+
+  <h3 class="p1" id="heading_id_35">Element</h3>
+
+  <p class="ziti3">文档元素</p>
+
+  <p class="ziti3">Node、EventTarget</p>
+
+  <p class="ziti3">Element对象表示HTML或XML文档中的元素。tagName属性定义元素的标签名或类型。元素的标准HTML属性可以通过Element对象的JavaScript属性来访问。所有属性（包括XML属性和非标准HTML属性）也可以通过getAttribute()和setAttribute()方法访问。元素内容可以通过继承自Node的属性访问。如果你只对Element对象之间的关系有兴趣，你可以使用children、firstElementChild或nextElementSibling及相关的属性。</p>
+
+  <p class="ziti3">从文档中获取Element对象有很多种方法。Document对象的documentElement属性指代该文档的根元素，比如HTML文档的＜html＞元素。对HTML文档来说，head和body属性很相似：它们指代文档的＜head＞和＜body＞元素。要通过唯一的id属性来定位一个特定的命名元素，可以使用Document.getElementById()。如同15.2节介绍过的，还可以通过Document及Element的方法，如getElementsByTagName()、getElementsByClassName()以及querySelectorAll()，来获取多个Element对象。最后，可以通过Document.createElement()来创建新的可插入文档的Element对象。</p>
+
+  <p class="ziti3">浏览器会在文档元素上触发很多种不同的事件，同时，Element对象定义了很多事件处理程序属性。另外，Element对象还定义了EventTarget()方法（参见EventTarget），可用于添加及删除事件监听器。</p>
+
+  <p class="ziti3">本书之前的版本中关于HTMLElement的参考条目已合并到本节中。注意，这儿讲述的部分属性、方法以及事件处理程序是HTML特有的，不能在XML文档的元素上工作。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除这儿列出的属性外，HTML元素的HTML属性也可以通过Element对象的JavaScript属性来访问。HTML标签及它们合法的属性列在本参考条目的结尾处。</p>
+
+  <p class="ziti3">readonly Attr[]attributes</p>
+
+  <p class="ziti3">Attr对象（代表当前元素的HTML或XML属性）的类数组对象。不过，Element对象通常可通过JavaScript属性来访问它的属性，所以永远不会真的需要用到这个attributes[]数组。</p>
+
+  <p class="ziti3">readonly unsigned long childElementCount</p>
+
+  <p class="ziti3">当前元素拥有的子元素（非子节点）的数目。</p>
+
+  <p class="ziti3">readonly HTMLCollection children</p>
+
+  <p class="ziti3">由当前Element的子Element（不包括非Element子元素，如Text和Comment节点）组成的类数组对象。</p>
+
+  <p class="ziti3">readonly DOMTokenList classList</p>
+
+  <p class="ziti3">元素的类属性是一个由空格分隔的类名列表。本属性允许访问这个列表中的各个元素，同时定义了查询、添加、删除以及切换类名的方法。细节请参考DOMTokenList。</p>
+
+  <p class="ziti3">string className</p>
+
+  <p class="ziti3">这个属性代表当前元素的class属性。class是JavaScript的保留字，所以JavaScript属性用className来代替class。注意，这个属性名有点误导性，因为class属性通常包含多个类名。</p>
+
+  <p class="ziti3">readonly long clientHeight</p>
+
+  <p class="ziti3">readonly long clientWidth</p>
+
+  <p class="ziti3">如果当前元素是根元素（参见document.documentElement），这两个属性将返回Window的尺寸，它们是除去滚动条及其他浏览器“包装”（chrome）之外的内部或视口的尺寸。在其他情况下，这两个属性返回元素的内容加上内边距的尺寸。</p>
+
+  <p class="ziti3">readonly long clientLeft</p>
+
+  <p class="ziti3">readonly long clientTop</p>
+
+  <p class="ziti3">这两个属性返回元素的左边框或顶边框的边界到内边距的左边框或顶边界之间的距离，单位为像素。一般情况下这就是左边框或顶边框的宽度，不过如果在元素的左侧或顶部有滚动条的话，这个值也包含对应滚动条的宽度。</p>
+
+  <p class="ziti3">CSSStyleDeclaration currentStyle</p>
+
+  <p class="ziti3">这个IE专有属性代表应用到当前元素上的所有CSS属性的级联集合（cascaded set）。在IE8及更早版本中，可以将它作为标签的Window.getComputedStyle()方法的替代。</p>
+
+  <p class="ziti3">readonly object dataset</p>
+
+  <p class="ziti3">通过为名称以"data-"为前缀的属性赋值，可以把任意值与任何HTML元素相关联这个dataset属性是元素的数据（data）属性的集合，通过这个属性可以更容易地设置和读取它们。</p>
+
+  <p class="ziti3">这个属性值的行为类似于普通的JavaScript对象。这个对象的每一个值对应元素上的一个data属性。如果元素有一个名为data-x的属性，dataset对象就会有一个名为x的属性，并且dataset.x的值和getAttribute("data-x")的值相同。</p>
+
+  <p class="ziti3">查询或设置dataset对象的属性相当于查询或存储这个元素对应的data属性。可以使用delete操作符来删除data属性，也可以使用for/in循环来枚举data属性。</p>
+
+  <p class="ziti3">readonly Element frstElementChild</p>
+
+  <p class="ziti3">这个属性类似于Node的firstChild属性，但它忽略Text及Comment节点，只返回Element。</p>
+
+  <p class="ziti3">string id</p>
+
+  <p class="ziti3">id属性的值。同一个文档中任意两个元素的id值都应该不同。</p>
+
+  <p class="ziti3">string innerHTML</p>
+
+  <p class="ziti3">定义当前元素包含的HTML或XML标签的一个可读写的字符串，不包括当前元素本身的开始及结束标签。查询这个属性将以一个HTML或XML文本字符串的形式返回当前元素的内容，设置这个属性为一个HTML或XML文本字符串，将用该文本的解析表示形式替换当前元素的内容。</p>
+
+  <p class="ziti3">readonly boolean isContentEditable</p>
+
+  <p class="ziti3">如果当前元素可编辑，本属性将为true；否则为false。如果一个元素或它的祖先元素有contenteditable属性，或者包含它的Document指定designMode属性，则这个元素可能是可编辑的。</p>
+
+  <p class="ziti3">string lang</p>
+
+  <p class="ziti3">lang属性的值，这个属性指定当前元素内容的语言编码。</p>
+
+  <p class="ziti3">readonly Element lastElementChild</p>
+
+  <p class="ziti3">这个属性类似于Node的lastChild属性，不过它忽略Text和Comment节点，只返回Elements。</p>
+
+  <p class="ziti3">readonly string localName</p>
+
+  <p class="ziti3">当前元素本地的、无前缀的名字。和tagName属性不同，如果存在命名空间前缀prefix时，tagName属性会包含这个前缀（对HTML元素而言还会转换为大写）。</p>
+
+  <p class="ziti3">readonly string namespaceURI</p>
+
+  <p class="ziti3">正式定义当前元素的命名空间的URL，可以为null或者一段类似于"http://www.w3.org/1999/xhtml"的字符串。</p>
+
+  <p class="ziti3">readonly Element nextElementSibling</p>
+
+  <p class="ziti3">这个属性类似于Node的nextSibling属性，不过它忽略Text和Comment节点，只返回Elements。</p>
+
+  <p class="ziti3">readonly long offsetHeight</p>
+
+  <p class="ziti3">readonly long offsetWidth</p>
+
+  <p class="ziti3">当前元素及其所有内容的高度及宽度，单位为像素，包括元素的CSS内边距及边框，但不包括外边距。</p>
+
+  <p class="ziti3">readonly long offsetLeft</p>
+
+  <p class="ziti3">readonly long offsetTop</p>
+
+  <p class="ziti3">当前元素的CSS边框的左上角相对于它的offsetParent容器元素的X及Y坐标。</p>
+
+  <p class="ziti3">readonly Element offsetParent</p>
+
+  <p class="ziti3">指定容器元素，offsetLeft和offsetTop将基于这个容器元素定义的坐标系统度量。对大多数元素来说，offsetParent是包含它们的＜body＞元素。不过，如果一个元素在一个动态定位的元素中，那个动态定位的元素将是offsetParent，如果元素在表格中，＜td＞、＜th＞或＜table＞元素可能会是offsetParent。参见15.8.5节。</p>
+
+  <p class="ziti3">string outerHTML</p>
+
+  <p class="ziti3">定义了当前元素及其子元素的HTML或XML标签。如果设置这个属性的值为一个字符串，这个元素（以及它所有的内容）将被新值解析成的HTML或XML文档碎片替代。</p>
+
+  <p class="ziti3">readonly string prefx</p>
+
+  <p class="ziti3">当前元素的命名空间前缀。这个值通常为n ull，除非你正在处理一个使用命名空间的XML文档。</p>
+
+  <p class="ziti3">readonly Element previousElementSibling</p>
+
+  <p class="ziti3">这个属性类似于Node的previousSibling属性，不过它忽略Text和Comment节点，只返回Elements。</p>
+
+  <p class="ziti3">readonly long scrollHeight</p>
+
+  <p class="ziti3">readonly long scrollWidth</p>
+
+  <p class="ziti3">元素的全部高度及宽度，单位为像素。当元素有滚动条时（比如，由于CSS的overflow属性），这两个属性与offsetHeight和offsetWidth的不同在于，后两者只简单地返回元素可见部分的尺寸。</p>
+
+  <p class="ziti3">long scrollLeft</p>
+
+  <p class="ziti3">long scrollTop</p>
+
+  <p class="ziti3">当前元素左边缘或顶边缘滚过的像素数。这两个属性只对带滚动条的元素有用，比如CSS属性overflow设置为auto的元素。＜html＞元素（参见Document.documentElement）的这两个属性的定义为文档滚过部分的数量。注意，这两个属性没有定义＜iframe＞标签中滚过部分的数量。可以通过设置这两个属性来滚动一个元素或整个文档。参见15.8.5节。</p>
+
+  <p class="ziti3">readonly CSSStyleDeclaration style</p>
+
+  <p class="ziti3">style属性的值定义了当前元素的内联CSS样式。注意，这个属性的值不是一个字符串，而是一个对象，其属性与CSS样式的属性一致并且可读写。细节请参考CSSStyleDeclaration。</p>
+
+  <p class="ziti3">readonly string tagName</p>
+
+  <p class="ziti3">当前元素的标签名。对HTML文档来说，无论文档源代码中标签名的大小写情况如何，总是返回大写的形式，所以，一个＜p＞元素的tagName属性值为"P"。XML文档是区分大小写的，返回的标签名和文档源代码中它所写的形式完全一致。这个属性与继承自Node接口的nodeName属性的值相同。</p>
+
+  <p class="ziti3">string title</p>
+
+  <p class="ziti3">当前元素的title属性的值。在许多浏览器中，当鼠标指针移到元素上时，浏览器会以工具提示的方式显示这个属性的值。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void blur()</p>
+
+  <p class="ziti3">这个方法将键盘焦点转移到当前包含Document对象的body元素上。</p>
+
+  <p class="ziti3">void click()</p>
+
+  <p class="ziti3">这个方法在当前元素上模拟一次单击。如果在这个元素上的正常单击会引发某个事件（比如转向一个链接），这个方法也会让对应事件发生。在其他情况下，调用这个方法只会在对应元素上触发一个单击事件。</p>
+
+  <p class="ziti3">void focus()</p>
+
+  <p class="ziti3">将键盘焦点转移到当前元素上。</p>
+
+  <p class="ziti3">string getAttribute(string qualifedName)</p>
+
+  <p class="ziti3">getAttribute()返回一个元素的指定名字的属性的值，如果对应名字的属性不存在则返回null。注意，HTMLElement对象为每一个标准HTML属性定义了匹配的JavaScript属性，所以在处理HTML文档时，只有在查询非标准属性的值的情况下才需要用到这个方法。在HTML文档中，属性名是区分大小写的。</p>
+
+  <p class="ziti3">在XML文档中，无法直接以元素属性的方式来获取属性值，只能通过调用这个方法来查找。对使用命名空间的XML文档来说，在传入这个方法的属性名中要包含命名空间前缀以及冒号或者使用getAttributeNS()来代替。</p>
+
+  <p class="ziti3">string getAttributeNS(string namespace,string localName)</p>
+
+  <p class="ziti3">这个方法和getAttribute()方法非常类似，区别在于属性被分为命名空间URI以及命名空间下的本地名字的组合。</p>
+
+  <p class="ziti3">ClientRect getBoundingClientRect()</p>
+
+  <p class="ziti3">返回描述当前元素的边框的ClientRect对象。</p>
+
+  <p class="ziti3">ClientRect[]getClientRects()</p>
+
+  <p class="ziti3">返回一个类数组对象，由描述了当前元素覆盖的一个或多个矩形的ClientRects组成。（跨越多行的内联对象往往需要多于一个的矩形才能精确地描述它们在窗口中的区域。）</p>
+
+  <p class="ziti3">NodeList getElementsByClassName(string classNames)</p>
+
+  <p class="ziti3">返回一个由子孙元素组成的类数组对象，每个元素的class属性都包含所有指定的classNames。classNames可以是一个单独的类或者是一个由空格分隔的类列表。返回的NodeList是实时的，会随着文档的变化自动更新。元素在返回的NodeList中的出现顺序与它们在文档中的出现顺序一样。注意Document也定义了这个方法。</p>
+
+  <p class="ziti3">NodeList getElementsByTagName(string qualifedName)</p>
+
+  <p class="ziti3">这个方法遍历当前元素的所有子孙元素，返回一个由具有指定标签名的Element节点组成的实时的类数组NodeList。元素在返回的数组中的出现顺序与它们在源文档中的出现顺序相同。</p>
+
+  <p class="ziti3">注意Document对象也有一个类似的getElementsByTagName()方法，不过它将遍历整个文档，而不仅仅是单个元素的子孙。</p>
+
+  <p class="ziti3">NodeList getElementsByTagNameNS(string namespace,string localName)</p>
+
+  <p class="ziti3">这个方法类似于getElementsByTagName()，不同的是它查找的元素由一个命名空间URI以及这个命名空间下的本地名字的组合定义。</p>
+
+  <p class="ziti3">boolean hasAttribute(string qualifedName)</p>
+
+  <p class="ziti3">如果当前元素拥有指定名字的属性，这个方法返回true；否则返回false。在HTML文档中，属性名是区分大小写的。</p>
+
+  <p class="ziti3">boolean hasAttributeNS(string namespace,string localName)</p>
+
+  <p class="ziti3">这个方法类似于hasAttribute()，不同之处是属性由命名空间URI以及这个命名空间下的本地名字指定。</p>
+
+  <p class="ziti3">void insertAdjacentHTML(string position,string text)</p>
+
+  <p class="ziti3">这个方法在相对于当前元素的指定position处插入指定的HTML标签text。参数position的取值只能是下面4个字符串之一：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00099.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">Element querySelector(string selectors)</p>
+
+  <p class="ziti3">返回当前元素的第一个匹配指定CSS selectors（可能是一个单独的CSS选择器或者一组由逗号分隔的选择器）的子孙元素。</p>
+
+  <p class="ziti3">NodeList querySelectorAll(string selectors)</p>
+
+  <p class="ziti3">返回当前Element的所有匹配指定selectors（可能是一个单独的CSS选择器或者一组由逗号分隔的选择器）的子孙元素组成的类数组对象。不同于getElementsByTagName()方法返回的NodeList，这个方法返回的NodeList不是实时的：它只是调用这个方法时匹配的元素的一张静态快照。</p>
+
+  <p class="ziti3">void removeAttribute(string qualifedName)</p>
+
+  <p class="ziti3">removeAttribute()删除当前元素的指定名字的属性。尝试移除不存在的属性的操作会自动忽略。在HTML文档中，属性名是区分大小写的。</p>
+
+  <p class="ziti3">void removeAttributeNS(string namespace,string localName)</p>
+
+  <p class="ziti3">removeAttributeNS()和removeAttribute()很类似，不同之处是移除的属性由命名空间URI和本地名字定义。</p>
+
+  <p class="ziti3">void scrollIntoView([boolean top])</p>
+
+  <p class="ziti3">如果一个HTML元素当前在窗口中不可见，这个方法将滚动文档以便将它显示出来。参数top可选，用于确定元素应该定位在靠近窗口的顶部还是底部。如果值为true或省略，浏览器会尝试将元素定位在靠近顶部的地方。如果值为false，浏览器会尝试将元素定位在靠近底部的地方。对那些可接受键盘焦点的元素来说，比如Input元素，focus()方法会隐性地执行一样的“滚动到显示”操作。也可参见Window的scrollTo()方法。</p>
+
+  <p class="ziti3">void setAttribute(string qualifedName,string value)</p>
+
+  <p class="ziti3">这个方法将指定属性设置为指定的值。如果没有对应名字的属性，将新创建一个。在HTML文档中，在设置之前属性名会先转为小写。注意，HTML文档的HTMLElement对象为所有标准HTML属性定义了相应的JavaScript属性，可以通过这些属性直接设置对应的属性值。也就是说，只有在设置非标准属性时才需要使用这个方法。</p>
+
+  <p class="ziti3">void setAttributeNS(string namespace,string qualifedName,string value)</p>
+
+  <p class="ziti3">这个方法类似于setAttribute()，不同之处是创建或设置的属性由命名空间URI、命名空间的前缀组成的限定名、冒号以及命名空间中的本地名字定义。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">代表HTML元素的Element对象定义相当多的事件处理程序属性。将下面列出的任意一个属性设置为一个函数，那个函数就会在该对象上发生（或冒泡到）特定事件时被调用。当然，也可以使用EventTarget定义的方法来注册事件处理程序。</p>
+
+  <p class="ziti3">大多数事件从文档层次结构冒泡到Document节点，然后从那儿再到Window对象。所以，这儿列出的每个事件处理程序属性在Document和Window对象上也有定义。Window对象有不少专有的事件处理程序，下面表格中标有星号的属性在Window对象上有不同的含义。由于历史原因，作为＜body＞元素的HTML属性注册的事件处理程序会注册在Window对象上，这意味着带星号的事件处理程序属性注册在＜body＞元素上时会和它们注册在其他元素上时的含义不同。参见Window。</p>
+
+  <p class="ziti3">这儿列出的大多数事件只会在特定类型的HTML元素上触发，不过由于这些事件大多会在文档树中向上冒泡，因此这些事件处理程序属性一般是为所有元素定义的。在HTML5的＜audio＞和＜video＞上触发的媒体事件不会冒泡，所以它们在MediaElement条目中归档。类似地，一些与HTML5表单相关的事件也不会冒泡，这些事件包含在FormControl条目中。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00100.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="pic">
+    <img alt="" src="../images/00101.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">HTML元素及属性</p>
+
+  <p class="ziti3">这一部分包括下面的HTML元素类型的独立参考页面：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00102.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="pic">
+    <img alt="" src="../images/00103.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">那些所有属性都是其HTML属性的简单映射的HTML元素没有单独的参考页面，下面这些属性是所有HTML元素都有的合法属性，因此它们也是所有Element对象的属性：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00104.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">下面的HTML元素只定义上面这些公共属性：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00105.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="pic">
+    <img alt="" src="../images/00106.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">剩下的HTML元素以及它们支持的属性见下面的表格。注意，这个表格只列出了除上面的公共属性外的属性，同时别忘了这个表格也包括那些有自己的参考页面的元素：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00107.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="pic">
+    <img alt="" src="../images/00108.jpeg" class="calibre3"/>
+  </div>
+
+  <h3 class="p1" id="heading_id_36">ErrorEvent</h3>
+
+  <p class="ziti3">某个工作线程未捕获的异常</p>
+
+  <p class="ziti3">Event</p>
+
+  <p class="ziti3">当一个Worker线程中发生一个未捕获的异常，并且这个异常在WorkerGlobalScope中没有被对应onerror函数处理时，这个异常就会在这个Worker对象上触发一个不冒泡的错误事件。这个事件有一个关联的ErrorEvent对象，提供了刚刚发生的异常的详情。在ErrorEvent对象上调用preventDefault()（或从事件处理程序上返回false）将阻止错误向包含的线程进一步传播，也可能会阻止它在错误控制台显示。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly string flename</p>
+
+  <p class="ziti3">最初抛出异常的JavaScript文件的URL。</p>
+
+  <p class="ziti3">readonly unsigned long lineno</p>
+
+  <p class="ziti3">文件中抛出异常的行号。</p>
+
+  <p class="ziti3">readonly string message</p>
+
+  <p class="ziti3">描述该异常的消息。</p>
+
+  <h3 class="p1" id="heading_id_37">Event</h3>
+
+  <p class="ziti3">标准事件、IE事件以及jQuery事件的细节</p>
+
+  <p class="ziti3">当事件处理程序被调用时，一个Event对象会传入，该对象的属性给出事件的细节，比如事件的类型以及发生事件的元素。Event对象的方法可以控制事件的传播。所有现代浏览器都实现了一个标准事件模型，除了IE，IE8及更早的版本定义了不兼容的专有事件模型。本页归档标准事件模型的属性和方法以及对应的IE方案，也包括jQuery事件对象，后者在IE上模拟一个标准的事件对象。关于事件的更多信息请参考第17章，关于jQuery事件的更多信息请参考19.4节。</p>
+
+  <p class="ziti3">在标准事件模型中，不同种类的事件有与其相关联的不同的事件对象：比如，鼠标事件有一个具有鼠标相关属性的MouseEvent对象，键盘事件有一个具有键盘相关属性的KeyEvent对象。MouseEvent和KeyEvent共享一个通用的Event超类。不过，在IE和jQuery事件模型中，Element对象上发生的所有事件都只使用一个单独的Event对象。在一个鼠标事件中，Event对象的与键盘事件相关的属性是没有意义的，但这些属性仍然会定义。为简单起见，这儿合并了事件层次结构，对所有可被分发到Element对象（然后冒泡到Document和Window对象）的事件属性编写了文档。</p>
+
+  <p class="ziti3">本来，几乎所有客户端JavaScript事件都是在文档元素上触发的，也很自然地应该把文档相关的事件对象的属性合并在一起。不过HTML5及相关的标准引入了一些新的事件类型，这些事件在非文档元素上触发。这些事件类型经常具有自己的Event类型，这些类型在它们自己的参考页面有介绍。参见BeforeUnloadEvent、CloseEvent、ErrorEvent、HashChangeEvent、MessageEvent、PageTransitionEvent、PopStateEvent、ProgressEvent以及StorageEvent。</p>
+
+  <p class="ziti3">这些事件对象类型中的大多数都扩展了Event。其他新的HTML5相关的事件类型没有定义专有的事件对象类型——与这些事件相关的对象只是一个普通的Event对象。本页归档这个“普通”Event对象加上它的一些子类型的属性。下面带星号的属性是由Event类型自己定义的，这些属性继承自MessageEvent等事件类型，一般为简单的、普通的事件，如Window对象的load事件和MediaElement对象的播放事件定义这些属性。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">这些常量定义eventPhase属性的值。IE事件模型不支持这个属性以及这些常量。</p>
+
+  <p class="ziti3">unsigned short CAPTURING_PHASE=1</p>
+
+  <p class="ziti3">事件正分发给它的目标的祖先的捕获事件处理程序。</p>
+
+  <p class="ziti3">unsigned short AT_TARGET=2</p>
+
+  <p class="ziti3">事件正在它的目标上分发。</p>
+
+  <p class="ziti3">unsigned short BUBBLING_PHASE=3</p>
+
+  <p class="ziti3">事件正在冒泡，同时正在它的目标的祖先上分发。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">这儿列出的属性是由标准事件模型定义的，适用于Event对象，也适用于鼠标及键盘相关的事件对象。这儿也列出了IE及jQuery事件模型的属性。带星号的属性是由Event直接定义的，在任何标准Event对象上总是可用的，无论这个事件是什么类型。</p>
+
+  <p class="ziti3">readonly boolean altKey</p>
+
+  <p class="ziti3">事件发生时Alt键是否按下。适用于鼠标、键盘事件以及IE事件。</p>
+
+  <p class="ziti3">readonly boolean bubbles*</p>
+
+  <p class="ziti3">如果事件会冒泡（除非调用stopPropagation()）则此属性为true；否则为false。IE事件未定义这个属性。</p>
+
+  <p class="ziti3">readonly unsigned short button</p>
+
+  <p class="ziti3">在一个mousedown、mouseup或click事件中，哪个鼠标按键改变了状态。值为0表示左键，值为2表示右键，值为1表示鼠标的中键。注意，这个属性在按键改变状态时定义，所以，例如，不可用于报告在一个mousemove事件中某个按键是否一直按下。同时，这个属性也不是一个位图：它不能告诉你除一个键按下之外的更多信息。最后，有些浏览器只生成左键点击的事件。</p>
+
+  <p class="ziti3">IE事件定义一个不兼容的button属性。在IE中，这个属性是一个位掩码：如果左键按下则1位被设置，右键按下则2位被设置，（三键鼠标的）中键按下则4位被设置。jQuery没有模拟IE的标准button属性，但参考了which属性。</p>
+
+  <p class="ziti3">readonly boolean cancelable*</p>
+
+  <p class="ziti3">如果事件的默认操作可以用preventDefault()来取消则为true；否则为false。所有标准事件类型都定义了这个属性，除了IE事件。</p>
+
+  <p class="ziti3">boolean cancelBubble</p>
+
+  <p class="ziti3">在IE事件模型中，如果一个事件处理程序想阻止一个事件向上冒泡到包含它的对象，必须设置这个属性为true。对于标准事件使用的是stopPropagation()。</p>
+
+  <p class="ziti3">readonly integer charCode</p>
+
+  <p class="ziti3">适用于按键事件，这个属性的值为引发事件的可打印字符的Unicode编码。对于不可打印的功能键来说，这个属性的值为0，同时，这个属性不适用于keydown和keyup事件。可以使用String.fromCharCode()来将这个值转为字符。在大多数浏览器中，发生按键事件时keyCode的值和这个属性的值一样。但在Firefox中，按键事件没有定义keyCode，必须使用charCode。这个事件不是标准事件，在IE事件中未定义，jQuery也没有对其进行模拟。</p>
+
+  <p class="ziti3">readonly long clientX</p>
+
+  <p class="ziti3">readonly long clientY</p>
+
+  <p class="ziti3">鼠标相对于客户端区域（client area）或浏览器窗口的X及Y坐标。注意，这两个坐标没有包含文档滚动条滚动的值；如果一个事件在窗口的最上方发生，无论文档上方已经滚动了多少，clientY的值都将是0。这两个属性适用于所有类型的鼠标事件。IE事件和标准事件中都定义了这两个属性。也可参考pageX和pageY。</p>
+
+  <p class="ziti3">readonly boolean ctrlKey</p>
+
+  <p class="ziti3">事件发生时Ctrl键是否按下。适用于鼠标和键盘事件，也适用于IE事件。</p>
+
+  <p class="ziti3">readonly EventTarget currentTarget*</p>
+
+  <p class="ziti3">当前正在处理这个事件的Element、Document或Window。在捕获或冒泡阶段，它和target不一致。IE事件没有定义这个属性，不过jQuery事件模拟了这个属性。</p>
+
+  <p class="ziti3">readonly DataTransfer dataTransfer</p>
+
+  <p class="ziti3">适用于拖放事件，这个属性定义了协调整个拖放操作的DataTransfer对象。拖放事件是一种鼠标事件；有这个属性的事件仍然会有clientX、clientY以及其他鼠标事件属性。拖放事件包括拖动源上的dragstart、drag、dragend以及放置目标上的dragenter、dragover、dragleave和drop。关于拖放操作的更多细节，请参考DataTransfer和17.7节。</p>
+
+  <p class="ziti3">readonly boolean defaultPrevented*</p>
+
+  <p class="ziti3">如果在当前事件上调用defaultPrevented()则为true；否则为false。这是标准事件模型中一个新添加的属性，可能还不是所有浏览器都支持。（jQuery事件定义一个功能类似于这个属性的isDefaultPrevented()方法。）</p>
+
+  <p class="ziti3">readonly long detail</p>
+
+  <p class="ziti3">与事件有关的一个数字细节。对click、mousedown以及mouseup事件来说，这个值是单击次数：单击为1，双击为3，三击为3，依此类推。在Firefox中，DOMMouseScroll事件使用这个属性来报告鼠标滚轮滚过的数量。</p>
+
+  <p class="ziti3">readonly unsigned short eventPhase*</p>
+
+  <p class="ziti3">当前事件传播的阶段。值为上面定义的三个常量之一。IE事件不支持这个属性。</p>
+
+  <p class="ziti3">readonly boolean isTrusted*</p>
+
+  <p class="ziti3">如果当前事件是由浏览器创建并分发的则为true；如果是由JavaScript代码创建并分发的人造事件则为false。这个属性在标准事件模型中还是一个相对较新的属性，可能不是所有浏览器都已实现。</p>
+
+  <p class="ziti3">readonly Element fromElement</p>
+
+  <p class="ziti3">适用于IE中的mouseover和mouseout事件，fromElement指向鼠标指针正在其中移动的对象。标准事件中对应的是relatedTarget属性。</p>
+
+  <p class="ziti3">readonly integer keyCode</p>
+
+  <p class="ziti3">按下的键的实际的键码。这个属性对所有类型的键盘事件都可用。键码可能会与浏览器、操作系统或者依赖的键盘硬件相关。一般情况下，显示一个可打印字符的键的实际的键码就是那个字符的编码。非打印字符的功能键的键码可能有很多种变化，可参见例17-8，其中包含一组常用的编码。这个属性尚未标准化，但所有浏览器（包括IE）都定义了它。</p>
+
+  <p class="ziti3">readonly boolean metaKey</p>
+
+  <p class="ziti3">事件发生时Meta键是否按下。适用于鼠标和键盘事件，也包括IE事件。</p>
+
+  <p class="ziti3">readonly integer offsetX,offsetY</p>
+
+  <p class="ziti3">适用于IE事件，这两个属性定义事件发生在事件源元素（参见srcElement）的坐标系统中的坐标。标准事件没有等效的属性。</p>
+
+  <p class="ziti3">readonly integer pageX,pageY</p>
+
+  <p class="ziti3">这两个属性不是标准属性，但广泛支持，类似于clientX和clientY，然而它们使用文档坐标而不是窗口坐标。IE事件没有定义这两个属性，不过jQuery为所有浏览器模拟了它们。</p>
+
+  <p class="ziti3">readonly EventTarget relatedTarget*</p>
+
+  <p class="ziti3">指向一个事件目标（通常是一个文档元素），该目标与事件的target节点关联。对mouseover事件来说，它是鼠标指针移动到目标上时离开的那个元素。对mouseout事件来说，它是鼠标离开目标时进入的元素。这个属性在IE事件中没有定义，不过jQuery事件中模拟了它。参见IE属性fromElement和toElement。</p>
+
+  <p class="ziti3">boolean returnValue</p>
+
+  <p class="ziti3">适用于IE事件，将这个属性设置为false将阻止发生事件的源元素的默认动作。标准事件中使用preventDefault()方法代替。</p>
+
+  <p class="ziti3">readonly long screenX,screenY</p>
+
+  <p class="ziti3">适用于鼠标事件，这两个属性定义了鼠标指针相对于用户的显示器的左上角的X、Y坐标。这两个属性一般不是很有用，不过适用于所有鼠标事件类型，同时标准事件和IE事件都支持。</p>
+
+  <p class="ziti3">readonly boolean shiftKey</p>
+
+  <p class="ziti3">事件发生时Shift键是否按下。适用于鼠标和按键事件，也适用于IE事件。</p>
+
+  <p class="ziti3">readonly EventTarget srcElement</p>
+
+  <p class="ziti3">适用于IE事件，这个属性定义触发事件的对象。标准事件中使用target代替。</p>
+
+  <p class="ziti3">readonly EventTarget target*</p>
+
+  <p class="ziti3">当前事件的目标对象——触发这个事件的对象。（所有可以作为事件目标的对象都实现EventTarget的方法。）这个属性不适用于IE事件，不过jQuery事件模拟它。参见srcElement。</p>
+
+  <p class="ziti3">readonly unsigned long timeStamp*</p>
+
+  <p class="ziti3">一个数字，可能为事件发生的时间或日期的时间戳，也可能是一个至少可用来比较两个事件发生的先后顺序的数字。许多浏览器返回的是一个可传入Date()构造函数的时间戳。但是，在Firefox 4及更早的版本中，这个属性是另外类型的时间戳，比如自电脑启动以来的毫秒数。IE事件不支持这个属性，jQuery将这个属性设置为Date.getTime()返回的格式的时间戳。</p>
+
+  <p class="ziti3">Element toElement</p>
+
+  <p class="ziti3">适用于IE中的mouseover和mouseout事件，toElement指代鼠标指针正要移入的对象。标准事件中使用relatedTarget代替。</p>
+
+  <p class="ziti3">readonly string type*</p>
+
+  <p class="ziti3">当前Event对象的事件名。这是事件处理程序注册的名字或者事件处理程序属性去掉开头的"on"之后的名字，比如"click"、"load"或"submit"。这个属性适用于标准事件和IE事件。</p>
+
+  <p class="ziti3">readonly Window view</p>
+
+  <p class="ziti3">生成事件的窗口（由于历史原因叫做"view"）。这个属性适用于所有标准的用户界面事件，比如鼠标和键盘事件。IE事件不支持此属性。</p>
+
+  <p class="ziti3">readonly integer wheelDelta</p>
+
+  <p class="ziti3">适用于鼠标滚轮（mousewheel）事件，这个属性指明Y轴上已经滚动的数量。不同的浏览器中此属性的值也不同：细节请参见17.6节。这是一个非标准属性，但是所有浏览器都支持，包括IE8及更早版本。</p>
+
+  <p class="ziti3">readonly integer wheelDeltaX</p>
+
+  <p class="ziti3">readonly integer wheelDeltaY</p>
+
+  <p class="ziti3">适用于支持两个维度的鼠标滚轮的浏览器中的mousewheel事件，这两个属性指明X和Y方向的滚动数量。17.6节有关于如何解释这两个属性的说明。如果wheelDeltaY有定义，那么它将与wheelDelta属性的值相同。</p>
+
+  <p class="ziti3">readonly integer which</p>
+
+  <p class="ziti3">这是个非标准的遗留属性，除IE外的浏览器都支持，jQuery中有对应的模拟。对鼠标事件来说，它和button属性一样：1表示左键，2表示中键，3表示右键。对键盘事件来说，它和keyCode的值一样。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">这些事件都是由Event类自己定义的，所以在所有标准Event对象上它们都可用。</p>
+
+  <p class="ziti3">void initEvent(string type,boolean bubbles,boolean cancelable)</p>
+
+  <p class="ziti3">这个方法初始化一个Event对象的type、bubbles以及cancelable属性。向Document的createEvent()方法传入字符串参数"Event"将创建一个新的事件对象。然后，在使用这个方法将其初始化之后，通过将它传入某个EventTarget的dispatchEvent()方法将它分发出去。其他标准事件属性（除type、bubbles以及cancelable）将在分发时初始化。如果想创建、初始化然后分发一个更复杂的合成（synthetic）事件，必须向createEvent()传入一个不同的参数（比如"MouseEvent"），然后用类似initMouseEvent()（本书没有介绍）的指定类型的初始化函数来初始化它。</p>
+
+  <p class="ziti3">void preventDefault()</p>
+
+  <p class="ziti3">告诉Web浏览器不要执行与当前事件关联的默认操作，如果存在对应的默认操作的话。如果事件不是可取消的类型，这个方法将没有任何效果。这个方法不适用于IE事件对象，不过jQuery中有对应的模拟。在IE事件模型中，替代的方法是将returnValue属性设置为false。</p>
+
+  <p class="ziti3">void stopImmediatePropagation()</p>
+
+  <p class="ziti3">类似于stopPropagation()，但除此之外，它还将阻止注册在这个文档元素上的所有其他事件处理程序。这个方法是新添加到标准事件模型中的，可能不是所有浏览器都实现它。它不适用于IE事件模型，不过jQuery中有对应的模拟。</p>
+
+  <p class="ziti3">void stopPropagation()</p>
+
+  <p class="ziti3">阻止事件在捕获、目标、冒泡阶段进行传播。调用这个方法后，同一个节点上同一个事件的其他事件处理程序将被调用，但这个事件将不会分发到其他节点上。这个方法在IE事件模型中不支持，不过jQuery中有对应模拟。在IE中，代替调用stopPropagation()的方法是将cancelBubble设置为true。</p>
+
+  <p class="ziti3">提议属性</p>
+
+  <p class="ziti3">这儿列出的属性是当前DOM Level 3 Events specification的草案中的提议。它们涉及现在浏览器中的主要不兼容部分，不过（在写本书时）还没有任何浏览器实现它。如果它们通用地实现了，编写处理文本输入事件、按键事件以及鼠标事件的可移植代码将更容易更简短。</p>
+
+  <p class="ziti3">readonly unsigned short buttons</p>
+
+  <p class="ziti3">这个属性类似于上面介绍过的IE版本的button属性。</p>
+
+  <p class="ziti3">readonly string char</p>
+
+  <p class="ziti3">适用于键盘事件，这个属性保存事件生成的字符串（可能包含多个字符）。</p>
+
+  <p class="ziti3">readonly string data</p>
+
+  <p class="ziti3">适用于textinput事件，这个属性定义输入的文本。</p>
+
+  <p class="ziti3">readonly unsigned long deltaMode</p>
+
+  <p class="ziti3">适用于滚轮事件，这个属性定义deltaX、deltaY以及deltaZ属性的合适的转换值。这个属性的值可能为下面的常量之一：DOM_DELTA_PIXEL、DOM_DELTA_LINE、DOM_DELTA_PAGE。这个属性的值是与平台相关的，它可能取决于系统偏好或者滚轮事件时按下的辅助键。</p>
+
+  <p class="ziti3">readonly long deltaX,deltaY,deltaZ</p>
+
+  <p class="ziti3">适用于滚轮事件，这些属性定义滚轮围绕这三条可能的轴分别旋转了多少。</p>
+
+  <p class="ziti3">readonly unsigned long inputMethod</p>
+
+  <p class="ziti3">适用于textinput事件，这个属性指明文本被输入的方式。属性值可能为下面的常量之一：DOM_INPUT_METHOD_UNKNOWN、OM_INPUT_METHOD_KEYBOARD、DOM_INPUT_METHOD_PASTE、DOM_INPUT_METHOD_DROP、DOM_INPUT_METHOD_IME、DOM_INPUT_METHOD_OPTION、DOM_INPUT_METHOD_HANDWRITING、DOM_INPUT_METHOD_VOICE、DOM_INPUT_METHOD_MULTIMODAL、DOM_INPUT_METHOD_SCRIPT。</p>
+
+  <p class="ziti3">readonly string key</p>
+
+  <p class="ziti3">对生成字符的键盘事件来说，这个属性的值与cha r的值一样。如果键盘事件没有生成字符，这个属性将保存按下的键的名字（如"Tab"或"Down"）。</p>
+
+  <p class="ziti3">readonly string locale</p>
+
+  <p class="ziti3">适用于键盘事件和textinput事件，这个属性指明一个标识键盘配置的区域的语言代码（例如"en-GB"），如果该信息已知的话。</p>
+
+  <p class="ziti3">readonly unsigned long location</p>
+
+  <p class="ziti3">适用于键盘事件，这个属性指明按下的键的键盘位置。属性的值可能是下面的常量之一：DOM_KEY_LOCATION_STANDARD、DOM_KEY_LOCATION_LEFT、DOM_KEY_LOCATION_RIGHT、DOM_KEY_LOCATION_NUMPAD、DOM_KEY_LOCATION_MOBILE、DOM_KEY_LOCATION_JOYSTICK。</p>
+
+  <p class="ziti3">readonly boolean repeat</p>
+
+  <p class="ziti3">适用于键盘事件，如果一个键按下足够长的时间，触发了重复事件，则这个属性值为true。</p>
+
+  <p class="ziti3">提议方法</p>
+
+  <p class="ziti3">类似于上面列出的提议属性，这儿列出的方法已经在标准的草案中有了提议，但还没有被任何浏览器实现。</p>
+
+  <p class="ziti3">boolean getModiferState(string modifer)</p>
+
+  <p class="ziti3">适用于鼠标和键盘事件，如果事件发生时指定的辅助键按下，则这个方法返回true；否则返回false。modifier可能是下面的字符串之一："Alt"、"AltGraph"、"CapsLock"、"Control"、"Fn"、"Meta"、"NumLock"、"Scroll"、"Shift"、"SymbolLock"以及"Win"。</p>
+
+  <h3 class="p1" id="heading_id_38">EventSource</h3>
+
+  <p class="ziti3">到一个HTTP服务器的长连接</p>
+
+  <p class="ziti3">EventTarget</p>
+
+  <p class="ziti3">一个EventSource表示一个HTTP长连接，Web服务器可以通过这个连接“推送”文本消息。要使用这些“服务器发送的事件”，可以将服务器的URL传给EventSource()构造函数，然后在生成的EventSource对象上注册一个消息事件处理程序。</p>
+
+  <p class="ziti3">服务器发送的事件是新添加的，在编写本书时，还没有浏览器支持。</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">new EventSource(string url)</p>
+
+  <p class="ziti3">创建一个连接到指定url的Web服务器的新EventSource对象。url为相对于当前文档的URL的地址。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">下面的常量定义了readyState属性可能的值。</p>
+
+  <p class="ziti3">unsigned short CONNECTING=0</p>
+
+  <p class="ziti3">连接正在建立中，或者连接已关闭并且EventSource正在重新连接。</p>
+
+  <p class="ziti3">unsigned short OPEN=1</p>
+
+  <p class="ziti3">连接已打开，正在分发事件。</p>
+
+  <p class="ziti3">unsigned short CLOSED=2</p>
+
+  <p class="ziti3">连接已关闭，原因是调用了close()方法，或者发生了重大错误不可能重新连接。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned short readyState</p>
+
+  <p class="ziti3">连接的状态。上面的常量定义了所有可能的值。</p>
+
+  <p class="ziti3">readonly string url</p>
+
+  <p class="ziti3">EventSource连接到的绝对URL。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void close()</p>
+
+  <p class="ziti3">这个方法将关闭连接。一旦调用这个方法，EventSource对象就不再可以使用。如果要再次连接，只能创建一个新的EventSource。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">网络通信是异步的，所以当连接打开、发生错误以及有消息从服务器到达时EventSource会触发事件。可以在这儿列出的属性上注册事件处理程序，也可以使用EventTarget的方法来代替。EventSource事件都分派在EventSource对象自身之上，不会冒泡，也没有可以取消的默认行为。</p>
+
+  <p class="ziti3">onerror</p>
+
+  <p class="ziti3">发生错误时触发。关联的事件对象是一个简单的Event。</p>
+
+  <p class="ziti3">onmessage</p>
+
+  <p class="ziti3">当有消息从服务器到达时触发。关联的事件对象是一个MessageEvent，通过这个对象的data属性可以取得服务器的消息的文本内容。</p>
+
+  <p class="ziti3">onopen</p>
+
+  <p class="ziti3">当连接打开时触发。关联的事件对象是一个简单的Event。</p>
+
+  <h3 class="p1" id="heading_id_39">EventTarget</h3>
+
+  <p class="ziti3">接收事件的对象</p>
+
+  <p class="ziti3">有事件在其上触发的对象或者事件冒泡到的对象，需要一种方式来为这些事件定义处理程序。这些对象定义的事件处理程序的注册属性名一般以"on"开头，通常它们也定义这儿描述的方法。事件处理程序注册是一个惊人复杂的话题，细节可参见17.2节，特别要注意的是，IE8及更早的版本使用的是和所有其他浏览器者不同的方法，在接下来的专门一节里有介绍。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void addEventListener(string type,function listener,[boolean useCapture])</p>
+
+  <p class="ziti3">这个方法将指定的listener函数注册为类型为type的事件的事件处理程序。type是一个事件名称字符串，不包含"on"前缀。如果这是一个注册在真实事件目标的文档祖先上的捕获事件处理程序（参见17.2.3节），参数useCapture的值应该为true。注意，有些浏览器还要求传入第三个参数到这个函数中，要注册普通的非捕获处理程序只能传入false。</p>
+
+  <p class="ziti3">boolean dispatchEvent(Event event)</p>
+
+  <p class="ziti3">这个方法分发一个合成event到当前事件目标上。通过document.createEvent()创建一个新的Event对象，传入事件名（比如对简单事件来说传入"event"）。接下来，为创建的Event对象调用事件初始化方法：对简单事件而言，这个方法是initEvent()（参见Event）。接下来，将初始化后的事件传入这个方法来分发它。在现代浏览器中，每一个Event对象都有一个isTrusted属性，由JavaScript分发的任何合成事件的这个属性都将是false。</p>
+
+  <p class="ziti3">每一种事件对象都定义一个特定于类型的初始化方法。这些方法不经常用到，有长长的繁琐的参数列表，本书没有相关文档。如果需要创建、初始化然后分发比基本Event更复杂的类型的合成事件，只能去在线查阅初始化方法的文档。</p>
+
+  <p class="ziti3">void removeEventListener(string type,function listener,[boolean useCapture])</p>
+
+  <p class="ziti3">这个方法移除一个已注册的事件listener函数。它和addEventListener()需要的参数一样。</p>
+
+  <p class="ziti3">Internet Explorer的方法</p>
+
+  <p class="ziti3">IE8及更早的版本不支持addEventListener()和removeEventListener()。它们实现了下面两个非常相似的方法来代替。（17.2.4节列出了一些重要的差异。）</p>
+
+  <p class="ziti3">void attachEvent(string type,function listener)</p>
+
+  <p class="ziti3">将指定的listener函数注册为类型为指定type的事件的事件处理程序。注意这个方法的type需要在事件名前面包含"on"。</p>
+
+  <p class="ziti3">void detachEvent(string type,function listener)</p>
+
+  <p class="ziti3">这个方法的作用与attachEvent()相反。</p>
+
+  <h3 class="p1" id="heading_id_40">FieldSet</h3>
+
+  <p class="ziti3">HTML表单中的＜fieldset＞</p>
+
+  <p class="ziti3">Node、Element、FormControl</p>
+
+  <p class="ziti3">FieldSet对象表示HTML＜form＞中的＜fieldset＞。FieldSet实现FormControl的大部分但不是所有属性和方法。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">boolean disabled</p>
+
+  <p class="ziti3">如果FieldSet禁用则为true。禁用FieldSet会同时禁用它包含的表单控件。</p>
+
+  <p class="ziti3">readonly HTMLFormControlsCollection elements</p>
+
+  <p class="ziti3">包含当前＜fieldset＞内的所有表单控件的类数组对象。</p>
+
+  <h3 class="p1" id="heading_id_41">File</h3>
+
+  <p class="ziti3">本地文件系统中的文件</p>
+
+  <p class="ziti3">File是一个具有名字同时可能也有一个修改日期的Blob。它代表本地文件系统中的一个文件。可以从一个由＜input type=file＞元素组成的files数组中，或者从一个由与drop事件的Event对象关联的DataTransfer对象组成的files数组中，取得一个用户选择的文件。</p>
+
+  <p class="ziti3">也可以在私有的沙箱文件系统中获取File对象，就像22.7节介绍过的一样。在写作本书的时候，文件系统的API还不是很稳定，该部分没有对应的文档。</p>
+
+  <p class="ziti3">可以通过FormData对象或者将File传入XMLHttpRequest.send()来将一个文件的内容上传到服务器，除此之外File对象本身不支持别的操作。可以使用FileReader来读一个File（或者任意Blob）的内容。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly Date lastModifedDate</p>
+
+  <p class="ziti3">当前文件的修改日期，如果不可用则为null。</p>
+
+  <p class="ziti3">readonly string name</p>
+
+  <p class="ziti3">当前文件的文件名（不包括路径）。</p>
+
+  <h3 class="p1" id="heading_id_42">FileError</h3>
+
+  <p class="ziti3">读文件时的错误</p>
+
+  <p class="ziti3">FileError对象代表使用FileReader或FileReaderSync读一个文件时发生的错误。如果使用同步API，将抛出FileError对象。如果使用异步API，分发错误事件时FileReader对象的error属性的值将是对应的FileError对象。</p>
+
+  <p class="ziti3">注意FileWriter API（22.7节介绍过，不过它还不够稳定，因此该部分没有相关文档）为这个对象添加了新的错误代码常量。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">FileError错误代码如下：</p>
+
+  <p class="ziti3">unsigned short NOT_FOUND_ERR=1</p>
+
+  <p class="ziti3">文件不存在。（可能在用户选中它后它被删除了，然后程序尝试去读它。）</p>
+
+  <p class="ziti3">unsigned short SECURITY_ERR=2</p>
+
+  <p class="ziti3">未知的安全问题阻止浏览器执行读取文件的代码。</p>
+
+  <p class="ziti3">unsigned short ABORT_ERR=3</p>
+
+  <p class="ziti3">中止读取文件的尝试。</p>
+
+  <p class="ziti3">unsigned short NOT_READABLE_ERR=4</p>
+
+  <p class="ziti3">文件不可读，可能因为它的权限已改变或者因为另一个进程把它锁定了。</p>
+
+  <p class="ziti3">unsigned short ENCODING_ERR=5</p>
+
+  <p class="ziti3">调用readAsDataURL()失败，因为文件太长，无法编码为一个data://URL。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned short code</p>
+
+  <p class="ziti3">这个属性指明发生的错误的种类。它的值为上面的常量之一。</p>
+
+  <h3 class="p1" id="heading_id_43">FileReader</h3>
+
+  <p class="ziti3">异步读取一个File或Blob</p>
+
+  <p class="ziti3">EventTarget</p>
+
+  <p class="ziti3">FileReader定义读取File或Blob的异步API。可通过下面的步骤读取一个文件：</p>
+
+  <p class="ziti3">·通过FileReader()构造函数创建一个FileReader。</p>
+
+  <p class="ziti3">·定义需要的事件处理程序。</p>
+
+  <p class="ziti3">·将File或Blog对象传入4个读取方法中的一个。</p>
+
+  <p class="ziti3">·触发onload处理程序时，文件内容将可以通过result属性访问。或者，如果触发onerror处理程序，error属性将指向一个提供更多信息的FileError对象。</p>
+
+  <p class="ziti3">·读取完成时，可以重用FileReader对象或根据需要丢弃它并创建一个新的。</p>
+
+  <p class="ziti3">关于在工作线程中可使用的同步API，参见fileReaderSync。</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">new FileReader()</p>
+
+  <p class="ziti3">使用FileReader()构造函数创建一个新的FileReader对象，不需要参数。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">下面的常量是readyState属性可能的值：</p>
+
+  <p class="ziti3">unsigned short EMPTY=0</p>
+
+  <p class="ziti3">还没有读取方法被调用。</p>
+
+  <p class="ziti3">unsigned short LOADING=1</p>
+
+  <p class="ziti3">正在读取中。</p>
+
+  <p class="ziti3">unsigned short DONE=2</p>
+
+  <p class="ziti3">读取已完成，成功或带有错误。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly FileError error</p>
+
+  <p class="ziti3">如果读取中出现错误，这个属性将指代描述该错误的FileError。</p>
+
+  <p class="ziti3">readonly unsigned short readyState</p>
+
+  <p class="ziti3">这个属性描述FileReader的当前状态。它的值可能为上面列出的3个常量之一。</p>
+
+  <p class="ziti3">readonly any result</p>
+
+  <p class="ziti3">如果读取成功完成，这个属性将以字符串或ArrayBuffer的形式（取决于调用了哪个读取方法）保存对应的File或Blob内容。如果readyState为LOADING或者触发一个progress事件，这个属性可能包含对应的File或Blob的部分内容。如果没有调用读取方法或者发生了错误，这个属性将为null。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void abort()</p>
+
+  <p class="ziti3">这个方法中止一个读取任务。它将readyState设置为DONE，将result设置为null，将error设置为一个code为FileError.ABORT_ERR的FileError对象。然后，它将触发一个abort事件和一个loadend事件。</p>
+
+  <p class="ziti3">void readAsArrayBuffer(Blob blob)</p>
+
+  <p class="ziti3">异步读取blob的字节内容，结果为一个ArrayBuffer对象，可通过result属性访问。</p>
+
+  <p class="ziti3">void readAsBinaryString(Blob blob)</p>
+
+  <p class="ziti3">异步读取blob的字节内容，将它们编码为JavaScript二进制字符串，并将结果赋值给result属性。JavaScript二进制字符串中的每一个“字符”的字符编码都在0～255之间。可以使用String.charCodeAt()来提取这些字节值。注意，二进制字符串是二进制数据的一种低效的表示形式：如果可能应该使用ArrayBuffers代替。</p>
+
+  <p class="ziti3">void readAsDataURL(Blob blob)</p>
+
+  <p class="ziti3">异步读取blob的字节，将它们（以及该Blog的类型）编码为data://URL，并将result属性设置为返回的字符串。</p>
+
+  <p class="ziti3">void readAsText(Blob blob,[string encoding])</p>
+
+  <p class="ziti3">异步读取blob的字节内容，并使用指定的encoding将它解码为一个Unicode文本字符串，然后将result属性设置为解码后的字符串。如未指定encoding，将默认使用UTF-8（如果UTF-16编码的文本以一个字节顺序标记（Byte Order Mark）开始的话也会自动检测并解码它）。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">和所有异步API类似，FileReader是基于事件的。可以使用这儿列出的处理程序属性来注册事件处理程序，或者使用FileReader实现的EventTarget()方法。</p>
+
+  <p class="ziti3">FileReader事件在FileReader对象自身上触发。它们不冒泡，也没有可取消的默认行为。FileReader事件处理程序总是传入ProgressEvent对象。一次成功的读取任务以一个loadstart事件开始，接着是零个或多个progress事件、一个load事件，以及一个loadend事件。不成功的读取任务以一个loadstart事件开始，接着是零个或多个progress事件、一个error或abort事件，以及一个loadend事件。</p>
+
+  <p class="ziti3">onabort</p>
+
+  <p class="ziti3">当读取任务通过abort()方法中止时触发。</p>
+
+  <p class="ziti3">onerror</p>
+
+  <p class="ziti3">发生某种错误时触发。FileReader的error属性指代一个有错误代码的FileError对象。</p>
+
+  <p class="ziti3">onload</p>
+
+  <p class="ziti3">当File或Blog成功读取时触发。FileReader的result属性值为File或Blob的内容，形式取决于调用的是哪个读取方法。</p>
+
+  <p class="ziti3">onloadend</p>
+
+  <p class="ziti3">每次调用FileReader的读取方法最后都会产生一个load事件、一个error事件或一个abort事件。在这些事件之后FileReader也会触发一个loadend事件，这样有些脚本就可以只监听一个事件而不是所有的3个事件。</p>
+
+  <p class="ziti3">onloadstart</p>
+
+  <p class="ziti3">在调用一个read方法之后但是在读取数据之前触发。</p>
+
+  <p class="ziti3">onprogress</p>
+
+  <p class="ziti3">当正在读取File或Blob数据时触发，大约每秒20次。ProgressEvent对象指出已经读取了多少字节，FileReader的result属性可能包含这些字节的表示形式。</p>
+
+  <h3 class="p1" id="heading_id_44">FileReaderSync</h3>
+
+  <p class="ziti3">同步读取一个File或Blob</p>
+
+  <p class="ziti3">FileReaderSync是FileReader API的一个同步版本，仅在Worker线程中可用。同步API比异步的更好用：只需要简单地创建一个FileReaderSync()对象，然后调用它的一个读取方法，该方法将返回对应File或Blob的内容或者抛出一个FileError对象。</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">new FileReaderSync()</p>
+
+  <p class="ziti3">使用FileReaderSync()构造函数创建一个新的FileReaderSync对象，后者不需要参数。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">如果读取失败，无论因为什么原因，这些方法都将抛出一个FileError对象。</p>
+
+  <p class="ziti3">ArrayBuffer readAsArrayBuffer(Blob blob)</p>
+
+  <p class="ziti3">读取blob的字节内容并以ArrayBuffer的形式返回。</p>
+
+  <p class="ziti3">string readAsBinaryString(Blob blob)</p>
+
+  <p class="ziti3">读取blob的字节内容，并编码为JavaScript二进制字符串（参见String.fromCharCode()），然后返回这个二进制字符串。</p>
+
+  <p class="ziti3">string readAsDataURL(Blob blob)</p>
+
+  <p class="ziti3">读取blob的字节内容并将内容与blob的type属性编码为一个data://URL，返回这个URL。</p>
+
+  <p class="ziti3">string readAsText(Blob blob,[string encoding])</p>
+
+  <p class="ziti3">读取blob的字节内容并使用指定的encoding（如果没有指定编码则使用UTF-8或UTF-16）解码为文本，并返回这个文本。</p>
+
+  <h3 class="p1" id="heading_id_45">Form</h3>
+
+  <p class="ziti3">HTML文档中的＜form＞表单</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">Form对象代表HTML文档中的一个＜form＞元素。它的elements属性是一个HTMLCollection，提供了访问表单的所有元素的一个方便方法。submit()和reset()方法允许表单在程序的控制下提交或者重置。</p>
+
+  <p class="ziti3">文档中的每一个表单都表示为docuement.forms[]数组的一个元素。表单的元素（如按钮、输入框、复选框等）都收集在类数组对象Form.elements中。指定名字的表单控件可以直接通过名字引用：控件名可以像Form对象的属性名一样使用。也就是说，如果要在表单f中引用一个name属性为"phone"的Input元素，可以使用JavaScript表达式f.phone。</p>
+
+  <p class="ziti3">关于HTML表单的更多内容可参见15.9节。关于表单中可以使用的表单控件的更多内容请参考FormControl、FieldSet、Input、Label、Select以及TextArea。</p>
+
+  <p class="ziti3">本页描述HTML5表单特性，在写作本书时，这些特性还没有广泛实现。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">这儿列出的大部分属性只是同名的HTML属性的简单映射。</p>
+
+  <p class="ziti3">string acceptCharset</p>
+
+  <p class="ziti3">一个或多个允许的字符集，其中的表单数据可能会编码之后再提交。</p>
+
+  <p class="ziti3">string action</p>
+
+  <p class="ziti3">表单提交到的URL。</p>
+
+  <p class="ziti3">string autocomplete</p>
+
+  <p class="ziti3">字符串"on"或者"off"。如果为"on"，浏览器将根据之前访问本页时保存的值预填表单控件。</p>
+
+  <p class="ziti3">readonly HTMLFormControlsCollection elements</p>
+
+  <p class="ziti3">一个类数组对象，由当前表单包含的表单控件组成。</p>
+
+  <p class="ziti3">string enctype</p>
+
+  <p class="ziti3">指定表单控件的值提交前的编码方式。该属性合法的值如下：</p>
+
+  <p class="ziti3">·"application/x-www-form-urlencoded"（默认）</p>
+
+  <p class="ziti3">·"multipart/form-data"</p>
+
+  <p class="ziti3">·"text/plain"</p>
+
+  <p class="ziti3">readonly long length</p>
+
+  <p class="ziti3">elements属性表示的表单控件的数目。表单元素自身就表现得有点像表单控件的类数组对象，对于一个表单f及一个整数n来说，表达式f[n]和f.elements[n]是一样的。</p>
+
+  <p class="ziti3">string method</p>
+
+  <p class="ziti3">用于提交表单到action URL中的HTTP方法。只能是"get"或"post"。</p>
+
+  <p class="ziti3">string name</p>
+
+  <p class="ziti3">表单的名字，由HTML的name属性指定。可以将这个属性的值作为文档对象的name属性使用，对应的文档属性的值为这个Form对象。</p>
+
+  <p class="ziti3">boolean noValidate</p>
+
+  <p class="ziti3">如果表单在提交之前没有验证则为true。这个属性是HTML的novalidate属性的镜像。</p>
+
+  <p class="ziti3">string target</p>
+
+  <p class="ziti3">窗口或窗体（frame）的名字，用于显示表单提交之后的返回文档。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">boolean checkValidity()</p>
+
+  <p class="ziti3">在支持表单验证的浏览器中，这个方法将检查每个表单控件的有效性。如果所有表单控件都有效则返回true，如果任何控件无效，它将在该控件触发一个invalid事件，然后返回false。</p>
+
+  <p class="ziti3">void dispatchFormChange()</p>
+
+  <p class="ziti3">这个方法在当前表单的每个控件上触发一个formchange事件。通常在用户的输入触发一个change事件时表单会自动触发这个事件，所以一般不需要调用这个方法。</p>
+
+  <p class="ziti3">void dispatchFormInput()</p>
+
+  <p class="ziti3">这个方法在当前表单的每个控件上触发一个forminput事件。通常在用户的输入触发input事件时表单会自动触发这个事件，所以一般不需要调用这个方法。</p>
+
+  <p class="ziti3">void reset()</p>
+
+  <p class="ziti3">将所有表单元素重设为它们的默认值。</p>
+
+  <p class="ziti3">void submit()</p>
+
+  <p class="ziti3">手动提交当前表单，不触发submit事件。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">与表单相关的这些事件处理程序属性是定义在Element上的，但由于它们在Form元素上触发，因此这儿也列出了更多的细节。</p>
+
+  <p class="ziti3">onreset</p>
+
+  <p class="ziti3">在表单的元素重置之前调用。可通过返回false或取消这个事件来阻止重置。</p>
+
+  <p class="ziti3">onsubmit</p>
+
+  <p class="ziti3">在表单提交之前调用。可通过返回false或取消这个事件来阻止提交。</p>
+
+  <h3 class="p1" id="heading_id_46">FormControl</h3>
+
+  <p class="ziti3">所有表单控件的通用特性</p>
+
+  <p class="ziti3">大多数HTML表单控件是＜input＞元素，但表单也可以包含＜button＞、＜select＞以及＜textarea＞控件。这一页是关于这些元素类型都有的特性的文档。关于HTML表单的介绍可参见15.9节，关于表单及表单控件的更多内容可参考Form、Input、Select以及TextArea。</p>
+
+  <p class="ziti3">＜fieldset＞和＜output＞元素实现这儿描述的属性中的大多数，但不是所有。本参考页将FieldSet和Output对象作为FormControls处理，虽然它们没有实现所有属性。</p>
+
+  <p class="ziti3">本页包含部分HTML5表单特性（特别是表单验证）的描述，在写作本书的时候，这些特性还没有广泛实现。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">boolean autofocus</p>
+
+  <p class="ziti3">如果文档一加载本控件就能自动获得键盘焦点，则本属性值为true。（FieldSet和Output控件没有实现本属性。）</p>
+
+  <p class="ziti3">boolean disabled</p>
+
+  <p class="ziti3">如果当前表单控件禁用则为t ru e。禁用的控件不会响应用户的输入，也不会参与表单验证。（Output元素没有实现这个属性；FieldSet元素使用它来禁用其包含的所有控件。）</p>
+
+  <p class="ziti3">readonly Form form</p>
+
+  <p class="ziti3">引用拥有当前控件的Form，如果没有对应的表单则为null。如果一个控件包含在一个＜form＞元素中，就说该form拥有这个元素。否则，如果控件有一个HTML form属性，并指定某个＜form＞的ID，则那个指定的表单就是本控件的拥有者。</p>
+
+  <p class="ziti3">readonly NodeList labels</p>
+
+  <p class="ziti3">与当前控件相关的所有Label元素组成的一个类数组对象。（FieldSet控件没有实现这个属性。）</p>
+
+  <p class="ziti3">string name</p>
+
+  <p class="ziti3">当前控件的HTML name属性的值。控件的name可用做Form元素的属性：该属性的值就是这个控件元素。提交表单时也会用到控件名。</p>
+
+  <p class="ziti3">string type</p>
+
+  <p class="ziti3">对＜input＞元素来说，type属性的值指定元素的类型，如果对应的＜input＞标签没有指定type属性则为"text"。对＜button＞、＜select＞以及textarea元素来说，type分别为"button"、"select-one"（或"select-multiple"，如果设置了multiple属性）以及"textarea"。对＜fieldset＞元素来说，type为"fieldset"，对＜output＞元素来说type为"output"。</p>
+
+  <p class="ziti3">readonly string validationMessage</p>
+
+  <p class="ziti3">如果控件是有效的或不受验证控制，这个属性将为空字符串。否则，这个属性包含一个说明为什么用户的输入无效的本地化字符串。</p>
+
+  <p class="ziti3">readonly FormValidity validity</p>
+
+  <p class="ziti3">这个属性指代一个对象，该对象指出用户对当前控件的输入是否为有效，以及如果无效的话为什么无效。</p>
+
+  <p class="ziti3">string value</p>
+
+  <p class="ziti3">每个表单控件都有一个字符串值value，将用于提交表单。对文本输入控件而言，这个值即是用户的输入。对按钮而言，这个值就是对应的HTML value属性。对output元素而言，这个属性类似于自Node继承的textContent属性。Fieldset元素没有这个属性。</p>
+
+  <p class="ziti3">readonly boolean willValidate</p>
+
+  <p class="ziti3">如果当前控件参与表单验证则本属性为true；否则为false。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">表单控件定义了下面这些事件处理程序属性。也可以通过所有Element()都实现的EventTarget()方法来注册事件处理程序。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00109.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">boolean checkValidity()</p>
+
+  <p class="ziti3">如果控件有效（或者它不参与验证）则返回true。否则，本方法将在对应控件上触发一个invalid事件并返回false。</p>
+
+  <p class="ziti3">void setCustomValidity(string error)</p>
+
+  <p class="ziti3">如果error是一个非空字符串，本方法将把该控件标记为无效，并将在向用户报告该元素的无效性时将error作为本地化消息显示。如果error是空字符串，之前设置的error字符串将删除，同时该控件将认为是有效的。</p>
+
+  <h3 class="p1" id="heading_id_47">FormData</h3>
+
+  <p class="ziti3">一次HTTP mutilpart/form-data请求体的内容</p>
+
+  <p class="ziti3">FormData类型是XML Http Request Level 2(XHR 2)的一个特性，该特性让使用XMLHttpRequest实现multipart/form-data编码的HTTP PUT请求更简单。如果想在一个请求中上传多个File对象，还需要复合编码（multipart encoding）。</p>
+
+  <p class="ziti3">使用构造函数创建一个FormData对象，然后使用append()方法来为它添加名/值对。在添加完所有的请求内容后，就可以将该FormData传入一个XMLHttpRequest的send()方法。</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">new FormData()</p>
+
+  <p class="ziti3">这个无参数的构造函数返回一个空FormData对象。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void append(string name,any value)</p>
+
+  <p class="ziti3">这个方法添加指定name及value的内容到FormData中。参数value可以是一个字符串或者一个Blob（别忘了File对象也是Blob）。</p>
+
+  <h3 class="p1" id="heading_id_48">FormValidity</h3>
+
+  <p class="ziti3">表单控件的有效性</p>
+
+  <p class="ziti3">FormControl的validity属性指代一个FormValidity对象，该对象是对应控件的有效状态的一个实时表示。如果valid属性为false，表明对应控件无效，此时应该至少有一个别的属性为ture来指出验证错误（一个或多个）的性质。</p>
+
+  <p class="ziti3">Form验证是一个HTML5特性，在写作本书的时候还没有广泛实现。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly boolean customError</p>
+
+  <p class="ziti3">一段脚本在当前元素上调用FormControl.setCustomValidity()。</p>
+
+  <p class="ziti3">readonly boolean patternMismatch</p>
+
+  <p class="ziti3">输入与pattern正则表达式不匹配。</p>
+
+  <p class="ziti3">readonly boolean rangeOverfow</p>
+
+  <p class="ziti3">输入太大了。</p>
+
+  <p class="ziti3">readonly boolean rangeUnderfow</p>
+
+  <p class="ziti3">输入太小了。</p>
+
+  <p class="ziti3">readonly boolean stepMismatch</p>
+
+  <p class="ziti3">输入与指定step不匹配。</p>
+
+  <p class="ziti3">readonly boolean tooLong</p>
+
+  <p class="ziti3">输入太长了。</p>
+
+  <p class="ziti3">readonly boolean typeMismatch</p>
+
+  <p class="ziti3">输入类型有误。</p>
+
+  <p class="ziti3">readonly boolean valid</p>
+
+  <p class="ziti3">如果本属性为true，则对应表单控件是有效的，其他属性都将为false。如果本属性为false，则对应表单控件无效，其他属性至少有一个为true。</p>
+
+  <p class="ziti3">readonly boolean valueMissing</p>
+
+  <p class="ziti3">必填的表单元素为空。</p>
+
+  <h3 class="p1" id="heading_id_49">Geocoordinates</h3>
+
+  <p class="ziti3">地理位置</p>
+
+  <p class="ziti3">本类型的对象表示地球表面的一个位置。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly double accuracy</p>
+
+  <p class="ziti3">纬度（latitude）与经度（longitude）值的精确度，单位为米。</p>
+
+  <p class="ziti3">readonly double altitude</p>
+
+  <p class="ziti3">海拔高度，单位为米，如果不可用则为null。</p>
+
+  <p class="ziti3">readonly double altitudeAccuracy</p>
+
+  <p class="ziti3">高度（altitude）属性的精确度，单位为米。如果altitude为null，则altitudeAccuracy也为null。</p>
+
+  <p class="ziti3">readonly double heading</p>
+
+  <p class="ziti3">用户前进的方向，从正北开始顺时针方向的角度，如果朝向不可用则为n ull。如果朝向信息可用但速度为0，则heading值将为NaN。</p>
+
+  <p class="ziti3">readonly double latitude</p>
+
+  <p class="ziti3">用户相对于赤道以北的纬度，十进制度数制。</p>
+
+  <p class="ziti3">readonly double longitude</p>
+
+  <p class="ziti3">用户相对于格林尼治子午线以东的经度，十进制度数制。</p>
+
+  <p class="ziti3">readonly double speed</p>
+
+  <p class="ziti3">用户的速度，单位为米每秒，如果速度信息不可用则为nul l。这个属性永远不会为负数值。可参见heading。</p>
+
+  <h3 class="p1" id="heading_id_50">Geolocation</h3>
+
+  <p class="ziti3">取得用户的纬度和经度</p>
+
+  <p class="ziti3">Geolocation对象定义了确定用户精确地理位置的方法。在支持它的浏览器中，Geolocation对象可以通过访问navigator.geolocation形式的Navigator对象来访问。这儿描述的方法依赖一些其他类型：位置信息以Geoposition对象的形式报告，错误以GeolocationError对象的形式报告。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void clearWatch(long watchId)</p>
+
+  <p class="ziti3">停止监视用户的位置。参数watchId的值必须是对应的watchPosition()方法的返回值。</p>
+
+  <p class="ziti3">void getCurrentPosition(function success,[function error],[object options])使用任何指定的options（参见下面的option的属性列表）来异步地确定用户的位置。这个方法会立刻返回，当用户的位置可用时，它将传入一个Geoposition对象到指定的success回调方法success中。如果发生了错误（可能用户不允许共享他的地理信息），并且定义了error回调方法error，它将传入一个GeolocationError对象到错误回调方法中。</p>
+
+  <p class="ziti3">long watchPosition(function success,[function error],[object options])</p>
+
+  <p class="ziti3">这个方法类似于getCurrentPosition()，但在确定用户当前位置之后，它会继续监视用户的位置并在每次发现位置明显改变后调用success回调函数。本方法的返回值是一个数字，可将这个数字传入clearWatch()来停止追踪用户的位置。</p>
+
+  <p class="ziti3">选项</p>
+
+  <p class="ziti3">传入getCurrentPosition()或watchPosition()的参数option是一个常规的JavaScript对象，带有零个或多个下列属性：</p>
+
+  <p class="ziti3">boolean enableHighAccuracy</p>
+
+  <p class="ziti3">这个选项提示需要一个高精确度的位置，即使这需要更长时间来确定或者需要使用更多的电池功率。默认为false。在支持通过Wi-Fi信号或GPS确定位置的设备上，将这个选项设置为true一般意味着“使用GPS”。</p>
+
+  <p class="ziti3">long maximumAge</p>
+
+  <p class="ziti3">这个选项指定传入successCallback的第一个Geoposition对象可接受的最长生存时间（单位为毫秒）。默认为0，意思是每次调用getCurrentPosition()或watchPosition()将请求一次新的位置修正。比如，如果将这个选项设置为60 000，将允许返回任意一个在最近一分钟内确定的Geoposition。</p>
+
+  <p class="ziti3">long timeout</p>
+
+  <p class="ziti3">这个选项指定了请求者愿意等待一次位置修正的时间，单位为毫秒。默认值为Infinity。如果过去的时间超过timeout毫秒，则会调用errorCallback。注意，询问用户是否同意共享位置信息的时间不算在timeout值内。</p>
+
+  <h3 class="p1" id="heading_id_51">GeolocationError</h3>
+
+  <p class="ziti3">查询用户位置时出现的错误</p>
+
+  <p class="ziti3">如果确定用户位置的尝试失败了，错误回调函数将通过一个描述错误原因的GeolocationError对象调用。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">这些常量是code属性可能的值：</p>
+
+  <p class="ziti3">unsigned short PERMISSION_DENIED=1</p>
+
+  <p class="ziti3">用户不允许共享他或她的位置信息。</p>
+
+  <p class="ziti3">unsigned short POSITION_UNAVAILABLE=2</p>
+
+  <p class="ziti3">由于未指定原因，位置不能确定。例如，这可能是由于网络错误等引起的。</p>
+
+  <p class="ziti3">unsigned short TIMEOUT=3</p>
+
+  <p class="ziti3">在分配的时间内（参见Geolocation中描述的timeout选项）不能确定位置信息。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned short code</p>
+
+  <p class="ziti3">这个属性的值可能为上面3个值之一。</p>
+
+  <p class="ziti3">readonly string message</p>
+
+  <p class="ziti3">关于错误的更多信息的消息。这条消息有助于调试，但不适合向最终用户显示。</p>
+
+  <h3 class="p1" id="heading_id_52">Geoposition</h3>
+
+  <p class="ziti3">时间戳位置报告</p>
+
+  <p class="ziti3">Geoposition对象表示指定时间的用户的地理信息。这类对象只有两个属性：一个时间戳和一个保存了实际位置属性的Geocoordinates对象的引用。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly Geocoordinates coords</p>
+
+  <p class="ziti3">这个属性引用一个Geocoordinates对象，该对象的属性指定用户的纬度、经度等信息。</p>
+
+  <p class="ziti3">readonly unsigned long timestamp</p>
+
+  <p class="ziti3">这些坐标有效的时刻，形式为纪元开始后的毫秒数。如果需要，可以使用这个值来创建一个Date对象。</p>
+
+  <h3 class="p1" id="heading_id_53">HashChangeEvent</h3>
+
+  <p class="ziti3">hashchange事件的event对象</p>
+
+  <p class="ziti3">Event</p>
+
+  <p class="ziti3">当文档URL的片断标识符（URL中以哈希标识“#”开始的部分）发生变化时，浏览器将触发一个hashchange事件。这可能是因为一个脚本改变了Location对象的hash属性，也可能是因为用户使用了浏览器的“返回”或“前进”按钮在浏览器的历史中穿行。这两种情况都会触发一个hashchange事件。对应的事件对象是HashChangeEvent。关于location.hash的历史管理以及hashchange事件的更多信息请参考22.2节。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly string newURL</p>
+
+  <p class="ziti3">这个属性保存location.href的新值。注意这是完整的URL，而不仅仅是它的hash部分。</p>
+
+  <p class="ziti3">readonly string oldURL</p>
+
+  <p class="ziti3">这个属性保存location.href的老值。</p>
+
+  <h3 class="p1" id="heading_id_54">History</h3>
+
+  <p class="ziti3">窗口的浏览历史</p>
+
+  <p class="ziti3">History对象表示窗口的浏览历史。但是，由于隐私原因，它不允许脚本读取曾经访问过的真实的URL。History对象的方法允许脚本将窗口在浏览历史中向前或向后移动，也可以添加新的条目到浏览历史中。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly long length</p>
+
+  <p class="ziti3">这个属性指明浏览器历史列表中的条目数目。由于无法知道当前显示的文档在这个列表中的索引，因此知道这个列表的大小没什么特别的用途。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void back()</p>
+
+  <p class="ziti3">back()方法将让当前History对象所属的窗口或框架页面重新访问在当前URL之前刚访问过的URL（如果存在的话）。调用这个方法效果等同于单击浏览器的“后退”按钮。也等同于：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">history.go(-1);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">void forward()</p>
+
+  <p class="ziti3">forward()方法将让当前History对象所属的窗口或框架页面重新访问在当前URL之后紧接着访问过的URL（如果存在的话）。调用这个方法效果等同于单击浏览器的“前进”按钮。也等同于：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">history.go(1);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">void go([long delta])</p>
+
+  <p class="ziti3">History.go()方法需要一个整数参数，将引发浏览器访问由History对象维护的浏览器历史中的距当前位置指定数目位置的URL。如果参数为正数，则浏览器沿着列表向前移动；如果为负数则向后移动。也就是说，调用history.go(-1)等同于调用history.back()，也与单击“后退”按钮效果一样。如果参数为0或者没有参数，这个方法将重新加载当前显示的文档。</p>
+
+  <p class="ziti3">void pushState(any data,string title,[string url])</p>
+
+  <p class="ziti3">这个方法添加一个新的条目到窗口的浏览历史中，保存一个由data以及指定的title和url组成的结构化副本（参见22.2节的“结构性复制”）。如果用户迟些使用浏览器的历史导航机制回到这个保存的状态，一个popstate事件将在当前窗口上触发，对应的PopStateEvent对象将在它的state属性中维护data的另一个副本。</p>
+
+  <p class="ziti3">参数title提供当前状态的名字，浏览器可能会在它的历史UI中显示这个名字。（在写作本书的时候，浏览器忽略这个参数）。如果指定参数url，它将显示在地址栏中，并且当前状态将可永久保存并可保存为书签或与他人分享。url是相对于当前文档的地址解析。如果url是一个绝对URL，它必须与当前文档同源。使用URL的一个通用方法是只使用以“#”开头的片段标识符。</p>
+
+  <p class="ziti3">void replaceState(any data,string title,[string url])</p>
+
+  <p class="ziti3">这个方法类似于pushState()，不同之外是它不是在窗口的浏览历史中创建一个新的条目，而是将当前条目用新的状态data、title以及url更新。</p>
+
+  <h3 class="p1" id="heading_id_55">HTMLCollection</h3>
+
+  <p class="ziti3">可用键名或数字访问的元素集合</p>
+
+  <p class="ziti3">HTMLCollection是一个由Element对象组成的只读的类数组对象，它也定义了与集合的元素的name及id值对应的属性。Document对象定义了如forms和image等HTMLCollection属性。</p>
+
+  <p class="ziti3">HTMLCollection对象定义了item()和namedItem()方法，用于根据位置或名字检索元素，不过几乎没有使用它们的必要：可以简单地将HTMLCollection当做JavaScript对象处理并访问它的属性及数组元素。比如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">document.images[0]//HTMLCollection中一个编号的元素</p>
+
+  <p class="ziti5">document.forms.address//HTMLCollection中一个命名的元素</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned long length</p>
+
+  <p class="ziti3">当前集合中的元素数目。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">Element item(unsigned long index)</p>
+
+  <p class="ziti3">返回集合中索引为index的元素，如果index出界了则返回null。也可以简单地用在数组方括号中指定位置的方式来代替显式地调用这个方法。</p>
+
+  <p class="ziti3">object namedItem(string name)</p>
+
+  <p class="ziti3">从集合中返回第一个id或name属性值为参数name的元素，如果不存在对应元素则返回null。也可以通过在数组方括号中指定元素名的方式来代替显式地调用这个方法。</p>
+
+  <h3 class="p1" id="heading_id_56">HTMLDocument</h3>
+
+  <p class="ziti3">参见Document</p>
+
+  </body></html>

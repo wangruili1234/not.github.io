@@ -1,0 +1,3522 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>第三部分　JavaScript核心参考</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+<h2 class="p4" id="heading_id_3"><a id="bw1" class="pcalibre calibre1"></a>JavaScript核心参考</h2>
+
+  <h3 class="p1" id="heading_id_4">arguments[]</h3>
+
+  <p class="ziti3">函数参数数组</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">arguments</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">arguments[]数组只定义在函数体中。在函数体中，arguments指代该函数的Arguments对象。该对象拥有数值属性，可当做数组来用，含有传入到该函数的所有参数。arguments标识符本质上是一个局部变量，在每个函数中会自动声明并初始化该变量。arguments仅在函数体中时才指代Arguments对象，在全局代码中为undefined。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Arguments;第8章</p>
+
+  <h3 class="p1" id="heading_id_5">Arguments</h3>
+
+  <p class="ziti3">函数的参数和其他属性</p>
+
+  <p class="ziti3">Object→Arguments</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">arguments</p>
+
+  <p class="ziti3">arguments[n]</p>
+
+  <p class="ziti3">元素</p>
+
+  <p class="ziti3">Arguments对象只定义在函数体中。从技术上讲，Arguments对象不是数组，但它拥有数值属性和length属性，数值属性可当做是数组元素，length属性则表示数组元素的个数。这些数组元素是传递给该方法的参数值。元素0是第一个参数，元素1是第二个参数，以此类推。所有作为参数传入的值都会成为Arguments对象的数组元素，即便在函数声明中没有指定参数名。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">callee</p>
+
+  <p class="ziti3">指代当前正在执行的函数。</p>
+
+  <p class="ziti3">length</p>
+
+  <p class="ziti3">传递给函数的参数个数，以及Arguments对象中数组元素的个数。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">调用函数时，会为其创建一个Arguments对象，并自动初始化局部变量arguments，指代该Arguments对象。Arguments对象的主要用途是，用来判断有多少个参数传入函数，还可用来指代未命名的参数。然而，除了数组元素和length属性，还可通过callee属性来指代匿名函数自身。</p>
+
+  <p class="ziti3">大部分情况下，可以将Arguments对象想象成一个数组，并额外带有callee属性。但是，Arguments对象并不是Array的实例，Arguments.length属性也不具有Array.length属性的任何特殊行为，而且不能用来改变数组的大小。</p>
+
+  <p class="ziti3">在非严格模式下，Arguments对象具有一个很不寻常的特性。当函数带有命名的参数时，Arguments对象的数组元素与局部变量是等同的。Arguments对象和参数名为引用同一个值提供了两种途径。用参数名改变一个函数参数的值，会同时影响通过Arguments对象获取的值，反之，通过Arguments对象改变一个函数参数的值，也会影响通过参数名获取的值。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Function;第8章</p>
+
+  <h3 class="p1" id="heading_id_6">Arguments.callee</h3>
+
+  <p class="ziti3">在严格模式下未定义</p>
+
+  <p class="ziti3">当前正在执行的函数</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">arguments.callee</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">arguments.callee指代当前正在执行的函数。通过它可以引用匿名函数自身。该属性只定义在函数体中。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//在匿名函数内使用callee属性来引用匿名函数自身，</p>
+
+  <p class="ziti5">//以便实现递归</p>
+
+  <p class="ziti5">var factorial=function(x){</p>
+
+  <p class="ziti5">if(x＜2)return 1;</p>
+
+  <p class="ziti5">else return x*arguments.callee(x-1);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">var y=factorial(5);//返回120</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_7">Arguments.length</h3>
+
+  <p class="ziti3">传给函数的参数个数</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">arguments.length</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Arguments对象的length属性表示传给当前函数的参数个数。该属性只定义在函数体中。</p>
+
+  <p class="ziti3">注意该属性表示的是实际传入的参数个数，而不是声明的参数个数。声明的参数个数请参阅Function.length。同时要留意该属性没有任何Array.length属性的特殊行为。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//使用Arguments对象来检查传入参数个数的正确性</p>
+
+  <p class="ziti5">function check(args){</p>
+
+  <p class="ziti5">var actual=args.length;//实际的参数个数</p>
+
+  <p class="ziti5">var expected=args.callee.length;//期待的参数个数</p>
+
+  <p class="ziti5">if(actual!=expected){//如果不相等，则抛出异常</p>
+
+  <p class="ziti5">throw new Error("参数个数有误：期望值："+expected+";实际值："+actual);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//演示如何使用check()方法的示例函数</p>
+
+  <p class="ziti5">function f(x,y,z){</p>
+
+  <p class="ziti5">check(arguments);//检查参数个数的正确性</p>
+
+  <p class="ziti5">return x+y+z;//正常执行该函数的剩余代码</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.length、Function.length</p>
+
+  <h3 class="p1" id="heading_id_8">Array</h3>
+
+  <p class="ziti3">对数组的内置支持</p>
+
+  <p class="ziti3">Object→Array</p>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new Array()</p>
+
+  <p class="ziti5">new Array(size)</p>
+
+  <p class="ziti5">new Array(element0,element1,...,elementn)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">size</p>
+
+  <p class="ziti3">设定的数组元素个数。返回数组的length属性等于size。</p>
+
+  <p class="ziti3">element0,...elementn</p>
+
+  <p class="ziti3">参数列表，可以是两个或多个任意值<sup class="calibre2"><a id="ch1" href="part0032_split_002.html#ch1-back" class="pcalibre calibre1">[1]</a></sup>。当Array()构造函数用这些参数调用时，新创建的数组实例会用指定的参数值来初始化，并将length属性设置为参数个数。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">新创建和初始化的数组。当不带参数调用Array()时，返回的数组为空，length属性为0。当用单个数值参数调用时，构造函数返回的数组带有指定个数的未定义元素。使用其他参数调用时，构造函数会使用指定的参数值初始化数组。当Array()构造函数不带new操作符，直接当做函数调用时，其表现行为与带有new操作符调用时是完全一样的。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">RangeError</p>
+
+  <p class="ziti3">当给Array()构造函数传入单个整数参数size时，如果size为负数，或大于2<sup class="calibre2">32</sup>-1时，会抛出RangeError异常。</p>
+
+  <p class="ziti3">直接量语法</p>
+
+  <p class="ziti3">ECMAScript 3规定了数组的直接量语法。可以将逗号分隔的表达式列表放在方括号中来创建和初始化一个数组。这些表达式的值会成为数组的元素。例如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var a=[1,true,'abc'];</p>
+
+  <p class="ziti5">var b=[a[0],a[0]*2,f(x)];</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">length</p>
+
+  <p class="ziti3">一个可读/写的整数，用来指明数组中的元素个数。当数组中的元素不连续时，length等于数组中最后一个元素的序号加一。改变length值会裁减或扩充数组。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">ECMAScript 5中新增加了以下方法：every()、filter()、forEach()、indexOf()、lastIndexOf()、map()、reduce()、reduceRight()和some()。在ES5标准化之前，除了IE，其他浏览器已经实现了这些方法。</p>
+
+  <p class="ziti3">concat()</p>
+
+  <p class="ziti3">把元素衔接到数组中。</p>
+
+  <p class="ziti3">every()</p>
+
+  <p class="ziti3">测试断言函数是否对每个数组元素都为真。</p>
+
+  <p class="ziti3">filter()</p>
+
+  <p class="ziti3">返回满足断言函数的数组元素。</p>
+
+  <p class="ziti3">forEach()</p>
+
+  <p class="ziti3">为数组的每一个元素调用指定函数。</p>
+
+  <p class="ziti3">indexOf()</p>
+
+  <p class="ziti3">在数组中查找匹配元素。</p>
+
+  <p class="ziti3">join()</p>
+
+  <p class="ziti3">将数组的所有元素转化为字符串，并衔接起来。</p>
+
+  <p class="ziti3">lastIndexOf()</p>
+
+  <p class="ziti3">在数组中反向查找。</p>
+
+  <p class="ziti3">map()</p>
+
+  <p class="ziti3">从数组的元素中，计算出新的数组元素。</p>
+
+  <p class="ziti3">pop()</p>
+
+  <p class="ziti3">移除数组最后一个元素。</p>
+
+  <p class="ziti3">push()</p>
+
+  <p class="ziti3">把元素添加到数组尾部。</p>
+
+  <p class="ziti3">reduce()</p>
+
+  <p class="ziti3">从数组的元素中，计算出一个值。</p>
+
+  <p class="ziti3">reduceRight()</p>
+
+  <p class="ziti3">从右到左缩减数组。</p>
+
+  <p class="ziti3">reverse()</p>
+
+  <p class="ziti3">在原数组中颠倒数组元素的顺序。</p>
+
+  <p class="ziti3">shift()</p>
+
+  <p class="ziti3">移除数组的第一个元素。</p>
+
+  <p class="ziti3">slice()</p>
+
+  <p class="ziti3">返回数组的一部分。</p>
+
+  <p class="ziti3">some()</p>
+
+  <p class="ziti3">测试是否至少有一个数组元素能让断言函数为真。</p>
+
+  <p class="ziti3">sort()</p>
+
+  <p class="ziti3">在原数组中对数组元素进行排序。</p>
+
+  <p class="ziti3">splice()</p>
+
+  <p class="ziti3">插入、删除或替换数组元素。</p>
+
+  <p class="ziti3">toLocaleString()</p>
+
+  <p class="ziti3">将数组转化为本地化字符串。</p>
+
+  <p class="ziti3">toString()</p>
+
+  <p class="ziti3">将数组转化为字符串。</p>
+
+  <p class="ziti3">unshift()</p>
+
+  <p class="ziti3">在数组头部插入元素。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">数组是JavaScript的基本特性，在第7章里有详细阐述。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">第7章</p>
+
+  <h3 class="p1" id="heading_id_9">Array.concat()</h3>
+
+  <p class="ziti3">衔接数组</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.concat(value,...)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">value,...</p>
+
+  <p class="ziti3">任意个要衔接到array中的值。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">一个新数组，包含array的元素，以及衔接的新元素。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">concat()会将参数衔接到array中得到一个新数组并返回。它不会修改array。如果传给concat()的某个参数本身是一个数组，则会将该数组的元素衔接到array中，而不是数组本身。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var a=[1,2,3];</p>
+
+  <p class="ziti5">a.concat(4,5)//返回[1,2,3,4,5]</p>
+
+  <p class="ziti5">a.concat([4,5]);//返回[1,2,3,4,5]</p>
+
+  <p class="ziti5">a.concat([4,5],[6,7])//返回[1,2,3,4,5,6,7]</p>
+
+  <p class="ziti5">a.concat(4,[5,[6,7]])//返回[1,2,3,4,5,[6,7]]</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.join()、Array.push()、Array.splice()</p>
+
+  <h3 class="p1" id="heading_id_10">Array.every()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">测试断言函数是否对每个元素为真。</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.every(predicate)</p>
+
+  <p class="ziti3">array.every(predicate,o)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">predicate</p>
+
+  <p class="ziti3">用来测试数组元素的断言函数。</p>
+
+  <p class="ziti3">o</p>
+
+  <p class="ziti3">调用predicate时的可选this值。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">如果对array的每一个元素调用predicate时都返回真值，则返回true。如果有任何一个元素调用predicate时返回假值，则返回false。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">every()方法用来测试数组的所有元素是否都满足某些条件。它会按照序号从小到大的顺序遍历array的元素，并对每个元素调用指定的predicate函数。如果predicate返回false（或任何可以转化为false的值），则every()会停止遍历，并立刻返回false。如果predicate的每一次调用都返回true，则every()返回true。当遍历的数组为空时，every()返回true。</p>
+
+  <p class="ziti3">对数组的每一个序号i，调用predicate时带有三个参数：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">predicate(array[i],i,array)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">predicate的返回值会当做布尔值解析。true和所有真值表示该数组元素通过了测试或者说满足该函数所描述的条件。如果返回值为false或假值，则表示数组元素没有通过测试。</p>
+
+  <p class="ziti3">更多细节请参考Array.forEach()。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">[1,2,3].every(function(x){return x＜5;})//=＞true:所有元素都＜5</p>
+
+  <p class="ziti5">[1,2,3].every(function(x){return x＜3;})//=＞false:不是所有元素都＜3</p>
+
+  <p class="ziti5">[].every(function(x){return false;});//=＞true:[]总是返回true</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.filter()、Array.forEach()、Array.some()</p>
+
+  <h3 class="p1" id="heading_id_11">Array.filter()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">返回通过断言的数组元素</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.map(predicate)</p>
+
+  <p class="ziti3">array.map(predicate,o)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">predicate</p>
+
+  <p class="ziti3">用来判断array中的元素是否需要包含在返回数组中的调用函数。</p>
+
+  <p class="ziti3">o</p>
+
+  <p class="ziti3">调用predicate时的可选this值。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">一个新数组，只包含那些让predicate返回真值的数组元素。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">filter()会创建一个新数组，包含那些让predicate函数返回真值的array的元素。filter()方法不会修改array本身（注意predicate函数有可能会修改）。</p>
+
+  <p class="ziti3">filter()按照序号从小到大遍历array，对每个元素仅调用一次predicate.对于序号i，调用predicate时带有三个参数：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">predicate(array[i],i,array)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">如果predicate返回真值，则array中序号为i的元素会追加到新创建的数组中。一旦filter()测试完array中的每一个元素，它就会返回新创建的数组。</p>
+
+  <p class="ziti3">更多细节请参考Array.forEach()。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">[1,2,3].filter(function(x){return x＞1;});//=＞[2,3]</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.every()、Array.forEach()、Array.indexOf()、Array.map()、Array.reduce()</p>
+
+  <h3 class="p1" id="heading_id_12">Array.forEach()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">为每一个数组元素调用一个函数</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.forEach(f)</p>
+
+  <p class="ziti3">array.forEach(f,o)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">f</p>
+
+  <p class="ziti3">为array的每一个元素调用的函数。</p>
+
+  <p class="ziti3">o</p>
+
+  <p class="ziti3">调用f时的可选this值。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">该方法无返回值。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">forEach()按照序号从小到大遍历array，并对每一个元素调用一次f。对于序号i，调用f时带有三个参数：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">f(array[i],i,array)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">f的任何返回值都会忽略。注意forEach()没有返回值。特别注意，它不会返回array。</p>
+
+  <p class="ziti3">数组方法的细节</p>
+
+  <p class="ziti3">下述细节适用于forEach()方法，也适用于相关方法：map()、filter()、every()和some()。</p>
+
+  <p class="ziti3">所有这些方法都接受函数作为第一个参数，并接受可选的第二个参数。如果指定了第二个参数o，则调用函数时，就好像该函数是o的方法一样。也就是说，在函数体内，this值等于o。如果没有指定第二个参数，则就像函数一样调用该函数（而不像方法），this值在非严格模式下是全局对象，在严格模式下则为null。</p>
+
+  <p class="ziti3">所有这些方法都会在开始遍历时就记录array的长度。如果调用函数把新元素追加到array中，这些新添加的元素不会遍历到。如果调用的函数修改了未遍历到的已存在元素，则调用时会传递修改后的值。</p>
+
+  <p class="ziti3">当作用于稀疏数组时，这些方法不会在实际上不存在元素的序号上调用函数。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var a=[1,2,3];</p>
+
+  <p class="ziti5">a.forEach(function(x,i,a){a[i]++;});//a现在是[2,3,4]</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.every()、Array.filter()、Array.indexOf()、Array.map()、Array.reduce()</p>
+
+  <h3 class="p1" id="heading_id_13">Array.indexOf()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">查找数组</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.indexOf(value)</p>
+
+  <p class="ziti3">array.indexOf(value,start)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">value</p>
+
+  <p class="ziti3">要在array中查找的值。</p>
+
+  <p class="ziti3">start</p>
+
+  <p class="ziti3">开始查找的可选数组序号。如果省略，则为0。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">一个大于等于start的最小序号值，该序号值处的array元素与value全等。如果不存在匹配元素时，则返回-1。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">该方法在array中查找等于value的元素，并返回找到的第一个元素的序号。查找的起始位置是start指定的数组序号，如果没有指定，则从0开始，然后一个接一个地查找，直到找到匹配的元素或检查完所有元素为止。判断是否相等使用的是“===”操作符。返回值是找到的第一个匹配元素的序号，如果没找到匹配的，则返回-1。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">['a','b','c'].indexOf('b')//=＞1</p>
+
+  <p class="ziti5">['a','b','c'].indexOf('d')//=＞-1</p>
+
+  <p class="ziti5">['a','b','c'].indexOf('a',1)//=＞-1</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.lastIndexOf()、String.indexOf()</p>
+
+  <h3 class="p1" id="heading_id_14">Array.join()</h3>
+
+  <p class="ziti3">将数组元素衔接为字符串</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.join()</p>
+
+  <p class="ziti3">array.join(separator)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">separator</p>
+
+  <p class="ziti3">在返回的字符串中，用来分隔数组的某个元素与下一个元素的可选字符或字符串。如果省略，默认是英文逗号（,）。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">一个字符串。将array的每一个元素转化为字符串，然后用separator字符串分隔开，最后衔接为返回的字符串。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">join()将数组的每一个元素转换为字符串，并通过在中间插入指定的separator字符串将它们衔接起来，最后返回衔接好的字符串。</p>
+
+  <p class="ziti3">可以进行相反的操作——将字符串分割成数组元素——使用String对象的split()方法即可。细节请参考String.split()。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">a=new Array(1,2,3,"testing");</p>
+
+  <p class="ziti5">s=a.join("+");//s是字符串"1+2+3+testing"</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">String.split()</p>
+
+  <h3 class="p1" id="heading_id_15">Array.lastIndexOf()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">反向查找数组</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.lastIndexOf(value)</p>
+
+  <p class="ziti3">arrray.lastIndexOf(value,start)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">value</p>
+
+  <p class="ziti3">要在array中查找的值。</p>
+
+  <p class="ziti3">start</p>
+
+  <p class="ziti3">开始查找的可选数组序号。如果省略，则从最后一个元素开始查找。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">一个小于等于start的最大序号值，该序号值处的array元素与value全等。如果不存在匹配元素时，则返回-1。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">该方法在array中一个接一个地反向查找等于value的元素，并返回找到的第一个元素的序号。查找的起始位置是start指定的数组序号，如果没有指定，则从最后一个元素开始。判断是否相等使用的是“===”操作符。返回值是找到的第一个匹配元素的序号，如果没找到匹配的，则返回-1。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.indexOf()、String.lastIndexOf()</p>
+
+  <h3 class="p1" id="heading_id_16">Array.length</h3>
+
+  <p class="ziti3">数组大小</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.length</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">数组的length属性总是比该数组中定义的序号最大的元素的序号大一。一般来说，数组都是“稠密”数组，拥有连续的元素，并且序号从0开始。对于这种数组，length属性表示数组中的元素个数。</p>
+
+  <p class="ziti3">使用Array()构造函数创建数组时，会初始化该数组的length属性。把新元素添加到数组中，在有必要时，会更新length属性：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">a=new Array();//a.length初始化为0</p>
+
+  <p class="ziti5">b=new Array(10);//b.length初始化为10</p>
+
+  <p class="ziti5">c=new Array("one","two","three");//c.length初始化为3</p>
+
+  <p class="ziti5">c[3]="four";//c.length更新为4</p>
+
+  <p class="ziti5">c[10]="blastoff";//c.length变成11</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">可以设置length属性的值来改变数组的大小。如果设置的length小于原值，会裁减数组，末尾处的元素会丢失。如果设置的length大于原值，数组会变大，新添加到末尾处的元素的值为undefined。</p>
+
+  <h3 class="p1" id="heading_id_17">Array.map()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">从数组元素中计算新值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.map(f)</p>
+
+  <p class="ziti3">array.map(f,o)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">f</p>
+
+  <p class="ziti3">为array的每一个元素调用的函数。它的返回值会成为返回数组的元素。</p>
+
+  <p class="ziti3">o</p>
+
+  <p class="ziti3">f调用时的可选this值。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">一个新数组，由函数f计算出的元素组成。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">map()会创建一个新数组，数组长度与array一样，数组元素通过将array的元素传递给函数f计算得到。map()按照从小到大的顺序遍历array的序号，并为每一个元素调用f一次。对于序号i，调用f时带有三个参数，f的返回值则存储在新创建数组的序号i处：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">a[i]=f(array[i],i,array)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">一旦map()将array中的每一个元素都传递给f，并将其返回值存储在新数组中后，就会返回该新数组。</p>
+
+  <p class="ziti3">更多细节请参考Array.forEach()。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">[1,2,3].map(function(x){return x*x;});//=＞[1,4,9]</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.every()、Array.f ilter()、Array.forEach()、Array.indexOf()、Array.reduce()</p>
+
+  <h3 class="p1" id="heading_id_18">Array.pop()</h3>
+
+  <p class="ziti3">移除并返回数组的最后一个元素</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.pop()</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">array的最后一个元素。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">pop()会移除array的最后一个元素，缩短数组的长度，并返回所移除元素的值。如果数组已经为空，pop()不会修改该数组，返回值是undefined。</p>
+
+  <p class="ziti3">示例</p>
+
+  <p class="ziti3">pop()与伴随的push()方法，可以提供先进后出（FILO）的栈功能。例如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var stack=[];//stack:[]</p>
+
+  <p class="ziti5">stack.push(1,2);//stack:[1,2]　返回2</p>
+
+  <p class="ziti5">stack.pop();//stack:[1]　返回2</p>
+
+  <p class="ziti5">stack.push([4,5]);//stack:[1,[4,5]]　返回2</p>
+
+  <p class="ziti5">stack.pop();//stack:[1]　返回[4,5]</p>
+
+  <p class="ziti5">stack.pop();//stack:[]　返回1</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.push()</p>
+
+  <h3 class="p1" id="heading_id_19">Array.push()</h3>
+
+  <p class="ziti3">给数组追加元素</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.push(value,...)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">value,...</p>
+
+  <p class="ziti3">追加到array尾部的一个或多个值。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">把指定值追加到数组后数组的新长度。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">push()会将参数按顺序追加到array尾部。它会直接修改array，而不会创新一个新数组。push()与伴随的pop()方法，可以提供先进后出（FILO）的栈功能。例子请参考Array.pop()。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.pop()</p>
+
+  <h3 class="p1" id="heading_id_20">Array.reduce()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">从数组元素中计算出一个值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.reduce(f)</p>
+
+  <p class="ziti3">array.reduce(f,inital)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">f</p>
+
+  <p class="ziti3">一个函数，可以合并两个值（比如两个数组元素），并返回一个“缩减”的新值。</p>
+
+  <p class="ziti3">initial</p>
+
+  <p class="ziti3">用来缩减数组的可选初始值。如果指定该参数，reduce()的行为会像是把该参数插入array的头部一样。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">数组的化简值，该值是最后一次调用f时的返回值。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">reduce()方法接受函数f作为第一个参数。该函数的行为应该像一个二元操作符一样：接受两个值，执行某些操作，然后返回结果。如果array有n个元素，reduce()方法会调用n-1次来将这些元素缩减为一个合并值。（你可能已经熟悉了数组缩减操作，在其他编程语言中，有时称为“折叠”或“注入”。）</p>
+
+  <p class="ziti3">第一次调用f时传入的是array的前两个元素。接下来的调用会传入之前的计算值和array的下一个元素（按照从小到大的序号顺序）。最后一次调用f的返回值会成为reduce()方法的返回值。</p>
+
+  <p class="ziti3">reduce()在调用时可以传入可选的第二个参数：initial。如果指定initial，reduce()的行为会像是把该参数插入array的头部一样（注意，实际上并没有修改array）。换一种说法是，就像reduce()带有两个参数调用，而initial就像是之前f的返回值一样。这种情况下，第一次调用f时传入的是initial和array的第一个元素。当指定initial时，要缩减的元素有n+1个（array的n个元素，加上initial值），则调用n次f。</p>
+
+  <p class="ziti3">如果array为空，又没有指定initial，reduce()会抛出TypeError异常。如果array为空，但指定initial，则reduce()返回initial，且永远不调用f。如果array只有一个元素，且没有指定initial，reduce()不调用f，会返回array的单个元素。</p>
+
+  <p class="ziti3">上面的段落描述了f的两个参数，实际上reduce()调用f时传入了4个参数。第三个参数是第二个参数的数组序号。第4个参数则是array自身。f永远当做函数调用，而不是方法。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">[1,2,3,4].reduce(function(x,y){return x*y;})//=＞24:((1*2)*3)*4</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.forEach()、Array.map()、Array.reduceRight()</p>
+
+  <h3 class="p1" id="heading_id_21">Array.reduceRight()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">从右到左缩减数组</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.reduceRight(f)</p>
+
+  <p class="ziti3">array.reduceRight(f,initial)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">f</p>
+
+  <p class="ziti3">一个函数，可以合并两个值（比如两个数组元素），并返回一个“缩减”的新值。</p>
+
+  <p class="ziti3">initial</p>
+
+  <p class="ziti3">用来缩减数组的可选初始值。如果指定该参数，reduceRight()的行为会像是把该参数插入array的尾部一样。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">数组的缩减值，该值是最后一次调用f时的返回值。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">reduceRight()与reduce()方法一样：调用f函数n-1次，来将array的n个元素缩减为单个值。reduceRight()与reduce()只有一点不同：遍历数组时是从右到左（从最大的序号到最小的），而不是从左到右。细节请参考Array.reduce()。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">[2,10,60].reduceRight(function(x,y){return x/y;})//=＞3:(60/10)/2</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.reduce()</p>
+
+  <h3 class="p1" id="heading_id_22">Array.reverse()</h3>
+
+  <p class="ziti3">颠倒数组中的元素顺序</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.reverse()</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Array对象的reverse()方法可以颠倒数组元素的顺序。它会在原数组中进行操作：重新调整array中的元素，而不会创建一个新数组。如果array有多个引用，该数组元素的新顺序在所有引用中可见。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">a=new Array(1,2,3);//a[0]==1,a[2]==3;</p>
+
+  <p class="ziti5">a.reverse();//现在a[0]==3,a[2]==1;</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_23">Array.shift()</h3>
+
+  <p class="ziti3">移除数组的第一个元素</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.shift()</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">数组原来的第一个元素。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">shift()会移除并返回array的第一个元素，并将所有后续元素前移一位，以填补数组头部的空缺。如果数组为空，shift()什么也不干，直接返回undefined值。注意shift()没有创建新数组，它会直接修改array。</p>
+
+  <p class="ziti3">shift()与Array.pop()类似，除了操作的是数组的头部而不是尾部。shift()经常与unshift()一起使用。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var a=[1,[2,3],4];</p>
+
+  <p class="ziti5">a.shift();//返回1;a=[[2,3],4]</p>
+
+  <p class="ziti5">a.shift();//返回[2,3]a=[4]</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.pop()、Array.unshift()</p>
+
+  <h3 class="p1" id="heading_id_24">Array.slice()</h3>
+
+  <p class="ziti3">返回数组的一部分</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.slice(start,end)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">start</p>
+
+  <p class="ziti3">数组片段开始处的数组序号。如果为负数，则表示从数组的尾部开始计算。也就是说，-1代表最后一个元素，-2代表倒数第二个元素，以此类推。</p>
+
+  <p class="ziti3">end</p>
+
+  <p class="ziti3">数组片段结束处的后一个元素的数组序号。如果没有指定，该片段会包含从start开始到数组尾部的所有数组元素。如果为负数，则表示从数组的尾部开始计算。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">一个新数组，包含array中从start一直到end之间的所有元素（包含start指定的元素，但不包含end指定的元素）。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">slice()返回array的片段，或称为子数组。返回的数组包含从start一直到end之间的所有元素（包含start指定的元素，但不包含end指定的元素）。如果没有指定end，返回的数组包含从start到array尾部的所有元素。</p>
+
+  <p class="ziti3">注意slice()没有修改数组。如果想要移除数组的一部分，请使用Array.splice()。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var a=[1,2,3,4,5];</p>
+
+  <p class="ziti5">a.slice(0,3);//返回[1,2,3]</p>
+
+  <p class="ziti5">a.slice(3);//返回[4,5]</p>
+
+  <p class="ziti5">a.slice(1,-1);//返回[2,3,4]</p>
+
+  <p class="ziti5">a.slice(-3,-2);//返回[3];在IE4下有误：返回[1,2,3]</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">bug</p>
+
+  <p class="ziti3">在IE4中start参数不能为负数。在IE的后续版本中已经修复该bug。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.splice()</p>
+
+  <h3 class="p1" id="heading_id_25">Array.some()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">测试是否有元素满足断言函数</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.some(predicate)</p>
+
+  <p class="ziti3">array.some(predicate,o)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">predicate</p>
+
+  <p class="ziti3">用来测试数组元素的断言函数。</p>
+
+  <p class="ziti3">o</p>
+
+  <p class="ziti3">调用predicate时的可选this值。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">如果array中有至少一个元素调用predicate时返回真值，则返回true。如果所有元素调用predicate时都返回假值，则返回false。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">some()方法用来测试数组中是否有元素满足某些条件。它会按照从小到大的顺序遍历array的元素，并依次对每个元素调用指定的predicate函数。如果predicate返回true（或任何可以转化为true的值），则some()会停止遍历，并立刻返回true。如果predicate的每一次调用都返回false（或任何可以转化为false的值），则some()返回false。当遍历的数组为空时，some()返回false。</p>
+
+  <p class="ziti3">该方法很类似every()。更多细节请参考Array.every()和Array.forEach()。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">[1,2,3].some(function(x){return x＞5;});//=＞false:没有元素＞5</p>
+
+  <p class="ziti5">[1,2,3].some(function(x){return x＞2;});//=＞true:有些元素＞3</p>
+
+  <p class="ziti5">[].some(function(x){return false;});//=＞false:[]总是返回false</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.every()、Array.filter()、Array.forEach()</p>
+
+  <h3 class="p1" id="heading_id_26">Array.sort()</h3>
+
+  <p class="ziti3">对数组元素进行排序</p>
+
+  <p class="ziti3">概要</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">array.sort()</p>
+
+  <p class="ziti5">array.sort(orderfunc)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">orderfunc</p>
+
+  <p class="ziti3">用来指定如何排序的可选函数。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">该数组的引用。注意是在原数组中进行排序，没有新建数组。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">sort()方法在原数组中对数组元素进行排序，没有创建新数组。如果在调用sort()时不带参数，将按字母顺序（更精确地说，是字符编码顺序）对数组中的元素进行排序。要实现这一点，首先要把元素转化为字符串（如果有必要的话），以便进行比较。</p>
+
+  <p class="ziti3">如果想按照其他顺序来进行排序，就必须提供比较函数，该函数要比较两个值，然后返回一个数字来表明这两个值的相对顺序。比较函数需要接受两个参数a和b，并返回如下值：</p>
+
+  <p class="ziti3">·一个小于0的值。在这种情况下，表示根据排序标准，a小于b，在排序后的数组中，a应该排列在b的前面。</p>
+
+  <p class="ziti3">·0。在这种排序下，a和b是相等的。</p>
+
+  <p class="ziti3">·一个大于0的值。在这种情况下，a大于b。</p>
+
+  <p class="ziti3">注意：数组中的undefined元素会始终排列在数组末尾。即便提供了自定义的比较函数，也是如此，因为undefined值不会传递给提供的orderfunc。</p>
+
+  <p class="ziti3">示例</p>
+
+  <p class="ziti3">下面的代码展示了如何书写一个比较函数，来使得对一个数值数组按数值排序，而不是按字母排序：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//用于数值排序的排序函数</p>
+
+  <p class="ziti5">function numberorder(a,b){return a-b;}</p>
+
+  <p class="ziti5">a=new Array(33,4,1111,222);</p>
+
+  <p class="ziti5">a.sort();//字母排序：1111,222,33,4</p>
+
+  <p class="ziti5">a.sort(numberorder);//数值排序：4,33,222,1111</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_27">Array.splice()</h3>
+
+  <p class="ziti3">插入、删除或替换数组元素</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.splice(start,deleteCount,value,...)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">start</p>
+
+  <p class="ziti3">开始插入和（或）删除处的数组元素的序号。</p>
+
+  <p class="ziti3">deleteCount</p>
+
+  <p class="ziti3">要删除的元素个数，从start开始，并包含start处的元素。如果指定为0，表示插入元素，而不用删除任何元素。</p>
+
+  <p class="ziti3">value,...</p>
+
+  <p class="ziti3">要插入数组中的零个或多个值，从start序号处开始插入。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">如果从array中删除了元素，则返回一个新数组，包含这些删除的元素。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">splice()将删除从start开始（包括start处）的零个或多个元素，并且用参数列表中指定的零个或多个值来替换掉那些删除的元素。位于插入或删除的元素之后的数组元素，在有必要时都会移动，以保持与数组中剩余元素的连续性。注意，虽然splice()与slice()的方法名类似，但作用不是类似的，splice()会直接修改数组。</p>
+
+  <p class="ziti3">示例</p>
+
+  <p class="ziti3">通过例子就很容易理解splice()的操作：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var a=[1,2,3,4,5,6,7,8];</p>
+
+  <p class="ziti5">a.splice(1,2);//返回[2,3]；a为[1,4]</p>
+
+  <p class="ziti5">a.splice(1,1);//返回[4]；a为[1]</p>
+
+  <p class="ziti5">a.splice(1,0,2,3);//返回[]；a为[1,2,3]</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.slice()</p>
+
+  <h3 class="p1" id="heading_id_28">Array.toLocaleString()</h3>
+
+  <p class="ziti3">将数组转化为本地化字符串</p>
+
+  <p class="ziti3">重写Object.toLocaleString()</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.toLocaleString()</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">数组的本地化字符串表示。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">TypeError</p>
+
+  <p class="ziti3">调用该方法时，如何对象不是Array，则抛出该异常。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">数组的toLocaleString()方法返回数组的本地化字符串表示。它首先调用所有数组元素的toLocaleString()方法，然后使用地区特定的分隔字符将结果字符串连接起来。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.toString()、Object.toLocaleString()</p>
+
+  <h3 class="p1" id="heading_id_29">Array.toString()</h3>
+
+  <p class="ziti3">将数组转化成字符串</p>
+
+  <p class="ziti3">重写Object.toString()</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.toString()</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">array的字符串表示。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">TypeError</p>
+
+  <p class="ziti3">调用该方法时，如果对象不是Array，则抛出该异常。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">数组的toString()方法把数组转化成字符串，并返回该字符串。当数组用于字符串上下文中时，JavaScript会调用该方法将数组自动转换成一个字符串。但是，在某些场景下，还是需要显式调用toString()方法。</p>
+
+  <p class="ziti3">toString()在把数组转化成字符串时，首先要将每个数组元素转化为字符串（通过调用这些元素的toString()方法）。一旦每个元素都转化成字符串后，toString()就会将这些字符串以逗号分隔的列表形式输出。返回值与不带参数调用join()方法返回的字符串是一样的。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.toLocaleString()、Object.toString()</p>
+
+  <h3 class="p1" id="heading_id_30">Array.unshift()</h3>
+
+  <p class="ziti3">在数组头部插入元素</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">array.unshift(value,...)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">value,...</p>
+
+  <p class="ziti3">要插入array头部的一个或多个值。</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">数组的新长度。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">unshift()会把参数插入array的头部，并将已经存在的元素顺次往后移动，以便留出空间。该方法的第一个参数会成为数组新的元素0，如果还有第二个参数的话，会成为新的元素1，以此类推。注意，unshift()不会创建新数组，而是直接修改数组本身。</p>
+
+  <p class="ziti3">示例</p>
+
+  <p class="ziti3">unshift()经常与shift()一起使用。例如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var a=[];//a:[]</p>
+
+  <p class="ziti5">a.unshift(1);//a:[1]返回：1</p>
+
+  <p class="ziti5">a.unshift(22);//a:[22,1]返回：2</p>
+
+  <p class="ziti5">a.shift();//a:[1]返回：22</p>
+
+  <p class="ziti5">a.unshift(33,[4,5]);//a:[33,[4,5],1]返回：3</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Array.shift()</p>
+
+  <h3 class="p1" id="heading_id_31">Boolean</h3>
+
+  <p class="ziti3">对布尔值的支持</p>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new Boolean(value)//构造函数</p>
+
+  <p class="ziti5">Boolean(value)//转换函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">value</p>
+
+  <p class="ziti3">Boolean对象存放的值，或要转化成布尔值的值。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">作为构造函数调用（带有new操作符）时，Boolean()会将参数转换成布尔值，并返回一个包含该值的Boolean对象。当做函数调用（不带new操作符）时，Boolean()只会将参数转换成一个原始的布尔值，并返回改值。</p>
+
+  <p class="ziti3">0、NaN、null、空字符串""和undefined值都会转换成false。其他原始值，除了false（但包含"false"字符串），以及其他的对象和数组都会转换成true。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">toString()</p>
+
+  <p class="ziti3">根据Boolean对象代表的布尔值返回"true"或"false"字符串。</p>
+
+  <p class="ziti3">valueOf()</p>
+
+  <p class="ziti3">返回Boolean对象中存放的原始布尔值。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">在JavaScript中，布尔值是一种基本的数据类型。Boolean对象是一个封装布尔值的对象。Boolean对象类型主要提供将布尔值转换成字符串的toString()方法。当调用toString()方法将布尔值转换成字符串时（通常是由JavaScript隐式调用的），JavaScript会在内部将这个布尔值转换成一个临时的Boolean对象，然后调用这个对象的toString()方法。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Object</p>
+
+  <h3 class="p1" id="heading_id_32">Boolean.toString()</h3>
+
+  <p class="ziti3">将布尔值转换成字符串</p>
+
+  <p class="ziti3">重写Object.toString()</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">b.toString()</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">根据原始布尔值或Boolean对象b的值返回"true"或"false"字符串。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">TypeError</p>
+
+  <p class="ziti3">调用该方法时，如果对象不是Boolean类型，则抛出该异常。</p>
+
+  <h3 class="p1" id="heading_id_33">Boolean.valueOf()</h3>
+
+  <p class="ziti3">Boolean对象的布尔值</p>
+
+  <p class="ziti3">重写Object.ValueOf()</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">b.valueOf()</p>
+
+  <p class="ziti3">返回值</p>
+
+  <p class="ziti3">Boolean对象b存放的原始布尔值。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">TypeError</p>
+
+  <p class="ziti3">调用该方法时，如果对象不是Boolean类型，则抛出该异常。</p>
+
+  <h3 class="p1" id="heading_id_34">Date</h3>
+
+  <p class="ziti3">操作日期和时间</p>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new Date()</p>
+
+  <p class="ziti5">new Date(milliseconds)</p>
+
+  <p class="ziti5">new Date(datestring)</p>
+
+  <p class="ziti5">new Date(year,month,day,hours,minutes,seconds,ms)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">不带参数时，Date()构造函数将根据当前日期和时间创建一个Date对象。当传入一个数字参数时，这个数字将当做日期的内部数字表示形式，单位为毫秒，值等于对应的getTime()方法的返回值。当传入一个字符串参数时，它将当做日期的字符串表示形式，格式为Date.parse()方法可接受的格式。在其他情况下，应该向构造函数传入2～7个数字参数，用于指定日期及时间的各个字段。除了前两个参数（指定年以及月的范围），其余参数都是可选的。注意，这些日期和时间值是使用本地时间指定的，而不是国际协调时间（UTC）（与格林尼治标准时间[GMT]）类似）。替代方案可参阅静态方法Date.UTC()。</p>
+
+  <p class="ziti3">Date()也可以不带new操作符，像一个函数一样调用。以这种方式调用时，Date()将忽略掉所有传入的参数，并返回当前日期和时间的一个字符串表示。</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">milliseconds</p>
+
+  <p class="ziti3">需要的时间与1970年1月1日午夜（UTC）之间的毫秒数。例如，传入参数5000将创建一个表示1970-01-01午夜之后5秒钟的日期。</p>
+
+  <p class="ziti3">datestring</p>
+
+  <p class="ziti3">一个以字符串形式定义日期（以及时间，可选）的参数。这个字符串应当为Date.parse()可接受的一种格式。</p>
+
+  <p class="ziti3">year</p>
+
+  <p class="ziti3">年份，4位数字。例如，2001代表2001年。为了与早期实现的JavaScript兼容，如果这个参数的值在0～99之间，则向它加上1900。</p>
+
+  <p class="ziti3">month</p>
+
+  <p class="ziti3">月份，介于0（1月）～11（12月）之间的一个整数。</p>
+
+  <p class="ziti3">day</p>
+
+  <p class="ziti3">月份中的第几天，介于1～31之间的一个整数。注意这个参数使用1作为最小的值，而其他参数使用0作为最小的值。可选的。</p>
+
+  <p class="ziti3">hours</p>
+
+  <p class="ziti3">小时，0（午夜）～23（晚上11点）之间的整数。可选的。</p>
+
+  <p class="ziti3">minutes</p>
+
+  <p class="ziti3">小时中的分钟，0～59之间的整数。可选的。</p>
+
+  <p class="ziti3">seconds</p>
+
+  <p class="ziti3">分钟里的秒数，0～59之间的整数。可选的。</p>
+
+  <p class="ziti3">ms</p>
+
+  <p class="ziti3">秒中的毫秒数，0～999之间的整数。可选的。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">Date对象没有可以直接读/写的属性，所有对日期及时间值的访问都需要通过方法。Date对象的大多数方法分为两种形式：一种使用本地时间；另一种使用世界时间（UTC或GMT）。如果一个方法的名字中有"UTC"，则它使用世界时间进行操作。这些方法对在下面一起列出了。例如，列表get[UTC]Day()同时代表getDay()和getUTCDay()。</p>
+
+  <p class="ziti3">Date的方法只能在Date对象上调用，如果试图在其他类型的对象上调用它们，将抛出TypeError异常。</p>
+
+  <p class="ziti3">get[UTC]Date()</p>
+
+  <p class="ziti3">返回Date对象的月份中的日期值，本地或世界时间。</p>
+
+  <p class="ziti3">get[UTC]Day()</p>
+
+  <p class="ziti3">返回Date对象的一周中的日期值，本地或世界时间。</p>
+
+  <p class="ziti3">get[UTC]FullYear()</p>
+
+  <p class="ziti3">返回日期的年份，完整的4位数字的格式，本地或世界时间。</p>
+
+  <p class="ziti3">get[UTC]Hours()</p>
+
+  <p class="ziti3">返回Date对象的小时值，本地或世界时间。</p>
+
+  <p class="ziti3">get[UTC]Milliseconds()</p>
+
+  <p class="ziti3">返回Date对象的毫秒值，本地或世界时间。</p>
+
+  <p class="ziti3">get[UTC]Minutes()</p>
+
+  <p class="ziti3">返回Date对象的分钟值，本地或世界时间。</p>
+
+  <p class="ziti3">get[UTC]Month()</p>
+
+  <p class="ziti3">返回Date对象的月份值，本地或世界时间。</p>
+
+  <p class="ziti3">get[UTC]Seconds()</p>
+
+  <p class="ziti3">返回Date对象的秒数值，本地或世界时间。</p>
+
+  <p class="ziti3">getTime()</p>
+
+  <p class="ziti3">返回Date对象的内部毫秒表示形式。注意这个值与时区无关，因此，没有一个单独的getUTCTime()方法。</p>
+
+  <p class="ziti3">getTimezoneOffset()</p>
+
+  <p class="ziti3">返回当前日期的本地表示与UTC表示之间相差的分钟数。注意返回值依赖于指定日期的夏令时是否有效。</p>
+
+  <p class="ziti3">getYear()</p>
+
+  <p class="ziti3">返回Date对象的年份值。这个方法已经过时，建议使用getFullYear()。</p>
+
+  <p class="ziti3">set[UTC]Date()</p>
+
+  <p class="ziti3">设置日期的月份的日期值，使用本地或世界时间。</p>
+
+  <p class="ziti3">set[UTC]FullYear()</p>
+
+  <p class="ziti3">设置日期的年份（以及可选的月份及日期）值，使用本地或世界时间。</p>
+
+  <p class="ziti3">set[UTC]Hours()</p>
+
+  <p class="ziti3">设置日期的小时值（以及可选的分钟、秒以及毫秒值），使用本地或世界时间。</p>
+
+  <p class="ziti3">set[UTC]Milliseconds()</p>
+
+  <p class="ziti3">设置日期的毫秒值，使用本地或世界时间。</p>
+
+  <p class="ziti3">set[UTC]Minutes()</p>
+
+  <p class="ziti3">设置日期的分钟值（以及可选的秒以及毫秒值），使用地本或世界时间。</p>
+
+  <p class="ziti3">set[UTC]Month()</p>
+
+  <p class="ziti3">设置日期的月份值（以及可选的月份中的天数），使用本地或世界时间。</p>
+
+  <p class="ziti3">set[UTC]Seconds()</p>
+
+  <p class="ziti3">设置日期的秒值（以及可选的毫秒值），使用本地或世界时间。</p>
+
+  <p class="ziti3">setTime()</p>
+
+  <p class="ziti3">使用毫秒的格式，设置一个Date对象的值。</p>
+
+  <p class="ziti3">setYear()</p>
+
+  <p class="ziti3">设置一个Date对象的年份值。已弃用，建议使用setFullYear()。</p>
+
+  <p class="ziti3">toDateString()</p>
+
+  <p class="ziti3">返回一个表示当前日期的日期部分的字符串，使用本地时区。</p>
+
+  <p class="ziti3">toGMTString()</p>
+
+  <p class="ziti3">使用GMT时区，将一个Date转换为一个字符串。已弃用，建议使用toUTCString()。</p>
+
+  <p class="ziti3">toISOString()</p>
+
+  <p class="ziti3">将一个Date转为字符串，使用ISO-8601标准来组合日期/时间格式和UTC。</p>
+
+  <p class="ziti3">toJSON()</p>
+
+  <p class="ziti3">将一个Date对象JSON序列化，使用toISOString()。</p>
+
+  <p class="ziti3">toLocaleDateString()</p>
+
+  <p class="ziti3">返回一个表示当前日期的日期部分的字符串，使用本地时区，本地时间格式。</p>
+
+  <p class="ziti3">toLocaleString()</p>
+
+  <p class="ziti3">将一个Date转换为字符串，使用本地时区以及本地时间格式。</p>
+
+  <p class="ziti3">toLocaleTimeString()</p>
+
+  <p class="ziti3">返回一个表示当前日期的时间部分的字符串，使用本地时区以及本地时间格式。</p>
+
+  <p class="ziti3">toString()</p>
+
+  <p class="ziti3">使用本地时区将一个Date转换为字符串。</p>
+
+  <p class="ziti3">toTimeString()</p>
+
+  <p class="ziti3">返回一个表示指定日期的时间部分的字符串，使用本地时区表示。</p>
+
+  <p class="ziti3">toUTCString()</p>
+
+  <p class="ziti3">将一个Date转为字符串，使用世界时间。</p>
+
+  <p class="ziti3">valueOf()</p>
+
+  <p class="ziti3">将一个Date转为对应的内部毫秒格式。</p>
+
+  <p class="ziti3">静态方法</p>
+
+  <p class="ziti3">除了上面列出的那些实例方法，Date对象也定义了三个表态方法。这些方法通过Date()构造函数本身调用，而不是通过各个Date对象。</p>
+
+  <p class="ziti3">Date.now()</p>
+
+  <p class="ziti3">返回当前时间，自纪元开始后的毫秒数。</p>
+
+  <p class="ziti3">Date.parse()</p>
+
+  <p class="ziti3">解析一个日期及时间的字符串表示，返回该日期的内部毫秒表示。</p>
+
+  <p class="ziti3">Date.UTC()</p>
+
+  <p class="ziti3">返回指定的UTC日期及时间的毫秒表示。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Date对象是JavaScript语言中内置的数据类型。Date对象通过上面描述的新Date()语法创建。</p>
+
+  <p class="ziti3">创建了一个Date对象之后，可以使用许多方法来对它进行操作。大多数方法只是简单地允许使用本地或UTC（世界时间，或GMT）时间获取或设置这个对象的年、月、日、小时、分钟、秒以及毫秒值。toString()方法以及它的变体则将日期转换为人类可读的字符串。getTime()及setTime()则获取或设置该Date对象的内部表示——自1970年1月1日午夜（GMT）以来的毫秒数。在这个标准的毫秒格式中，日期及时间都由一个单独的整数表示，这使得对日期的算术操作特别简单。ECMAScript标准要求Date对象能以毫秒的精度，表示1970-01-01之前及之后1亿天的日期及时间。这是一个加上或减去273 785年的区间，也就是说，直到275 755年，JavaScript的时钟才会走到头。</p>
+
+  <p class="ziti3">示例</p>
+
+  <p class="ziti3">创建一个Date对象后，有若干方法可以用来操作它：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">d=new Date();//取得当前日期及时间</p>
+
+  <p class="ziti5">document.write('Today is:"+d.toLocaleDateString()+'.');//显示日期</p>
+
+  <p class="ziti5">document.write('The time is:'+d.toLocaleTimeString());//显示时间</p>
+
+  <p class="ziti5">var dayOfWeek=d.getDay();//星期几？</p>
+
+  <p class="ziti5">var weekend=(dayOfWeek==0)||(dayOfWeek==6);//是周末吗？</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Date对象的另一个常用方法是从当前时间的毫秒表示中减去其他的时间，以便判断两个时间之间的差。下面的客户端代码示例显示了两种这样的用法：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜script language="JavaScript"＞</p>
+
+  <p class="ziti5">today=new Date();//记下当天的日期</p>
+
+  <p class="ziti5">christmas=new Date();//取得当前年份的日期</p>
+
+  <p class="ziti5">christmas.setMonth(11);//将月份设置为12月</p>
+
+  <p class="ziti5">christmas.setDate(25);//以及将天设置为25日</p>
+
+  <p class="ziti5">//如果圣诞节还没有过，计算现在与圣诞节之间的毫秒数，</p>
+
+  <p class="ziti5">//然后将它转为天数并输出一条消息</p>
+
+  <p class="ziti5">if(today.getTime()＜christmas.getTime()){</p>
+
+  <p class="ziti5">difference=christmas.getTime()-today.getTime();</p>
+
+  <p class="ziti5">difference=Math.floor(difference/(1000*60*60*24));</p>
+
+  <p class="ziti5">document.write('距圣诞节只有'+difference+'天了！＜p＞');</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">＜/script＞//……这儿是其他的HTML文档……</p>
+
+  <p class="ziti5">＜script language="JavaScript"＞//这儿使用Date对象来计时</p>
+
+  <p class="ziti5">//通过除以1000来将毫秒转为秒</p>
+
+  <p class="ziti5">now=new Date();</p>
+
+  <p class="ziti5">document.write('＜p＞加载本页花费了'+</p>
+
+  <p class="ziti5">(now.getTime()-today.getTime())/1000+</p>
+
+  <p class="ziti5">'秒。');</p>
+
+  <p class="ziti5">＜/script＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.parse()、Date.UTC()</p>
+
+  <h3 class="p1" id="heading_id_35">Date.getDate()</h3>
+
+  <p class="ziti3">返回一个Date对象的月份中的日期值</p>
+
+  <p class="ziti3">概要</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">date.getDate()</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">给定Date对象date的月份中的日期值，使用本地时间。返回值在1～31之间。</p>
+
+  <h3 class="p1" id="heading_id_36">Date.getDay()</h3>
+
+  <p class="ziti3">返回一个Date对象的一周中的日期值。</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getDay()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">给定Date对象date的一周中的日期值，使用本地时间。返回值介于0（星期天）～6（星期一）之间。</p>
+
+  <h3 class="p1" id="heading_id_37">Date.getFullYear()</h3>
+
+  <p class="ziti3">返回一个Date对象的年份值。</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getFullYear()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">date以本地时间表示时的年份值。返回值是一个完整的4位数字的年份，包含世纪，而不是一个两位数字的缩写。</p>
+
+  <h3 class="p1" id="heading_id_38">Date.getHours()</h3>
+
+  <p class="ziti3">返回一个Date对象的小时值。</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getHours()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">指定的Date对象date以本地时间表示时的小时值。返回值在0（午夜）～23（晚上11点）之间。</p>
+
+  <h3 class="p1" id="heading_id_39">Date.getMilliseconds()</h3>
+
+  <p class="ziti3">返回一个Date对象的毫秒值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getMilliseconds()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">指定的date以本地时间表示时的毫秒值。</p>
+
+  <h3 class="p1" id="heading_id_40">Date.getMinutes()</h3>
+
+  <p class="ziti3">返回一个Date对象的分钟值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getMinutes()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">指定Date对象date以本地时间表示时的分钟值。返回值在0～59之间。</p>
+
+  <h3 class="p1" id="heading_id_41">Date.getMonth()</h3>
+
+  <p class="ziti3">返回一个Date对象的月份值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getMonth()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">指定Date对象date以本地时间表示的月份值。返回值在0（1月）～11（12月）之间。</p>
+
+  <h3 class="p1" id="heading_id_42">Date.getSeconds()</h3>
+
+  <p class="ziti3">返回一个Date对象的秒钟值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getSeconds()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">指定Date对象date以本地时间表示的秒钟值。返回值在0～59之间。</p>
+
+  <h3 class="p1" id="heading_id_43">Date.getTime()</h3>
+
+  <p class="ziti3">将一个Date对象以毫秒形式返回</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getTime()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">指定的Date对象date的毫秒表示形式，即1970-1-01午夜（GMT）到指定日期之间的毫秒数。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">getTime()将日期和时间转换为一个单独的整数。在比较两个Date对象或判断两个日期之间的时间差时，这个方法很有用。注意，一个日期的毫秒表示形式与时区无关，所以这个方法不存在对应的getUTCTime()方法。不要把这个getTime()方法与getDay()和getDate()方法混淆，后两者分别返回一周中的日期值和一月中的日期值。</p>
+
+  <p class="ziti3">Date.parse()和Date.UTC()方法可以在不创建Date对象的情况下将一个日期或时间转换为毫秒表示形式。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date、Date.parse()、Date.setTime()、Date.UTC()</p>
+
+  <h3 class="p1" id="heading_id_44">Date.getTimezoneOffset()</h3>
+
+  <p class="ziti3">取得与GMT时间之间的差</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getTimezoneOffset()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">GMT时间与本地时间的差，用分钟表示。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">getTimezoneOffset()以分钟为单位返回GMT或UTC时间与本地时间的差。实际上，这个函数告诉你当前JavaScript代码运行在哪个时区，以及给定的日期是否处于夏令时状态。</p>
+
+  <p class="ziti3">返回值的单位是分钟，而不是小时，因为有些国家的时区不是以小时为间隔。</p>
+
+  <h3 class="p1" id="heading_id_45">Date.getUTCDate()</h3>
+
+  <p class="ziti3">返回一个Date对象的一月中的日期值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getUTCDate()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">以全球时间表示的date的一月中的日期值（介于1～31之间）。</p>
+
+  <h3 class="p1" id="heading_id_46">Date.getUTCDay()</h3>
+
+  <p class="ziti3">返回一个Date对象的一周中的日期值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getUTCDay()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">以全球时间表示的date一周中的日期值。返回值在0（星期天）～6（星期六）之间。</p>
+
+  <h3 class="p1" id="heading_id_47">Date.getUTCFullYear()</h3>
+
+  <p class="ziti3">返回一个Date对象的年份值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getUTCFullYear()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">以全球时间表示的date的年份值。返回值是一个完整的4位数字的年份，而不是两位数字的缩写。</p>
+
+  <h3 class="p1" id="heading_id_48">Date.getUTCHours()</h3>
+
+  <p class="ziti3">返回一个Date对象的小时值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getUTCHours()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">以全球时间表示的date的小时值。返回值是0（午夜）～23（晚上11点）之间的一个整数。</p>
+
+  <h3 class="p1" id="heading_id_49">Date.getUTCMilliseconds()</h3>
+
+  <p class="ziti3">返回一个Date对象的毫秒值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getUTCMilliseconds()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">以全球时间表示的date的毫秒值。</p>
+
+  <h3 class="p1" id="heading_id_50">Date.getUTCMinutes()</h3>
+
+  <p class="ziti3">返回一个Date对象的分钟值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getUTCMinutes()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">以全球时间表示的date的分钟值。返回值是0～59之间的一个整数。</p>
+
+  <h3 class="p1" id="heading_id_51">Date.getUTCMonth()</h3>
+
+  <p class="ziti3">返回一个Date对象的一年中的月份值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getUTCMonth()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">以全球时间表示的date的一年中的月份值。返回值是0（1月）～11（12月）之间的一个整数。注意，Date对象用1表示一个月中的第一天，但用0表示一年中的第一个月。</p>
+
+  <h3 class="p1" id="heading_id_52">Date.getUTCSeconds()</h3>
+
+  <p class="ziti3">返回一个Date的秒数值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getUTCSeconds()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">以全球时间表示的date的秒数值。返回值是0～59之间的一个整数。</p>
+
+  <h3 class="p1" id="heading_id_53">Date.getYear()</h3>
+
+  <p class="ziti3">返回一个Date对象的年份值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.getYear()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">给定Date对象的年份值减去1900。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">getYear()返回给定Date对象date的年份值减去1900。自ECMAScript第3版开始，JavaScript已不再要求实现这个方法；可使用getFullYear()来代替它。</p>
+
+  <h3 class="p1" id="heading_id_54">Date.now()</h3>
+
+  <p class="ziti3">以毫秒的形式返回当前时间</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">Date.now()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">从1970-01-01午夜（GMT）到现在的时间，以毫秒表示。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">在ECMAScript 5之前，可以像下面这样实现这个方法：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">Date.now=function(){return(new Date()).getTime();}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date、Date.getTime()</p>
+
+  <h3 class="p1" id="heading_id_55">Date.parse()</h3>
+
+  <p class="ziti3">解析一个日期/时间字符串</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">Date.parse(date)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">date</p>
+
+  <p class="ziti3">一个包含待解析的日期和时间的字符串。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">从1970-01-01午夜（GMT）到给定日期之间的毫秒数。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Date.parse()是Date的一个静态方法。它返回从纪元开始到给定字符串参数所指定的日期之间的毫秒数。返回值可以直接用于创建一个新的Date对象，或用于通过Date.setTime()设置一个已存在的Date对象的日期。</p>
+
+  <p class="ziti3">ECMAScript 5要求这个方法可以解析由Date.toISOString()方法返回的字符串。在ECMAScript 5以及之前的版本中，还要求这个方法能解析由toUTCString()和toString()方法返回的依赖于具体实现环境的字符串。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date、Date.setTime()、Date.toISOString()、Date.toString()</p>
+
+  <h3 class="p1" id="heading_id_56">Date.setDate()</h3>
+
+  <p class="ziti3">设置一个Date对象的一月中的日期值</p>
+
+  <p class="ziti3">概要</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">date.setDate(day_of_month)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">day_of_month</p>
+
+  <p class="ziti3">1～31之间的一个整数，将用做date的对应月中的日期值（本地时间）。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的毫秒表示形式。在有ECMAScript标准之前，这个方法什么也不返回。</p>
+
+  <h3 class="p1" id="heading_id_57">Date.setFullYear()</h3>
+
+  <p class="ziti3">设置一个Date的年份值，以及可选的月份值和日期值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setFullYear(year)</p>
+
+  <p class="ziti3">date.setFullYear(year,month)</p>
+
+  <p class="ziti3">date.setFullYear(year,month,day)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">year</p>
+
+  <p class="ziti3">d at e中待设置的年份值，本地时间形式。这个参数应该是一个包含世纪的整数，如1999；它不能是缩写，如99。</p>
+
+  <p class="ziti3">month</p>
+
+  <p class="ziti3">0～11之间的一个可选整数，将用做date的月份值（本地时间）。</p>
+
+  <p class="ziti3">day</p>
+
+  <p class="ziti3">1～31之间的一个可选整数，将用做date的对应月中的日期值（本地时间）。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的内部毫秒表示形式。</p>
+
+  <h3 class="p1" id="heading_id_58">Date.setHours()</h3>
+
+  <p class="ziti3">设置一个Date的小时、分钟、秒以及毫秒值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setHours(hours)</p>
+
+  <p class="ziti3">date.setHours(hours,minutes)</p>
+
+  <p class="ziti3">date.setHours(hours,minutes,seconds)</p>
+
+  <p class="ziti3">date.setHours(hours,minutes,seconds,millis)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">hours</p>
+
+  <p class="ziti3">0（午夜）～23（晚上11点）之间的一个整数，将用做date的新的小时值（本地时间）。</p>
+
+  <p class="ziti3">minutes</p>
+
+  <p class="ziti3">0～59之间的一个可选整数，将用做date的新的分钟值（本地时间）。在ECMAScript标准化之前，不支持这个参数。</p>
+
+  <p class="ziti3">seconds</p>
+
+  <p class="ziti3">0～59之间的一个可选整数，将用做date的新的秒钟值（本地时间）。在ECMAScript标准化之前，不支持这个参数。</p>
+
+  <p class="ziti3">millis</p>
+
+  <p class="ziti3">0～999之间的一个可选整数，将用做date的新的毫秒值（本地时间）。在ECMAScript标准化之前，不支持这个参数。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整过后的时间的毫秒表示形式。在ECMAScript标准化之前，这个方法什么也不返回。</p>
+
+  <h3 class="p1" id="heading_id_59">Date.setMilliseconds()</h3>
+
+  <p class="ziti3">设置一个日期的毫秒值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setMilliseconds(millis)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">millis</p>
+
+  <p class="ziti3">将用于date以本地时间表示的毫秒值。这个参数应该是0～999之间的一个整数。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的毫秒表示形式。</p>
+
+  <h3 class="p1" id="heading_id_60">Date.setMinutes()</h3>
+
+  <p class="ziti3">设置一个Date的分钟、秒钟以及毫秒值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setMinutes(minutes)</p>
+
+  <p class="ziti3">date.setMinutes(minutes,seconds)</p>
+
+  <p class="ziti3">date.setMinutes(minutes,seconds,millis)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">minutes</p>
+
+  <p class="ziti3">0～59之间的一个整数，将用做Date对象date的分钟值（本地时间）。</p>
+
+  <p class="ziti3">seconds</p>
+
+  <p class="ziti3">0～59之间的一个可选整数，将用做date的秒钟值（本地时间）。在ECMAScript标准化之前，不支持这个参数。</p>
+
+  <p class="ziti3">millis</p>
+
+  <p class="ziti3">0～999之间的一个可选整数，将用做date的毫秒值（本地时间）。在ECMAScript标准化之前，不支持这个参数。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整过后的日期的毫秒表示形式。在ECMAScript标准化之前，这个方法什么也不返回。</p>
+
+  <h3 class="p1" id="heading_id_61">Date.setMonth()</h3>
+
+  <p class="ziti3">设置一个Date的月份及日期值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setMonth(month)</p>
+
+  <p class="ziti3">date.setMonth(month,day)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">month</p>
+
+  <p class="ziti3">0（1月）～11（12月）之间的一个整数，将用做该Date对象date的新月份值（本地时间）。注意月份从0开始，而1月中的日期从1开始。</p>
+
+  <p class="ziti3">day</p>
+
+  <p class="ziti3">1～31之间的一个可选整数，将用做该date的对应月份中的日期值（本地时间）。在ECMAScript标准化之前，不支持这个参数。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的毫秒表现形式。在ECMAScript标准化之前，这个方法什么也不返回。</p>
+
+  <h3 class="p1" id="heading_id_62">Date.setSeconds()</h3>
+
+  <p class="ziti3">设置一个Date的秒钟及毫秒值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setSeconds(seconds)</p>
+
+  <p class="ziti3">date.setSeconds(seconds,millis)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">seconds</p>
+
+  <p class="ziti3">0～59之间的一个整数，将用做Date对象date的秒钟值。</p>
+
+  <p class="ziti3">millis</p>
+
+  <p class="ziti3">0～999之间的一个可选整数，将用做该date的新毫秒值（本地时间）。在ECMAScript标准化之前，不支持这个参数。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整过后的日期的毫秒表现值。在ECMAScript标准化之前，这个参数什么也不返回。</p>
+
+  <h3 class="p1" id="heading_id_63">Date.setTime()</h3>
+
+  <p class="ziti3">使用毫秒值设置一个时间</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setTime(milliseconds)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">milliseconds</p>
+
+  <p class="ziti3">需要的日期及时间与1970-01-01午夜（GMT）之间的毫秒数。这种类型的毫秒值也可以传入Date()构造函数，还可以通过调用Date.UTC()和Date.parse()方法获得。将日期转换为这种毫秒格式后，它将与时区无关。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">milliseconds参数。在ECMAScript标准化之前，这个方法什么也不返回。</p>
+
+  <h3 class="p1" id="heading_id_64">Date.setUTCDate()</h3>
+
+  <p class="ziti3">设置一个Date的对应月中的日期值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setUTCDate(day_of_month)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">day_of_month</p>
+
+  <p class="ziti3">将用做date的对应月中的日期值，以全球时间表示。这个参数应该是1～31之间的一个整数。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的内部毫秒表示形式。</p>
+
+  <h3 class="p1" id="heading_id_65">Date.setUTCFullYear()</h3>
+
+  <p class="ziti3">设置一个Date的年份、月份以及日期值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setUTCFullYear(year)</p>
+
+  <p class="ziti3">date.setSeconds(seconds,millis)</p>
+
+  <p class="ziti3">date.setUTCFullYear(year,month,day)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">year</p>
+
+  <p class="ziti3">将用做dat e的以全球时间表示的年份值。这个参数应该是一个包含世纪的整数，如1999，不能是缩写，如99。</p>
+
+  <p class="ziti3">month</p>
+
+  <p class="ziti3">0～11之间的一个可选整数，将用做date的月份值（全球时间）。注意月份是以0开始的数字，而月份中的日期则以1开始。</p>
+
+  <p class="ziti3">day</p>
+
+  <p class="ziti3">1～31之间的一个可选整数，将用做date的对应月中的新日期值（全球时间）。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的时间的毫秒表示形式。</p>
+
+  <h3 class="p1" id="heading_id_66">Date.setUTCHours()</h3>
+
+  <p class="ziti3">设置一个Date的小时、分钟、秒钟以及毫秒值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setUTCHours(hours)</p>
+
+  <p class="ziti3">date.setUTCHours(hours,minutes)</p>
+
+  <p class="ziti3">date.setUTCHours(hours,minutes,seconds)</p>
+
+  <p class="ziti3">date.setUTCHours(hours,minutes,seconds,millis)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">hours</p>
+
+  <p class="ziti3">将用做date的以全球时间表示的小时值。这个参数应该为0（午夜）～23（晚上11点）之间的一个整数。</p>
+
+  <p class="ziti3">minutes</p>
+
+  <p class="ziti3">0～59之间的一个可选整数，将用做date的新分钟值（全球时间）。</p>
+
+  <p class="ziti3">seconds</p>
+
+  <p class="ziti3">0～59之间的一个可选整数，将用做date的新秒钟值（全球时间）。</p>
+
+  <p class="ziti3">millis</p>
+
+  <p class="ziti3">0～999之间的一个可选整数，将用做date的新毫秒值（全球时间）。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的毫秒表示形式。</p>
+
+  <h3 class="p1" id="heading_id_67">Date.setUTCMilliseconds()</h3>
+
+  <p class="ziti3">设置一个Date的毫秒值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setUTCMilliseconds(millis)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">millis</p>
+
+  <p class="ziti3">将用做date的以全球时间表示的毫秒值。这个参数应该为0～999之间的一个整数。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的毫秒表示形式。</p>
+
+  <h3 class="p1" id="heading_id_68">Date.setUTCMinutes()</h3>
+
+  <p class="ziti3">设置一个Date的分钟、秒钟以及毫秒值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setUTCMinutes(minutes)</p>
+
+  <p class="ziti3">date.setUTCMinutes(minutes,seconds)</p>
+
+  <p class="ziti3">date.setUTCMinutes(minutes,seconds,millis)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">minutes</p>
+
+  <p class="ziti3">将用做date的以全球时间表示的分钟值。这个参数应该为0～59之间的一个整数。</p>
+
+  <p class="ziti3">seconds</p>
+
+  <p class="ziti3">0～59之间的一个可选整数，将用做date的秒钟值（全球时间）。</p>
+
+  <p class="ziti3">millis</p>
+
+  <p class="ziti3">0～999之间的一个可选整数，将用做date的毫秒值（全球时间）。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的毫秒表示形式。</p>
+
+  <h3 class="p1" id="heading_id_69">Date.setUTCMonth()</h3>
+
+  <p class="ziti3">设置一个Date的月份值及日期值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setUTCMonth(month)</p>
+
+  <p class="ziti3">date.setUTCMonth(month,day)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">month</p>
+
+  <p class="ziti3">将用做date的以全球时间表示的月份值。这个参数应该是0（1月）～11（12月）之间的一个整数。注意月份值是从0开始的数字，一个月中的日期值则是从1开始。</p>
+
+  <p class="ziti3">day</p>
+
+  <p class="ziti3">1～31之间的一个可选整数，将用做date的对应月中的日期值（全球时间）。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的毫秒表示形式。</p>
+
+  <h3 class="p1" id="heading_id_70">Date.setUTCSeconds()</h3>
+
+  <p class="ziti3">设置一个Date的秒钟及毫秒值（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setUTCSeconds(seconds)</p>
+
+  <p class="ziti3">date.setUTCSeconds(seconds,millis)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">seconds</p>
+
+  <p class="ziti3">将用做date的以全球时间表示的秒钟值。这个参数应该为0～59之间的一个整数。</p>
+
+  <p class="ziti3">millis</p>
+
+  <p class="ziti3">0～999之间的一个可选整数，将用做date的毫秒值（全球时间）。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的毫秒表示形式。</p>
+
+  <h3 class="p1" id="heading_id_71">Date.setYear()</h3>
+
+  <p class="ziti3">设置一个Date的年份值</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.setYear(year)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">year</p>
+
+  <p class="ziti3">一个将用做该Date对象date的年份值（全球时间）的整数。如果这个值在0～99之间，它将会加上1900，以便把它当做1900～1999之间的年份处理。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调整后的日期的毫秒表示形式。在ECMAScript标准化之前，这个方法什么也不返回。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">setYear()设置给定Date对象的年份值，其中1900～1999之间的年份的行为有些特别。</p>
+
+  <p class="ziti3">根据ECMAScript第3版，JavaScript实现中已不再对这个函数做要求，建议使用setFullYear()来代替它。</p>
+
+  <h3 class="p1" id="heading_id_72">Date.toDateString()</h3>
+
+  <p class="ziti3">以字符串的形式返回一个Date的日期部分</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.toDateString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">某个date的日期部分的一个与具体实现相关的、人类可读的字符串表示形式。以本地时区表示。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.toString()</p>
+
+  <p class="ziti3">Date.toTimeString()</p>
+
+  <h3 class="p1" id="heading_id_73">Date.toGMTString()</h3>
+
+  <p class="ziti3">已弃用</p>
+
+  <p class="ziti3">将一个Date转换为全球时间表示的一个字符串</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.toGMTString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">由Date对象date定义的日期及时间的一个字符串表示形式。在转换为字符串之前，日期将先从本地时区转换为GMT时区。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">toGMTString()已弃用，建议使用功能相同的Date.toUTCString()。</p>
+
+  <p class="ziti3">根据ECMAScript第3版，JavaScript的具体实现已不要对这个方法做要求，建议使用toUTCString()来代替。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.toUTCString()</p>
+
+  <h3 class="p1" id="heading_id_74">Date.toISOString()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">将一个Date转换为ISO-8601格式的字符串</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.toISOString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">date的一个字符串表示形式，以ISO-8601标准以及时区为"Z"的UTC时间表示形式，包含日期和时间的完整精度。返回的字符串格式形如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">yyyy-mm-ddThh:mm:ss.sssZ</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.parse()、Date.toString()</p>
+
+  <h3 class="p1" id="heading_id_75">Date.toJSON</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">JSON序列化一个Date对象</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.toJSON(key)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">key</p>
+
+  <p class="ziti3">JSON.stringify()会传递这个参数，但是toJSON方法会忽略它。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">date的一个字符串表示形式，值为调用它的toISOString()方法的结果。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">JSON.stringify()使用该方法将一个Date对象转换为一个字符串。它不是一个通用的方法。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.toISOString()、JSON.stringify()</p>
+
+  <h3 class="p1" id="heading_id_76">Date.toLocaleDateString()</h3>
+
+  <p class="ziti3">以本地格式的字符串形式返回一个Date的日期部分</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.toLocaleDateString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">date的日期部分的一个与具体实现相关的、人类可读的字符串表示形式，使用本地时区以及本地习惯格式。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.toDateString()、Date.toLocaleString()、Date.toLocaleTimeString()、Date.toString()、Date.toTimeString()</p>
+
+  <h3 class="p1" id="heading_id_77">Date.toLocaleString()</h3>
+
+  <p class="ziti3">将一个Date转换为一个本地格式的字符串</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.toLocaleString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">由date指定的日期与时间的一个字符串表示形式。日期与时间使用本地时区以及本地的习惯表示。</p>
+
+  <p class="ziti3">用法</p>
+
+  <p class="ziti3">toLocaleString()使用本地时区，将一个日期转换为一个字符串。这个方法也使用本地习惯来格式化日期及时间，所以在不同的国家或平台上，格式可能会不一样。toLocaleString()一般返回的是用户首选的日期及时间格式。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.toISOString()、Date.toLocaleDateString()、Date.toLocaleTimeString()、Date.toString()、Date.toUTCString()</p>
+
+  <h3 class="p1" id="heading_id_78">Date.toLocaleTimeString()</h3>
+
+  <p class="ziti3">返回使用本地格式表示的Date的时间部分</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.toLocaleTimeString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">一个与实现相关的、人类可读的表示date的时间部分的字符串，使用本地时区以及本地习惯格式。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.toDateString()、Date.toLocaleDateString()、Date.toLocaleString()、Date.toString()、Date.toTimeString()</p>
+
+  <h3 class="p1" id="heading_id_79">Date.toString()</h3>
+
+  <p class="ziti3">将一个Date转换为一个字符串</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.toString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">date的一个人类可读的字符串表示形式，使用本地时区。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">toString()返回date的一个人类可读的、与实现相关的字符串表示形式。和toUTCString()不同，toString()使用本地时区。与toLocaleString()不同，toString()可能不使用本地特定的格式来表示日期及时间。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.parse()</p>
+
+  <p class="ziti3">Date.toDateString()</p>
+
+  <p class="ziti3">Date.toISOString()</p>
+
+  <p class="ziti3">Date.toLocaleString()</p>
+
+  <p class="ziti3">Date.toTimeString()</p>
+
+  <p class="ziti3">Date.toUTCString()</p>
+
+  <h3 class="p1" id="heading_id_80">Date.toTimeString()</h3>
+
+  <p class="ziti3">以字符串形式返回一个Date的时间部分</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.toTimeString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">一个与实现相关的、人类可读的表示date的时间部分的字符串，使用本地时区表示。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.toString()、Date.toDateString()、Date.toLocaleTimeString()</p>
+
+  <h3 class="p1" id="heading_id_81">Date.toUTCString()</h3>
+
+  <p class="ziti3">将一个Date转换为字符串（全球时间）</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.toUTCString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">date的一个人类可读的以全球时间表示的字符串。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">toUTCString()返回date的以全球时间表示的与实现相关的字符串。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date.toISOString()、Date.toLocaleString()、Date.toString()</p>
+
+  <h3 class="p1" id="heading_id_82">Date.UTC()</h3>
+
+  <p class="ziti3">将一个Date说明转为毫秒形式</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">Date.UTC(year,month,day,hours,minutes,seconds,ms)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">year</p>
+
+  <p class="ziti3">以4位数格式表示的年份。如果这个参数在0～99之间（包括0和99），则它将加上1900，当做1900～1999之间的年份处理。</p>
+
+  <p class="ziti3">month</p>
+
+  <p class="ziti3">月份，指定为0（1月）～11（12月）之间的一个整数。</p>
+
+  <p class="ziti3">day</p>
+
+  <p class="ziti3">对应月中的日期值，指定为1～31之间的一个整数。注意这个参数的最小值为1，而其他参数的最小值是0。这个参数是可选的。</p>
+
+  <p class="ziti3">hours</p>
+
+  <p class="ziti3">小时，指定为0（午夜）～23（晚上11点）之间的一个整数。这个参数是可选的。</p>
+
+  <p class="ziti3">minutes</p>
+
+  <p class="ziti3">小时中的分钟值，指定为0～59之间的一个整数。这个参数是可选的。</p>
+
+  <p class="ziti3">seconds</p>
+
+  <p class="ziti3">分钟中的秒钟值，指定为0～59之间的一个整数。这个参数是可选的。</p>
+
+  <p class="ziti3">ms</p>
+
+  <p class="ziti3">毫秒值，指定为0～999之间的一个整数。这个参数是可选的，在ECMAScript标准化之前，这个参数会被忽略。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">指定的全球时间的毫秒表示形式。也就是说，这个方法返回1970-01-01午夜（GMT）与指定时间的毫秒数。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Date.UTC()是一个静态方法；须通过Date()构造函数调用它，而不是通过具体的Date对象调用。</p>
+
+  <p class="ziti3">Date.UTC()的参数指定一个日期及时间，将当做UTC解析；使用GMT时区。指定的UTC时间将转换为毫秒格式，可用于Date()构造函数方法和Date.setTime()方法。</p>
+
+  <p class="ziti3">Date()构造函数方法和Date.UTC()所能接受的日期及时间参数完全相同。不同之处在于，Date()构造函数使用本地时间，而Date.UTC()使用全球时间（GMT）。可以使用类似下面的代码使用UTC定义来创建一个Date对象：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">d=new Date(Date.UTC(1996,4,8,16,30));</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Date、Date.parse()、Date.setTime()</p>
+
+  <h3 class="p1" id="heading_id_83">Date.valueOf()</h3>
+
+  <p class="ziti3">将一个Date转为毫秒表示形式</p>
+
+  <p class="ziti3">重写Object.valueOf()</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">date.valueOf()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">date的毫秒表示形式。返回值与Date.getTime()的返回值相同。</p>
+
+  <h3 class="p1" id="heading_id_84">decodeURI()</h3>
+
+  <p class="ziti3">解码一个URI中的字符</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">decodeURI(uri)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">uri</p>
+
+  <p class="ziti3">一个包含已编码的URI或其他待解码的文本的字符串。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">uri的一个副本，其中所有十六进制转义序列都已替换为它们代表的字符。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">URIError</p>
+
+  <p class="ziti3">表示uri中的一个或多个转义序列格式有误，不能正确解码。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">decodeURI()是一个全局函数，返回它的uri参数的一份解码后的副本。它是encodeURI()的逆操作，更多细节可参阅该函数的参考页面。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">decodeURIComponent()、encodeURI()、encodeURIComponent()、escape()、unescape()</p>
+
+  <h3 class="p1" id="heading_id_85">decodeURIComponent()</h3>
+
+  <p class="ziti3">解码一个URI组件中的字符</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">decodeURI(s)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">s</p>
+
+  <p class="ziti3">一个包含已编码的URI组件或其他待解码的文本的字符串。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">s的一个副本，其中所有的十六进制转义序列都已替换为它们所代表的字符。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">URIError</p>
+
+  <p class="ziti3">表示s中的一个或多个转义序列格式有误，不能正确地解码。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">decodeURIComponent()是一个全局函数，返回它的参数的一个已解码的副本。它是encodeURIComponent()的逆操作，更多细节可参阅该函数的参考页面。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">decodeURI()、encodeURI()、encodeURIComponent()、escape()、unescape()</p>
+
+  <h3 class="p1" id="heading_id_86">encodeURI()</h3>
+
+  <p class="ziti3">转义一个URI中的字符</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">encodeURI(uri)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">uri</p>
+
+  <p class="ziti3">一个包含URI或其他待编码的文本的字符串。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">uri的一个副本，其中某些字符已被替换为十六进制转义序列。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">URIError</p>
+
+  <p class="ziti3">表示uri包含非法的Unicode代理项对，不能编码。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">encodeURI()是一个全局函数，返回它的uri参数的一个编码后的副本。ASCII字母和数字以及下面的ASCII标点字符将不会编码：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">-_.!～*'()</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">由于encodeURI()的意图是编码完整的URI，因此下面这些在URI中有特殊含义的ASCII标点字符也不会被转义：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">;/?:@＆=+$,#</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">uri中的其他字符将被转换为对应的UTF-8编码，并将结果的一、二或三个字节编码为一个%xx格式的十六进制转义序列。在这种编码机制中，ASCII字符将被替换为一个单独的%xx转义序列，编码在\u0080～\u07ff之间的字符将被替换为两个转义序列，其他所有的十六位的Unicode字符则将被替换为三个转义序列。</p>
+
+  <p class="ziti3">使用这个方法来编码URI时，必须确保该URI的组件（如查询字符串）都不包含如“?”和“#”等的URI分隔字符。如果这些组件必须包含这类字符，则应该使用encodeURIComponent()来对每个组件进行单独编码。</p>
+
+  <p class="ziti3">decodeURI()是这个方法的逆方法。在ECMAScript第3版之前，可以使用escape()和unescape()方法（现在这两个方法已弃用）来执行类似的编码和解码。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//返回http://www.isp.com/app.cgi?arg1=1＆arg2=hello%20world</p>
+
+  <p class="ziti5">encodeURI("http://www.isp.com/app.cgi?arg1=1＆arg2=hello world");</p>
+
+  <p class="ziti5">encodeURI("\u00a9");//版权字符将编码为%C2%A9</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">decodeURI()、decodeURIComponent()、encodeURIComponent()、escape()、unescape()</p>
+
+  <h3 class="p1" id="heading_id_87">encodeURIComponent()</h3>
+
+  <p class="ziti3">转义URI组件中的字符</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">encodeURIComponent(s)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">s</p>
+
+  <p class="ziti3">一个包含URI一部分或其他待编码文本的字符串。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">s的一个副本，某些字符已替换为十六进制转义序列。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">URIError</p>
+
+  <p class="ziti3">表示s包含非法的Unicode代理项对，不能编码。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">encodeURIComponent()是一个全局函数，返回它的参数s的一个编码后的副本。ASCII字母和数字以及下面这些ASCII标点字符将不会编码：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">-_.!～*'()</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">所有其他字符，包括如“/”、“:”以及“#”等用于分隔URI的多个组件的标点字符，都将被替换为一个或多个十六进制的转义序列。关于编码机制的描述可参阅encodeURI()。</p>
+
+  <p class="ziti3">注意encodeURIComponent()和encodeURI()之间的差别：encodeURIComponent()假设它的参数是URI的一部分（如协议、主机名、路径或查询字符串）。因此，它将那些用于分隔URI不同部分的标点字符也转义了。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">encodeURIComponent("hello world?");//返回hello%20world%3F</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">decodeURI()、decodeURIComponent()、encodeURI()、escape()、unescape()</p>
+
+  <h3 class="p1" id="heading_id_88">Error</h3>
+
+  <p class="ziti3">一个一般性的异常</p>
+
+  <p class="ziti3">对象→错误</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">new Error()</p>
+
+  <p class="ziti3">new Error(message)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">message</p>
+
+  <p class="ziti3">一条可选的错误消息，用于提供关于该异常的细节。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">一个新构建的Error对象。如果指定message参数，则该Error对象将把它用做它的message属性的值；其他情况下，它将使用一个预定义的默认字符串作为该属性的值。当不使用new操作符，直接将Error()构造函数像一个函数一样调用时，它的行为和带new操作符调用时一样。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">message</p>
+
+  <p class="ziti3">提供关于该异常的细节的一条错误消息。这个属性的值为传给构造函数的字符串或一个预定义的默认字符串。</p>
+
+  <p class="ziti3">name</p>
+
+  <p class="ziti3">一个指定该异常的类型的字符串。对Error类和它所有的子类而言，这个属性指定了用于创建该实例的构造函数的名字。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">toString()</p>
+
+  <p class="ziti3">返回一个表示该Error对象的预定义字符串。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Error类的实例表示的错误或异常通常与throw和try/catch语句一起使用。name属性指明该异常的类型，message属性则提供了关于该异常的人类可读的细节。</p>
+
+  <p class="ziti3">JavaScript解释器永远不会直接抛出Error对象，它只会抛出Error的某个子类的实例，如SyntaxError或RangeError。在自己的代码中，抛出Error对象来发出异常信号可能更方便，或者可以简单地使用一个原始字符串或数值来抛出一条错误消息或一个错误代码。</p>
+
+  <p class="ziti3">注意，虽然ECMAScript标准为Error类定义一个toString()方法（并且Error的所有子类都继承了这个方法），但它并不要求这个toString()方法返回的字符串包含message属性的内容。因此，不要期望toString()方法会将一个Error对象转换为一个有意义的、人类可读的字符串。向用户显示错误消息时，应该显式地使用该Error对象的name及message属性。</p>
+
+  <p class="ziti3">示例</p>
+
+  <p class="ziti3">可以像下面这样发出异常信号：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">function factorial(x){</p>
+
+  <p class="ziti5">if(x＜0)throw new Error("factorial:x must be＞=0");</p>
+
+  <p class="ziti5">if(x＜=1)return 1;else return x*factorial(x-1);</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">如果捕获一个异常，则可以使用类似下面的代码向用户显示（这儿使用客户端的Window.alert()方法）：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">try{＆*(＆/*这儿将抛出一个异常*/}</p>
+
+  <p class="ziti5">catch(e){</p>
+
+  <p class="ziti5">if(e instanceof Error){//它是Error或其子类的实例吗？</p>
+
+  <p class="ziti5">alert(e.name+":"+e.message);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">EvalError、RangeError、ReferenceError、SyntaxError、TypeError、URIError</p>
+
+  <h3 class="p1" id="heading_id_89">Error.message</h3>
+
+  <p class="ziti3">人类可读的错误消息</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">error.message</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Error对象（或Error的任何子类的实例）的message属性用于包含一个人类可读的字符串，提供了关于发生的错误或异常的细节。如果向Error()构造函数传入message参数，则该参数将会是这个message属性的值。如果没有传入message参数，则Error对象的这个属性将继承预定义的默认值（可能是空字符串）。</p>
+
+  <h3 class="p1" id="heading_id_90">Error.name</h3>
+
+  <p class="ziti3">错误的类型</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">error.name</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Error对象（或Error的任何子类的实例）的name属性定义发生的错误或异常的类型。所有Error对象都从它们的构造函数继承这个属性。这个属性的值和它们的构造函数的名字相同。也就是说，SyntaxError对象的name属性为"SyntaxError"，EvalError对象的name属性为"EvalError"。</p>
+
+  <h3 class="p1" id="heading_id_91">Error.toString()</h3>
+
+  <p class="ziti3">将一个Error对象转为字符串</p>
+
+  <p class="ziti3">重写Object.toString()</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">error.toString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">一个根据实现预定义的字符串。除了它应该是一个字符串外，ECMAScript标准化没有指定这个方法的返回值的任何信息。值得注意的是，返回的字符串并不要求包含错误名或错误消息。</p>
+
+  <h3 class="p1" id="heading_id_92">escape()</h3>
+
+  <p class="ziti3">已弃用</p>
+
+  <p class="ziti3">编码一个字符串</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">escape(s)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">s</p>
+
+  <p class="ziti3">待“转义”或编码的字符串。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">s的一个编码后的副本，其中某些字符已替换为十六进制转义序列。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">escape()是一个全局函数。它返回一个包含s的一个已编码版本的新字符串。字符串s本身并未修改。</p>
+
+  <p class="ziti3">在escape()返回的字符串中，s中非ASCII字母、数字以及标点字符@、*、_、+、-、.和/的所有字符都已替换为%xx或%u xxxx（其中x为一个十六进制数字）格式的转义序列。\u0000～\u00ff的Unicode字符替换为%xx转义序列，其他Unicode字符则将替换为%u xxxx序列。</p>
+
+  <p class="ziti3">可使用unescape()函数来解码由escape()编码的字符串。</p>
+
+  <p class="ziti3">虽然escape()函数在第1版ECMAScript中成为标准，但在第3版ECMAScript中弃用并移除它。ECMAScript的各种实现大多还支持这个方法，但这并不是必需的。建议使用encodeURI()和encodeURIComponent()来代替escape()。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">escape("Hello World!");//返回"Hello%20World%21"</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">encodeURI()、encodeURIComponent()</p>
+
+  <h3 class="p1" id="heading_id_93">eval()</h3>
+
+  <p class="ziti3">执行一段字符串中的JavaScript代码</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">eval(code)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">code</p>
+
+  <p class="ziti3">包含待求值的JavaScript表达式或待执行的JavaScript语句的字符串。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">求值后的代码的值，如果存在对应的值的话。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">如果code不是合法的JavaScript代码，则eval()将抛出一个SyntaxError。如果在对code求值的过程中发生了错误，则eval()将传播这个错误。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">eval()是一个用于执行一段JavaScript代码字符串的全局方法。如果code包含一个表达式，则eval()将对该表达式求值并返回这个值。（一些表达式（如看起来像语句的对象和函数直接量）在传入eval()时必须包含在圆括号中以消除多义性。）如果code包含一条或多条JavaScript语句，则eval()将执行这些语句，并由最后一个语句返回对应值。如果code不返回任何值，则eval()将返回undefined。最后，如果code抛出异常，则eval()将把这个异常传递给调用函数。</p>
+
+  <p class="ziti3">在ECMAScript 3和ECMAScript 5中，eval()的行为不同，甚至在ECMAScript 5中，在严格和非严格模式下它的行为也不相同，为了解释这些差异，需要一个小的额外话题。如果一门编程语言将eval()定义为一个操作符而不是一个函数，那么实现高效的解释器会容易很多。JavaScript的eval()是一个函数，出于效率的考虑，它在直接、类似操作符一样调用和非直接调用eval()之间做了区分。直接调用是指直接使用标识符eval()，如果去掉圆括号，看起来eval()就像一个操作符。其他形式的eval()的调用都是非直接调用。如果将eval()函数赋值给一个名字不同的变量，并通过该变量调用它，这也是一种非直接调用。类似地，如果将eval()作为全局对象的一个方法来调用，它也是一种非直接调用。</p>
+
+  <p class="ziti3">根据直接和非直接调用的差别，可以将eval()的行为归纳如下：</p>
+
+  <p class="ziti3">直接调用，ES3及ES5非严格模式</p>
+
+  <p class="ziti3">eval()在当前词法作用域内对code求值。如果code包含变量或函数声明，则将在本地作用域中定义它们。这是eval()的普通用例。</p>
+
+  <p class="ziti3">非直接调用，ES3</p>
+
+  <p class="ziti3">ECMAScript 3标准化允许解释器对任何eval()的非直接调用抛出一个EvalError。ES3的实现实际上一般没有这么做，但应该避免非直接调用。</p>
+
+  <p class="ziti3">非直接调用，ES5</p>
+
+  <p class="ziti3">ECMAScript 5中，对eval()的非直接调用不再抛出EvalError，但code必须在全局作用域中求值，当前词法作用域内的任何本地变量都将忽略。在ES5中，可以这样赋值："var geval=eval;"，然后使用geval()来在全局作用域中对code求值。</p>
+
+  <p class="ziti3">直接或非直接调用，严格模式</p>
+
+  <p class="ziti3">在严格模式中，c ode中定义的变量和函数将在一个私有作用域中定义，这个私有作用域仅在调用该eval()期间有效。这意味着，在严格模式下直接调用eval()将不能改变词法作用域，在严格模式下的非直接调用不能更改全局作用域。当对eval()的调用在严格模式下，或者如果code以"use strict"指令开始时，这些规则将生效。</p>
+
+  <p class="ziti3">在JavaScript这门语言中eval()提供了非常强大的功能，但实际项目中它使用的不多。常用的场景包括编写作为递归的JavaScript解释器的程序，以及编写动态生成并判断JavaScript代码的程序。</p>
+
+  <p class="ziti3">对于大多数期望参数传入字符串参数的函数来讲，在执行真正的逻辑时，不管传入的参数是什么类型都会首先转换为字符串。eval()则不会这样，如果传入的参数不是字符串原始值，它会直接返回这个值。因此，当传入一个字符串对象给eval()时就需要非常小心了，这时应当传入一个字符串原始值才对。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">eval("1+2");//返回3</p>
+
+  <p class="ziti5">//这段代码使用客户端JavaScript方法来提示用户输入一个表达式，</p>
+
+  <p class="ziti5">//然后向用户显示它的求值结果</p>
+
+  <p class="ziti5">//更多细节可参阅客户端方法Window.alert()和Window.prompt()</p>
+
+  <p class="ziti5">try{</p>
+
+  <p class="ziti5">alert("结果："+eval(prompt("请输入一个表达式：","")));</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">catch(exception){</p>
+
+  <p class="ziti5">alert(exception);</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_94">EvalError</h3>
+
+  <p class="ziti3">当eval()使用错误时抛出</p>
+
+  <p class="ziti3">对象→错误→EvalError</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">new EvalError()</p>
+
+  <p class="ziti3">new EvalError(message)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">message</p>
+
+  <p class="ziti3">一条可选的错误消息，提供了关于该异常的细节。如果指定，这个参数将用做这个EvalError对象的message属性的值。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">一个新构造的EvalError对象。如果指定message参数，则Error对象将把它用做其message属性的值，在其他情况下，它将使用预定义的默认字符串作为该属性的值。当不带new操作符，像一个函数一样调用EvalError()构造函数时，它的行为和带new操作符调用时一样。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">message</p>
+
+  <p class="ziti3">一条提供该异常的细节的错误消息。这个属性的值为传入构造函数的字符串或者自定义实现的默认字符串。更多细节可参阅Error.message。</p>
+
+  <p class="ziti3">name</p>
+
+  <p class="ziti3">一个指定该异常类型的字符串。所有EvalError对象的这个属性都继承自值"EvalError"。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">当全局函数eval()以任意其他名字调用时，可能会抛出EvalError类的一个实例。关于如何调用这个函数的限制，可参阅eval()。关于异常的抛出和捕获的细节，可参阅Error。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Error、Error.message、Error.name</p>
+
+  <h3 class="p1" id="heading_id_95">Function</h3>
+
+  <p class="ziti3">JavaScript函数</p>
+
+  <p class="ziti3">对象→函数</p>
+
+  <p class="ziti3">概要</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">function functionname(argument_name_list)//函数定义语句</p>
+
+  <p class="ziti5">{</p>
+
+  <p class="ziti5">body</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">function(argument_name_list){body}//匿名函数直接量</p>
+
+  <p class="ziti5">functionname(argument_value_list)//函数调用</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new Function(argument_names...,body)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">argument_names...</p>
+
+  <p class="ziti3">任意多个字符串参数，每个字符串命名要创建的Function对象的一个或多个参数。</p>
+
+  <p class="ziti3">body</p>
+
+  <p class="ziti3">指定函数体的字符串。它可以含有任意多条JavaScript语句，这些语句之间用分号隔开，并且可以引用任意参数名，这些参数名由前面提到的传给构造函数的参数指定。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">新创建的Function对象。调用该函数会执行由body指定的JavaScript代码。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">SyntaxError</p>
+
+  <p class="ziti3">表示在body参数或某个argument_names参数中存在JavaScript语法错误。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">arguments[]</p>
+
+  <p class="ziti3">传递给函数的参数数组。不推荐使用。</p>
+
+  <p class="ziti3">caller</p>
+
+  <p class="ziti3">调用该函数的Function对象的引用。如果是全局调用，则该属性为null。不推荐使用。</p>
+
+  <p class="ziti3">length</p>
+
+  <p class="ziti3">声明函数时指定的形参个数。</p>
+
+  <p class="ziti3">prototype</p>
+
+  <p class="ziti3">一个给构造函数用的对象。用构造函数创建的所有对象会共享prototype对象定义的属性和方法。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">apply()</p>
+
+  <p class="ziti3">将函数作为指定对象的方法来调用。传递给它的是指定的参数数组。</p>
+
+  <p class="ziti3">bind()</p>
+
+  <p class="ziti3">返回一个新函数。通过可选的指定参数，作为指定对象的方法调用该方法。</p>
+
+  <p class="ziti3">call()</p>
+
+  <p class="ziti3">将函数作为指定对象的方法来调用。传递给它的是指定的参数。</p>
+
+  <p class="ziti3">toString()</p>
+
+  <p class="ziti3">返回函数的字符串表示。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">函数是JavaScript的一种基本数据类型。第8章解释了如何定义和使用函数。第9章介绍了方法、构造函数以及函数的prototype属性等相关主题。要了解详细情况，请阅读这两章。注意，虽然可以使用这里介绍的Function()构造函数来创建函数对象，但这样做效率不高。在大部分情况下，推荐使用函数定义语句或函数直接量来定义函数。</p>
+
+  <p class="ziti3">在JavaScript 1.1及后续版本中，函数体会自动定义一个局部变量arguments，指代Arguments对象。该对象是一个值数组，元素是传递给函数的参数值。不要将这一属性与上面介绍的弃用的arguments[]属性相混淆。详见Arguments的参考页。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Arguments、第8章、第9章</p>
+
+  <h3 class="p1" id="heading_id_96">Function.apply()</h3>
+
+  <p class="ziti3">将函数作为一个对象的方法调用</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">function.apply(thisobj,args)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">thisobj</p>
+
+  <p class="ziti3">调用function的对象。在函数体中，thisobj是关键字this的值。如果这个参数为null，则使用全局对象。</p>
+
+  <p class="ziti3">args</p>
+
+  <p class="ziti3">一个值数组。它的元素是传递给function的参数值。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调用函数function的返回值。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">TypeError</p>
+
+  <p class="ziti3">如果调用该函数的对象不是函数，或者参数args不是数组和Arguments对象，则抛出该异常。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">apply()将指定的函数function作为对象thisobj的方法来调用，并传入在args数组中包含的参数。它返回的是调用function的返回值。在函数体内，关键字this指代thisobj对象。args参数必须是数组或Arguments对象。如果想单独指定传递给函数的参数，而不是通过数组元素来指定参数，可以使用Function.call()方法。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//将默认的Object.toString()应用在一个对象上，</p>
+
+  <p class="ziti5">//以便覆盖该对象上的toString()方法。注意没传参数</p>
+
+  <p class="ziti5">Object.prototype.toString.apply(o);//用apply()调用Math.max()方法来查找数组中的最大元素</p>
+
+  <p class="ziti5">//注意在这种情况下，第一个参数无所谓</p>
+
+  <p class="ziti5">var data=[1,2,3,4,5,6,7,8];</p>
+
+  <p class="ziti5">Max.max.apply(null,data);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Function.call()</p>
+
+  <h3 class="p1" id="heading_id_97">Function.arguments[]</h3>
+
+  <p class="ziti3">已弃用</p>
+
+  <p class="ziti3">传递给函数的参数</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">function.arguments[i]</p>
+
+  <p class="ziti3">function.arguments.length</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Function对象的arguments属性是一个参数数组，它的元素是传递给函数的参数。它只在函数执行时才定义。arugments.length表示数组中的元素个数。</p>
+
+  <p class="ziti3">不推荐使用该属性，赞成使用Arguments对象。在新的JavaScript代码中，永远不要使用它。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Arguments</p>
+
+  <h3 class="p1" id="heading_id_98">Function.bind()</h3>
+
+  <p class="ziti3">ECMAScript 5</p>
+
+  <p class="ziti3">返回一个作为方法调用的函数</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">function.bind(o)</p>
+
+  <p class="ziti3">function.bind(o,args...)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">o</p>
+
+  <p class="ziti3">要绑定到函数上的对象。</p>
+
+  <p class="ziti3">args...</p>
+
+  <p class="ziti3">要绑定到函数上的零个或多个参数值。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">一个新函数。该函数会当做o的方法来调用，并向它传入args参数。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">bind()方法返回一个新函数，该函数会当做对象o的方法来调用。传递给该函数的参数由两部分组成，一部分是传递给bind()的args数组指定的参数，剩下的是传给这个新函数的所有值。</p>
+
+  <p class="ziti3">示例</p>
+
+  <p class="ziti3">假设f是一个函数，我们像下面这样调用bind()方法：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var g=f.bind(o,1,2);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">这样，g就一个新函数了。调用g(3)等价于：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">f.call(o,1,2,3);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Function.apply()、Function.call()、8.7.4节</p>
+
+  <h3 class="p1" id="heading_id_99">Function.call()</h3>
+
+  <p class="ziti3">将函数作为对象的方法调用</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">function.call(thisobj,args...)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">thisobj</p>
+
+  <p class="ziti3">调用function的对象。在函数体中，thisobj是关键字this的值。如果这个参数为null，则使用全局对象。</p>
+
+  <p class="ziti3">args...</p>
+
+  <p class="ziti3">任意多个参数，它们会作为参数传递给function。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">调用函数function的返回值。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">TypeError</p>
+
+  <p class="ziti3">如果调用该函数的对象不是函数，则抛出该异常。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">call()将指定的函数function作为对象thisobj的方法来调用，并传入参数列表中thisobj之后的参数。返回的是调用function的返回值。在函数体内，关键字this指代thisobj对象，如果thisobj为null，则使用全局对象。</p>
+
+  <p class="ziti3">如果想用数组来指定传递给函数的参数，请使用Function.apply()方法。</p>
+
+  <p class="ziti3">示例</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//将默认的Object.toString()应用在一个对象上</p>
+
+  <p class="ziti5">//以便覆盖该对象上的toString()方法。注意没传参数</p>
+
+  <p class="ziti5">Object.prototype.toString().call(o);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Function.apply()</p>
+
+  <h3 class="p1" id="heading_id_100">Function.caller()</h3>
+
+  <p class="ziti3">已弃用；在严格模式下未定义</p>
+
+  <p class="ziti3">调用当前函数的函数</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">function.caller</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">在JavaScript的早期版本中，Function对象的caller属性是对调用当前函数的函数的引用。</p>
+
+  <p class="ziti3">如果函数是在JavaScript程序的全局作用域中调用的，则caller的值为null。该属性只能在函数内部使用。（即，只有在执行函数时，才定义caller属性。）</p>
+
+  <p class="ziti3">Function.caller属性不属于ECMAScript标准，在遵守该标准的实现中，该属性不是必需的。不应该再使用它。</p>
+
+  <h3 class="p1" id="heading_id_101">Function.length()</h3>
+
+  <p class="ziti3">声明的参数的个数</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">function.length</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">函数的length属性指定定义函数时所声明的形参的个数。实际调用函数时，传入的参数个数可以比函数的length属性多，也可以比它少。不要将Function对象和Arguments对象的length属性混淆，后者指定的是实际传递给函数的参数个数。示例请阅读Arguments.length参考页。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Arguments.length</p>
+
+  <h3 class="p1" id="heading_id_102">Function.prototype()</h3>
+
+  <p class="ziti3">对象类的原型</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">function.prototype</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">prototype属性会在函数作为构造函数时使用。它指代作为整个对象类的原型对象。用构造函数创建的任何对象都会继承prototype对象引用的对象的所有属性。</p>
+
+  <p class="ziti3">构造函数、prototype属性和JavaScript中的类定义，请阅读第9章中的完整讨论。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">第9章</p>
+
+  <h3 class="p1" id="heading_id_103">Function.toString()</h3>
+
+  <p class="ziti3">将函数转换成字符串</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">function.toString()</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">表示函数的字符串。</p>
+
+  <p class="ziti3">异常</p>
+
+  <p class="ziti3">TypeError</p>
+
+  <p class="ziti3">如果调用该函数的对象不是函数，则抛出该异常。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Function对象的toString()方法能将函数转换为字符串，但其功能与具体实现相关。在大部分实现中，比如Firefox和IE中的实现，该方法返回的字符串是有效的JavaScript代码——包含关键字function、参数列表和函数体的完整代码等。在这些实现中，toString()方法的输出是全局eval()函数的有效输入。然而，该规范并不需要这一行为，因此要避免依赖该方法。</p>
+
+  <h3 class="p1" id="heading_id_104">Global</h3>
+
+  <p class="ziti3">全局对象</p>
+
+  <p class="ziti3">对象→全局</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">this</p>
+
+  <p class="ziti3">全局属性</p>
+
+  <p class="ziti3">全局对象不是一个类，所以下面列举的全局属性在自己名称下有独立的参考页。也就是说，在"undefined"名称下可以找到undefined属性的详细信息，而不是在"Global.undefined"下寻找。注意，所有全局变量也都是全局对象的属性：</p>
+
+  <p class="ziti3">Infinity</p>
+
+  <p class="ziti3">表示正无穷大的数值。</p>
+
+  <p class="ziti3">NaN</p>
+
+  <p class="ziti3">表示不是数值的值。</p>
+
+  <p class="ziti3">undefined</p>
+
+  <p class="ziti3">undefind值。</p>
+
+  <p class="ziti3">全局函数</p>
+
+  <p class="ziti3">全局对象是一个对象，不是类。下面列举的全局函数不是任何对象的方法，它们的参考页出现在各自的函数名下。例如，在"parseInt()"下可以找到parseInt()函数的详细信息，而不是到"Global.parseInt()"下查找：</p>
+
+  <p class="ziti3">decodeURI()</p>
+
+  <p class="ziti3">解码使用encodeURI()转义的字符串。</p>
+
+  <p class="ziti3">decodeURIComponent()</p>
+
+  <p class="ziti3">解码使用encodeURIComponent()转义的字符串。</p>
+
+  <p class="ziti3">encodeURI()</p>
+
+  <p class="ziti3">通过转义特定字符对URI编码。</p>
+
+  <p class="ziti3">encodeURIComponent()</p>
+
+  <p class="ziti3">通过转义特定字符对URI的组成部分编码。</p>
+
+  <p class="ziti3">escape()</p>
+
+  <p class="ziti3">用转义序列替换特定字符来对字符串编码。</p>
+
+  <p class="ziti3">eval()</p>
+
+  <p class="ziti3">执行JavaScript代码字符串，返回结果。</p>
+
+  <p class="ziti3">isFinite()</p>
+
+  <p class="ziti3">判断一个值是否无穷大。</p>
+
+  <p class="ziti3">isNaN()</p>
+
+  <p class="ziti3">判断一个值是否是非数值。</p>
+
+  <p class="ziti3">parseFloat()</p>
+
+  <p class="ziti3">从字符串中解析数值。</p>
+
+  <p class="ziti3">parseInt()</p>
+
+  <p class="ziti3">从字符串中解析整数。</p>
+
+  <p class="ziti3">unescape()</p>
+
+  <p class="ziti3">解码使用escape()编码的字符串。</p>
+
+  <p class="ziti3">全局对象</p>
+
+  <p class="ziti3">除了上面列举的全局属性和全局函数，全局对象还定义一些属性，用来引用JavaScript预定义的所有其他对象。这些属性大部分都是构造函数：</p>
+
+  <p class="ziti3">Array</p>
+
+  <p class="ziti3">Array()构造函数。</p>
+
+  <p class="ziti3">Boolean</p>
+
+  <p class="ziti3">Boolean()构造函数。</p>
+
+  <p class="ziti3">Date</p>
+
+  <p class="ziti3">Date()构造函数。</p>
+
+  <p class="ziti3">Error</p>
+
+  <p class="ziti3">Error()构造函数。</p>
+
+  <p class="ziti3">EvalError</p>
+
+  <p class="ziti3">EvalError()构造函数。</p>
+
+  <p class="ziti3">Function</p>
+
+  <p class="ziti3">Function()构造函数。</p>
+
+  <p class="ziti3">JSON</p>
+
+  <p class="ziti3">引用一个对象，该对象定义了解析和序列化JSON的函数。</p>
+
+  <p class="ziti3">Math</p>
+
+  <p class="ziti3">引用一个对象，该对象定义了数学函数。</p>
+
+  <p class="ziti3">Number</p>
+
+  <p class="ziti3">Number()构造函数。</p>
+
+  <p class="ziti3">Object</p>
+
+  <p class="ziti3">Object()构造函数。</p>
+
+  <p class="ziti3">RangeError</p>
+
+  <p class="ziti3">RangeError()构造函数。</p>
+
+  <p class="ziti3">ReferenceError</p>
+
+  <p class="ziti3">ReferenceError()构造函数。</p>
+
+  <p class="ziti3">RegExp</p>
+
+  <p class="ziti3">RegExp()构造函数。</p>
+
+  <p class="ziti3">String</p>
+
+  <p class="ziti3">String()构造函数。</p>
+
+  <p class="ziti3">SyntaxError</p>
+
+  <p class="ziti3">SyntaxError()构造函数。</p>
+
+  <p class="ziti3">TypeError</p>
+
+  <p class="ziti3">TypeError()构造函数。</p>
+
+  <p class="ziti3">URIError</p>
+
+  <p class="ziti3">URIError()构造函数。</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">全局对象是一个预定义对象，用做JavaScript中全局属性和全局函数的占位符。通过全局对象，可以访问所有其他预定义的对象、函数和属性。全局对象不是任何对象的属性，因此它没有名字（之所以选择Global作为该参考页的标题，只是为了方便组织，并不是说全局对象的名字为Global）。在全局JavaScript代码中，可以用关键字this来引用全局对象。但通常不必用这种方式来引用全局对象，因为全局对象是作用域链的头，这意味着所有不合格的变量和函数名都会作为全局对象的属性来查询。例如，当JavaScript代码引用parseInt()函数时，它引用的就是全局对象的parseInt属性。全局对象是作用域链的头，还意味着在全局JavaScript代码中声明的所有变量都将成为全局对象的属性。</p>
+
+  <p class="ziti3">全局对象只是一个对象，而不是类。不存在Global()构造函数，也就无法实例化一个新的全局对象。</p>
+
+  <p class="ziti3">当JavaScript代码嵌入一个特定环境时，全局对象通用具有与该特定环境相关的额外属性。实际上，ECMAScript标准没有规定全局对象的类型，JavaScript的实现或嵌入环境可以使用任意类型的对象来作为全局对象，只要该对象定义了这里列举的基本属性和方法。</p>
+
+  <p class="ziti3">例如，在客户端JavaScript中，全局对象是Window对象，表示运行JavaScript代码的Web浏览器窗口。</p>
+
+  <p class="ziti3">示例</p>
+
+  <p class="ziti3">在核心JavaScript中，全局对象的预定义属性都是不可枚举的，因此可以用for/in循环来列出所有隐式或显式声明的全局变量，代码如下：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var variables="";</p>
+
+  <p class="ziti5">for(var name in this){</p>
+
+  <p class="ziti5">variables+=name+"\n";</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">第四部分的Window；第3章</p>
+
+  <h3 class="p1" id="heading_id_105">Infinity</h3>
+
+  <p class="ziti3">表示无穷大的数值属性</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">Infinity</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">Infinity是一个全局属性，用来存放表示正无穷大的特殊数值。用for/in循环不可枚举Infinity属性，用delete操作符也无法删除它。注意，Infinity不是常量，它可以设置为任意值，有时你得特别留意这一点。（然而Number.POSITIVE_INFINITY是常量。）</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">isFinite()、NaN、Number.POSITIVE_INFINITY</p>
+
+  <h3 class="p1" id="heading_id_106">isFinite()</h3>
+
+  <p class="ziti3">判断数值是否有限</p>
+
+  <p class="ziti3">概要</p>
+
+  <p class="ziti3">isFinite(n)</p>
+
+  <p class="ziti3">参数</p>
+
+  <p class="ziti3">n</p>
+
+  <p class="ziti3">要检测的数组。</p>
+
+  <p class="ziti3">返回</p>
+
+  <p class="ziti3">如果n是有限数（或者可以转换成有限数），那么返回true。如果n是NaN（非数值）或是正/负无穷大，则返回false。</p>
+
+  <p class="ziti3">参阅</p>
+
+  <p class="ziti3">Infinity、isNaN()、NaN、Number.NaN、Number.NEGTIVE_INFINITY、Number.POSITIVE_INFINITY</p>
+
+  </body></html>

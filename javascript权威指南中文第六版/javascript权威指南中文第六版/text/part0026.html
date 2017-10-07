@@ -1,0 +1,1939 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>第17章　事件处理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="p4" id="heading_id_2">第17章　事件处理</h2>
+
+  <p class="ziti3">客户端JavaScript程序采用了异步事件驱动编程模型（13.3.2节有介绍）。在这种程序设计风格下，当文档、浏览器、元素或与之相关的对象发生某些有趣的事情时，Web浏览器就会产生事件（event）。例如，当Web浏览器加载完文档、用户把鼠标指针移到超链接上或敲击键盘时，Web浏览器都会产生事件。如果JavaScript应用程序关注特定类型的事件，那么它可以注册当这类事件发生时要调用的一个或多个函数。请注意，这种风格并不只应用于Web编程，所有使用图形用户界面的应用程序都采用了它，它们静待某些事情发生（即，它们等待事件发生），然后它们响应。</p>
+
+  <p class="ziti3">请注意，事件本身并不是一个需要定义的技术名词。简而言之，事件就是Web浏览器通知应用程序发生了什么事情。事件不是JavaScript对象，不会出现在程序源代码中。当然，会有一些事件相关的对象出现在源代码中，它们需要技术说明，因此，本章从一些重要的定义开始。</p>
+
+  <p class="ziti3">事件类型（eventtype）是一个用来说明发生什么类型事件的字符串。例如，"mousemove"表示用户移动鼠标，"keydown"表示键盘上某个键被按下，而"load"表示文档（或某个其他资源）从网络上加载完毕。由于事件类型只是一个字符串，因此实际上有时会称之为事件名字（event name），我们用这个名字来标识所谈论的特定类型的事件。现代浏览器支持许多事件类型，17.1节会有一个概述。</p>
+
+  <p class="ziti3">事件目标（event target）是发生的事件或与之相关的对象。当讲事件时，我们必须同时指明类型和目标。例如，window上的load事件或＜button＞元素的click事件。在客户端的JavaScript应用程序中，Window、Document和Element对象是最常见的事件目标，但某些事件是由其他类型的对象触发。例如，第18章会介绍由XMLHttpRequest对象触发的readystatechange事件。</p>
+
+  <p class="ziti3">事件处理程序（event handler）或事件监听程序（event listener）是处理或响应事件的函数<sup class="calibre2"><a id="ch1" href="part0026.html#ch1-back" class="pcalibre calibre1">[1]</a></sup>。应用程序通过指明事件类型和事件目标，在Web浏览器中注册它们的事件处理程序函数。当在特定的目标上发生特定类型的事件时，浏览器会调用对应的处理程序。当对象上注册的事件处理程序被调用时，我们有时会说浏览器“触发”（fire、trigger）和“派发”（dispatch）了事件。有很多注册事件处理程序的方法，17.2节和17.3节会详细说明处理程序的注册和调用。</p>
+
+  <p class="ziti3">事件对象（event object）是与特定事件相关且包含有关该事件详细信息的对象。事件对象作为参数传递给事件处理程序函数（不包括IE8及之前版本，在这些浏览器中有时仅能通过全局变量event才能得到）。所有的事件对象都有用来指定事件类型的type属性和指定事件目标的target属性。（在IE8及之前版本中用srcElement而非target。）每个事件类型都为其相关事件对象定义一组属性。例如，鼠标事件的相关对象会包含鼠标指针的坐标，而键盘事件的相关对象会包含按下的键和辅助键的详细信息。许多事件类型仅定义了像type和target这样少量的标准属性，就无法获取许多其他有用的信息。对于这些事件而言，只是事件简单地发生，无法得到事件的详细信息。本章没有专门的小节来介绍Event对象，而是在介绍特定事件类型时会说明事件对象的属性。在第四部分描述特定事件类型时会解释事件对象的属性<sup class="calibre2"><a id="ch2" href="part0026.html#ch2-back" class="pcalibre calibre1">[2]</a></sup>。</p>
+
+  <p class="ziti3">事件传播（event propagation）是浏览器决定哪个对象触发其事件处理程序的过程。对于单个对象的特定事件（比如Window对象的load事件），必须是不能传播的。当文档元素上发生某个类型的事件时，然而，它们会在文档树上向上传播或“冒泡”（bubble）。如果用户移动鼠标指针到超链接上，在定义这个链接的＜a＞元素上首先会触发mousemove事件，然后是在容器元素上触发这个事件，也许是＜p＞元素、＜div＞元素或Document对象本身。有时，在Document或其他容器元素上注册单个事件处理程序比在每个独立的目标元素上都注册处理程序要更方便。事件处理程序能通过调用方法或设置事件对象属性来阻止事件传播，这样它就能停止冒泡且将无法在容器元素上触发处理程序。17.3.6节会详细介绍事件传播。</p>
+
+  <p class="ziti3">事件传播的另外一种形式称为事件捕获（event capturing），在容器元素上注册的特定处理程序有机会在事件传播到真实目标之前拦截（或“捕获”）它。IE 8及之前版本不支持事件捕获，所以不常用它。但是，当处理鼠标拖放事件时，捕获或“夺取”鼠标事件的能力是必需的，例17-2会展示如何实现这种能力。</p>
+
+  <p class="ziti3">一些事件有与之相关的默认操作。例如，当超链接上发生click事件时，浏览器的默认操作是按照链接加载新页面。事件处理程序可以通过返回一个适当的值、调用事件对象的某个方法或设置事件对象的某个属性来阻止默认操作的发生。这有时称为“取消”事件，17.3.6节会介绍它。</p>
+
+  <p class="ziti3">有了这些定义好的术语，现在我们能继续深入学习事件和事件处理。17.1节会概述浏览器支持的许多事件类型。它没有介绍任何单个事件的详细信息，而是告诉大家Web应用中有哪些事件类型可以使用。这一节交叉引用了本书的其他部分内容，用于演示一些事件实战。</p>
+
+  <p class="ziti3">在17.1节之后，接着两节会介绍如何注册事件处理程序和浏览器如何调用这些事件处理程序。由于JavaScript事件模型的历史演变和IE 9之前版本缺乏对标准的支持，因此这两个主题可能会超出想象的复杂。</p>
+
+  <p class="ziti3">本章后面会演示特定事件类型如何工作的示例，这些特定事件类型包括：</p>
+
+  <p class="ziti3">·文档加载和准备就绪事件</p>
+
+  <p class="ziti3">·鼠标事件</p>
+
+  <p class="ziti3">·鼠标滚轮事件</p>
+
+  <p class="ziti3">·拖放事件</p>
+
+  <p class="ziti3">·键盘事件</p>
+
+  <p class="ziti3">·文本输入事件</p>
+
+  <h3 class="p1" id="heading_id_3">17.1　事件类型</h3>
+
+  <p class="ziti3">在We b初期，客户端程序员只能使用少部分事件，比如"load"、"click"和"mouseover"等。这些传统事件类型在所有浏览器中都得到了很好的支持，17.1.1节主要介绍这些内容。随着Web平台发展到包括更强大的API，事件集合随之越来越大，没有单个标准能定义完整的事件集合。在写本章时，浏览器所支持的事件数量正在快速地增长，这些新事件有3个来源：</p>
+
+  <p class="ziti3">·3级DOM事件（DOM Level 3 Events）规范，经过长期的停滞之后，在W3C的主持下又开始焕发生机。17.1.2节介绍DOM事件。</p>
+
+  <p class="ziti3">·HTML5规范及相关衍生规范的大量新API定义了新事件，比如历史管理、拖放、跨文档通信，以及视频和音频的播放。17.1.3节会概述这些事件。</p>
+
+  <p class="ziti3">·基于触摸和支持JavaScript的移动设备的出现，比如iPhone，它们需要定义新的触摸和手势事件类型。在17.1.4节会看到一些针对Apple产品的例子。</p>
+
+  <p class="ziti3">注意，许多新事件类型尚未广泛实现，定义它们的标准也依旧处于草案阶段。接下来的几节将概述这些事件，但不会列出详细信息。本章剩下的部分将全面涵盖事件处理模型，及大量已经得到良好支持的事件应用示例。如果大概理解了事件的工作原理，那么就能轻松地处理作为新Web API定义和实现的新事件类型。</p>
+
+  <p class="middle-img">事件分类</p>
+
+  <p class="ziti4">事件大致可以分成几类，了解这些分类将有助于理解和组织如下长长的事件列表：</p>
+
+  <p class="ziti4">依赖于设备的输入事件</p>
+
+  <p class="ziti4">有些事件和特定输入设备直接相关，比如鼠标和键盘。包括诸如"mousedown"、"mousemove"、"mouseup"、"keydown"、"keypress"和"keyup"这样的传统事件类型，也包括像"touchmove"和"gesturechange"这样新的触摸事件类型。</p>
+
+  <p class="ziti4">独立于设备的输入事件</p>
+
+  <p class="ziti4">有些输入事件没有直接相关的特定输入设备。例如，click事件表示激活了链接、按钮或其他文档元素，这通常是通过鼠标单击实现，但也能通过键盘或触摸感知设备上的手势来实现。尚未广泛实现的textinput事件就是一个独立于设备的输入事件，它既能取代按键事件并支持键盘输入，也可以取代剪切和粘贴与手写识别的事件。</p>
+
+  <p class="ziti4">用户界面事件</p>
+
+  <p class="ziti4">用户界面事件是较高级的事件，通常出现在定义Web应用用户界面的HTML表单元素上。包括文本输入域获取键盘焦点的focus事件、用户改变表单元素显示值的change事件和用户单击表单中的“提交”按钮的submit事件。</p>
+
+  <p class="ziti4">状态变化事件</p>
+
+  <p class="ziti4">有些事件不是由用户活动而是由网络或浏览器活动触发，用来表示某种生命周期或相关状态的变化。当文档完全加载时，在Window对象上会发生load事件，这可能是这类事件中最常用的。在13.3.4节讨论过的DOMContentLoaded事件与此类似。HTML5历史管理机制会（见22.2节）触发popstate事件来响应浏览器的后退按钮。HTML5离线Web应用API（见20.4节）包括online和offline事件。第18章将展示当向服务器请求的数据准备就绪时，如何利用readystatechange事件得到通知。类似地，用于读取用户选择本地文件的新API（见22.6.5节）使用像"loadstart"、"progress"和"loadend"事件来实现I/O过程的异步通知。</p>
+
+  <p class="ziti4">特定API事件</p>
+
+  <p class="ziti4">HTML5及相关规范定义的大量Web API都有自己的事件类型。拖放API（见17.7节）定义了诸如"dragstart"、"dragenter"、"dragover"和"drop"事件，应用程序想自定义拖放源（drag source）或拖放目标（drop target）就必须处理这些相关事件。HTML5的＜video＞和＜audio＞元素（见21.2节）定义一长串像"waiting"、"playing"、"seeking"和"volumechange"等相关事件，这些事件通常仅用于Web应用，这些Web应用希望为视频和音频的播放定义自定义控件。</p>
+
+  <p class="ziti4">计时器和错误处理程序</p>
+
+  <p class="ziti4">已经在第14章介绍过的计时器（timer）和错误处理程序（error handler）属于客户端JavaScript异步编程模型的部分，并有相似的事件。虽然本章不会讨论计时器和错误处理程序，但思考它们同事件处理之间的关系是有益的，所以在本章的语境中重读14.1节和14.6节会发现很有趣。</p>
+
+  <h4 class="p5" id="heading_id_4">17.1.1　传统事件类型</h4>
+
+  <p class="ziti3">处理鼠标、键盘、HTML表单和Window对象的事件都是Web应用中最常用的，它们已经存在很长的时间并得到了广泛的支持。接下来会说明这类事件的许多重要详细信息。</p>
+
+  <p class="yanse">1.表单事件</p>
+
+  <p class="ziti3">回到Web和JavaScript的早期，表单和超链接都是网页中最早支持脚本的元素。这就意味着表单事件是所有事件类型中最稳定且得到良好支持的那部分。当提交表单和重置表单时，＜form＞元素会分别触发submit和reset事件。当用户和类按钮表单元素（包括单选按钮和复选框）交互时，它们会发生click事件。当用户通过输入文字、选择选项或选择复选框来改变相应表单元素的状态时，这些通常维护某种状态的表单元素会触发change事件。对于文本输入域，只有用户和表单元素完成交互并通过Tab键或单击的方式移动焦点到其他元素上时才会触发change事件。响应通过键盘改变焦点的表单元素在得到和失去焦点时会分别触发focus和blur事件。</p>
+
+  <p class="ziti3">15.9.3节涵盖了所有表单相关事件的详细信息。不过，这里还有一些进一步说明。</p>
+
+  <p class="ziti3">通过事件处理程序能取消submit和reset事件的默认操作，某些click事件也是如此。focus和blur事件不会冒泡，但其他所有表单事件都可以。IE定义了focusin和focusout事件可以冒泡，它们可以用于替代foucs和blur事件。jQuery库（见第19章）为不支持focusin和focusout事件的浏览器模拟了这两个事件，同时3级DOM事件规范也正在标准化它们。</p>
+
+  <p class="ziti3">最后注意，无论用户何时输入文字（通过键盘或剪切和粘贴）到＜textarea＞和其他文本输入表单元素，除IE外的浏览器都会触发input事件。不像change事件，每次文字插入都会触发input事件。遗憾的是，input事件的事件对象没有指定输入文本的内容。（稍后介绍的textinput事件将会成为这个事件的有用替代方案。）</p>
+
+  <p class="yanse">2.Window事件</p>
+
+  <p class="ziti3">Window事件是指事件的发生与浏览器窗口本身而非窗口中显示的任何特定文档内容相关。但是，这些事件中有一些会和文档元素上发生的事件同名。</p>
+
+  <p class="ziti3">load事件是这些事件中最重要的一个，当文档和其所有外部资源（比如图片）完全加载并显示给用户时就会触发它。有关load事件的讨论贯穿整个第13章。DOMContentLoaded和readystatechange是load事件的替代方案，当文档和其元素为操作准备就绪，但外部资源完全加载完毕之前，浏览器就会尽早触发它们。17.4节有这些与文件加载相关事件的示例。</p>
+
+  <p class="ziti3">unload事件和load相对，当用户离开当前文档转向其他文档时会触发它。unload事件处理程序可以用于保存用户的状态，但它不能用于取消用户转向其他地方。beforeunload事件和unload类似，但它能提供询问用户是否确定离开当前页面的机会。如果beforeunload的处理程序返回字符串，那么在新页面加载之前，字符串会出现在展示给用户确认的对话框上，这样用户将有机会取消其跳转而留在当前页上。</p>
+
+  <p class="ziti3">Window对象的onerror属性有点像事件处理程序，当JavaScript出错时会触发它。但是，它不是真正的事件处理程序，因为它能用不同的参数来调用。更多详细信息请看14.6节。</p>
+
+  <p class="ziti3">像＜img＞元素这样的单个文档元素也能为load和error事件注册处理程序。当外部资源（例如图片）完全加载或发生阻止加载的错误时就会触发它们。某些浏览器也支持abort事件（HTML5将其标准化），当图片（或其他网络资源）因为用户停止加载进程而导致失败就会触发它。</p>
+
+  <p class="ziti3">前面介绍的表单元素的focus和blur事件也能用做Window事件，当浏览器窗口从操作系统中得到或失去键盘焦点时会触发它们。</p>
+
+  <p class="ziti3">最后，当用户调整浏览器窗口大小或滚动它时会触发resize和scroll事件。scroll事件也能在任何可以滚动的文档元素上触发，比如那些设置CSS的overflow属性（见16.2.6节）的元素。传递给resize和scroll事件处理程序的事件对象是一个非常普通的Event对象，它没有指定调整大小或发生滚动的详细信息属性，但可以通过15.8节介绍的技术来确定新窗口的尺寸和滚动条的位置。</p>
+
+  <p class="yanse">3.鼠标事件</p>
+
+  <p class="ziti3">当用户在文档上移动或单击鼠标时都会产生鼠标事件。这些事件在鼠标指针所对应的最深嵌套元素上触发，但它们会冒泡直到文档最顶层。传递给鼠标事件处理程序的事件对象有属性集，它们描述了当事件发生时鼠标的位置和按键状态，也指明当时是否有任何辅助键按下。clientX和clientY属性指定了鼠标在窗口坐标中的位置，button和which属性指定了按下的鼠标键是哪个。（无论如何请看Event参考页，因为这些属性难以简单使用。）当键盘辅助键按下时，对应的属性altkey、ctrlKey、metaKey和shiftKey会设置为true。而对于click事件，detail属性指定了其是单击、双击还是三击。</p>
+
+  <p class="ziti3">用户每次移动或拖动鼠标时，会触发mousemove事件。这些事件的发生非常频繁，所以mousemove事件处理程序一定不能触发计算密集型任务。当用户按下或释放鼠标按键时，会触发mousedown和mouseup事件。通过注册mousedown和mousemove事件处理程序，可以探测和响应鼠标的拖动。合理地这样做能够捕获鼠标事件，甚至当鼠标从开始元素移出时我们都能持续地接受到mousemove事件。17.5节包含一个处理拖动的示例。</p>
+
+  <p class="ziti3">在mousedown和mouseup事件队列之后，浏览器也会触发click事件。之前介绍过click事件是独立于设备的表单事件，但实际上它不仅仅在表单元素上触发，它可以在任何文档元素上触发，同时传递拥有之前介绍的所有鼠标相关额外字段的事件对象。如果用户在相当短的时间内连续两次单击鼠标按键，跟在第二个click事件之后是dblclick事件。当单击鼠标右键时，浏览器通常会显示上下文菜单（context menu）。在显示菜单之前，它们通常会触发contextmenu事件，而取消这个事件就可以阻止菜单的显示。这个事件也是获得鼠标右击通知的简单方法。</p>
+
+  <p class="ziti3">当用户移动鼠标指针从而使它悬停到新元素上时，浏览器就会在该元素上触发mouseover事件。当鼠标移动指针从而使它不再悬停在某个元素上时，浏览器就会在该元素上触发mouseout事件。对于这些事件，事件对象将有relatedTarget属性指明这个过程涉及的其他元素。（到Event参考页查看relatedTarget属性的IE等效属性。）mouseover和mouseout事件和这里介绍的所有鼠标事件一样会冒泡。但这通常不方便，因为当触发mouseout事件处理程序时，你不得不检查鼠标是否真的离开目标元素还是仅仅是从这个元素的一个子元素移动到另一个。正因为如此，IE提供了这些事件的不冒泡版本mouseenter和mouseleave。JQuery模拟非IE的浏览器中这些事件的支持（见第19章），同时3级DOM事件规范把它们标准化了。</p>
+
+  <p class="ziti3">当用户滚动鼠标滚轮时，浏览器触发mousewheel事件（或在Firefox中是DOMMouseScroll事件）。传递的事件对象属性指定滚轮转动的大小和方向。3级DOM事件规范正在标准化一个更通用的多维wheel事件，一旦实现将取代mousewheel和DOMMouseScroll事件。17.6节包含一个mousewheel事件示例。</p>
+
+  <p class="yanse">4.键盘事件</p>
+
+  <p class="ziti3">当键盘聚焦到Web浏览器时，用户每次按下或释放键盘上的按键时都会产生事件。键盘快捷键对于操作系统和浏览器本身有特殊意义，它们经常被操作系统或浏览器“吃掉”并对JavaScript事件处理程序不可见。无论任何文档元素获取键盘焦点都会触发键盘事件，并且它们会冒泡到Document和Window对象。如果没有元素获得焦点，可以直接在文档上触发事件。传递给键盘事件处理程序的事件对象有keyCode字段，它指定按下或释放的键是哪个。除了keyCode，键盘事件对象也有altKey、ctrlKey、metaKey和shiftKey，描述键盘辅助键的状态。</p>
+
+  <p class="ziti3">keydown和keyup事件是低级键盘事件，无论何时按下或释放按键（甚至是辅助键）都会触发它们。当keydown事件产生可打印字符时，在keydown和keyup之间会触发另外一个keypress事件。当按下键重复产生字符时，在keyup事件之前可能产生很多keypress事件。keypress是较高级的文本事件，其事件对象指定产生的字符而非按下的键。</p>
+
+  <p class="ziti3">所有浏览器都支持keydown、keyup和keypress事件，但有一些互用性问题，因为事件对象的keyCode属性值从未标准化过。3级DOM事件规范尝试解决之前的互用性问题，但尚未实施。17.9节包含处理keydown事件的示例，17.8节包含处理keypress事件的示例。</p>
+
+  <h4 class="p5" id="heading_id_5">17.1.2　DOM事件</h4>
+
+  <p class="ziti3">W3C开发3级DOM事件规范已经长达十年之久。在写本章时，它已经做了大量修订使其适合当前浏览器的现状，现在终于处于标准化的“最后征集工作草案”（last call working draft）阶段。它标准化了前面介绍的许多传统事件，同时增加了这里介绍的一些新事件。这些新事件类型尚未得到广泛支持，一旦标准确定，我们就期望浏览器厂商能实现它们。</p>
+
+  <p class="ziti3">如上所述，3级DOM事件规范标准化了不冒泡的focusin和focusout事件来取代冒泡的focus和blur事件，标准化了冒泡的mouseenter和mouseleave事件来取代不冒泡的mouseover和mouseout事件。此版本的标准也弃用了大量由2级DOM事件规范定义但未得到广泛实现的事件类型。浏览器依旧允许产生像DOMActivate、DOMFocusIn和DOMNodeInserted这样的事件，但它们不再必要，同时本书的文档也不会列出它们<sup class="calibre2"><a id="ch3" href="part0026.html#ch3-back" class="pcalibre calibre1">[3]</a></sup>。</p>
+
+  <p class="ziti3">3级DOM事件规范中新增内容有通过wheel事件对二维鼠标滚轮提供标准支持，通过textinput事件和传递新KeyboardEvent对象作为参数给keydown、keyup和keypress的事件处理程序来给文本输入事件提供更好的支持。</p>
+
+  <p class="ziti3">wheel事件的处理程序接收到的事件对象除了所有普通鼠标事件属性，还有deltaX、deltaY和deltaZ属性来报告三个不同的鼠标滚轴。大多数鼠标滚轮是一维或两维的，并不使用deltaZ。更多关于mousewheel事件的内容请参见17.6节。</p>
+
+  <p class="ziti3">如上所述，3级DOM事件规范定义了keypress事件，但不赞成使用它而使用称为textinput的新事件。传递给textinput事件处理程序的事件对象不再有难以使用的数字keyCode属性值，而有指定输入文本字符串的data属性。textinput事件不是键盘特定事件，无论通过键盘、剪切和粘贴、拖放等方式，每当发生文本输入时就会触发它。规范定义了事件对象的inputMethod属性和一组代表各种文本输入种类的常量（键盘、粘贴、拖放、手写和语音识别等）。在写本章时，Safari和Chrome使用混合大小写的textInput来支持这个事件版本，其事件对象有data属性但没有inputMethed属性。17.8节包含使用textInput事件的示例。</p>
+
+  <p class="ziti3">新DOM标准通过在事件对象中加入新的key和char属性来简化keydown、keyup和keypress事件，这些属性都是字符串。对于产生可打印字符的键盘事件，key和char值将等于生成的文本。对于控制键，key属性将会是像标识键的"Enter"、"Delete"和"Left"这样的字符串，而char属性将是null，或对于像Tab这样的控制键有一个字符编码，它将是按键产生的字符串。在写本章时，尚未有浏览器支持key和char属性，但如果key属性实现了，例17-8将使用它。</p>
+
+  <h4 class="p5" id="heading_id_6">17.1.3　HTML5事件</h4>
+
+  <p class="ziti3">HTML5及相关标准定义了大量新的Web应用API（见第22章），其中许多API都定义了事件。本节列出并简要介绍这些HTML5和Web应用事件。其中一些事件现在已经可以开始使用，但更详细的信息在本书的其他地方，另外一些尚未得到广泛实现，也没有详细文档。</p>
+
+  <p class="ziti3">广泛推广的HTML5特性之一是加入用于播放音频和视频的＜audio＞和＜video＞元素。这些元素有长长的事件列表，它们触发各种关于网络事件、数据缓冲状况和播放状态的通知：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00036.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">传递给媒体事件处理程序的事件对象普通且没有特殊属性，target属性用于识别＜audio＞和＜video＞元素，然而这些元素有许多相关的属性和方法。21.2节有更多关于这些元素及其属性和事件的详细内容。</p>
+
+  <p class="ziti3">HTML5的拖放API允许JavaScript应用参与基于操作系统的拖放操作，实现Web和原生应用间的数据传输。该API定义了如下7个事件类型：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00037.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">触发拖放事件的事件对象和通过鼠标事件发送的对象类似，其附加属性dataTransfer持有DataTransfer对象，它包含关于传输的数据和其中可用的格式的信息。17.7节将对HTML5拖放API进行说明和演示。</p>
+
+  <p class="ziti3">HTML5定义了历史管理机制（见22.2节），它允许Web应用同浏览器的返回和前进按钮交互。这个机制涉及的事件是hashchange和popstate。这些事件是类似load和unload的生命周期通知事件，它在Window对象上触发而非任何单独的文档元素。</p>
+
+  <p class="ziti3">HTML5为HTML表单定义了大量的新特性。除了标准化前面介绍的表单输入事件外，HTML5也定义了表单验证机制，包括当验证失败时在表单元素上会触发invalid事件。除Opera外的浏览器厂商已经慢慢实现HTML5的新表单特性和事件，但本书没有涵盖它们。</p>
+
+  <p class="ziti3">HTML5包含了对离线Web应用的支持（见20.4节），它们可以安装到本地应用缓存中，所以即使浏览器离线时它们依旧能运行，比如当移动设备不在网络范围内时。相关的两个最重要事件是offline和online，无论何时浏览器失去或得到网络连接都会在Window对象上触发它们。标准还定义了大量其他事件来通知应用下载进度和应用缓存更新：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00038.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">很多新Web应用API都使用message事件进行异步通信。跨文档通信API（见22.3节）允许一台服务器上的文档脚本能和另一台服务器上的文档脚本交换消息。其工作受限于同源策略（见13.6.2节）这一安全方式。发送的每一条消息都会在接收文档的Window上触发message事件。传递给处理程序的事件对象包含data属性，它有保存信息内容以及用于识别消息发送者的source属性和origin策略。message事件的使用方式与使用Web Worker（见13.6.2节）通信、通过Server-Sent事件（见18.3节）和WebSocket（见22.9节）进行网络通信相似。</p>
+
+  <p class="ziti3">HTML5及相关标准定义了一些不在窗口、文档和文档元素的对象上触发的事件。XMLHttpRequest规范第2版和File API规范都定义了一系列事件来跟踪异步I/O的进度。它们在XMLHttpRequest或FileReader对象上触发事件。每次读取操作都是以loadstart事件开始，接着是progress和loadend事件。此外，每个操作仅在最终loadend事件之前会有load、error或abort事件。更多详细信息请参见18.1.4节和22.6.5节。</p>
+
+  <p class="ziti3">最后，HTML5及相关标准定义了少量庞杂的事件类型。在Window对象上发生的Web存储（见20.1节）API定义了storage事件（在Window对象上）用于通知存储数据的改变。HTML5也标准化了最早由Microsoft在IE中引入的beforeprint和afterprint事件。顾名思义，当文档打印之前或之后立即在Window对象上触发这些事件，它提供了打印文档时添加或删除类似日期或时间等内容的机会。（这些事件不应该用于处理打印文档的样式，因为CSS媒体类型更适合这个用途。）</p>
+
+  <h4 class="p5" id="heading_id_7">17.1.4　触摸屏和移动设备事件</h4>
+
+  <p class="ziti3">强大的移动设备的广泛采用（特别是使用触摸屏的那些设备）需要建立新的事件类别。在许多情况下，触摸屏事件映射到传统的事件类型（比如click和srcoll），但不是每次和触摸屏UI的交互都能仿效鼠标，也不是所有的触摸都可以当做鼠标事件处理。本节主要介绍运行在Apple的iPhone和iPad设备上的Safari所产生的手势和触摸事件，还包括用户旋转这些设备时产生的orientationchange事件。在写本章时，这些事件尚未标准化，但W3C已经开始用Apple的触摸事件作为起点制定“触摸事件规范”。本书第四部分并没有记录这些事件，但你可以在Apple的开发者中心（http://developer.apple.com/）查询更多信息。</p>
+
+  <p class="ziti3">Safari产生的手势事件用于两个手指的缩放和旋转手势。当手势开始时生成gesturestart事件，而手势结束时生成gestureend事件。在这两个事件之间是跟踪手势过程的gesturechange事件队列。这些事件传递的事件对象有数字属性scale和rotation。scale属性是两个手指之间当前距离和初始距离的比值。“捏紧”手势的scale值小于1.0，而“撑开”手势的scale值大于1.0。rotation属性是指从事件开始手指旋转的角度，它以度为单位，正值表示按照顺时针方向旋转。</p>
+
+  <p class="ziti3">手势事件是高级事件，用于通知已经翻译的手势。如果想实现自定义手势，你可以监听低级触摸事件。当手指触摸屏幕时会触发touchstart事件，当手指移动时会触发touchmove事件，而当手指离开屏幕时会触发touchend事件。不像鼠标事件，触摸事件并不直接报告触摸的坐标。相反，触摸事件传递的事件对象有一个changedTouches属性，该属性是一个类数组对象，其每个元素都描述触摸的位置。</p>
+
+  <p class="ziti3">当设备允许用户从竖屏旋转到横屏模式时会在Window对象上触发orientationchanged事件，该事件传递的事件对象本身没有用。但是，在移动版的Safari中，Window对象的orientation属性能给出当前方位，其值是0、90、180或-90。</p>
+
+  <h3 class="p1" id="heading_id_8">17.2　注册事件处理程序</h3>
+
+  <p class="ziti3">注册事件处理程序有两种基本方式。第一种方式出现在Web初期，给事件目标对象或文档元素设置属性。第二种方式更新并且更通用，是将事件处理程序传递给对象或元素的一个方法。但复杂的是，每种技术都有两个版本。可以在JavaScript代码中设置事件处理程序为对象属性，或对于文档元素，可以在HTML中直接设置相应属性。对于通过方法调用的处理程序注册，有一个标准方法，命名为addEventListener()，除IE8及以前版本之外，所有浏览器都支持这种方式，而IE 9之前的IE版本支持的是一个叫attachEvent()的不同方法。</p>
+
+  <h4 class="p5" id="heading_id_9">17.2.1　设置JavaScript对象属性为事件处理程序</h4>
+
+  <p class="ziti3">注册事件处理程序最简单的方式就是通过设置事件目标的属性为所需事件处理程序函数。按照约定，事件处理程序属性的名字由"on"后面跟着事件名组成：onclick、onchange、onload、onmouseover等。注意这些属性名是区分大小写的，所有都是小写，即使事件类型是由多个词组成（比如"readystatechange"）。下面是两个事件处理程序注册示例：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//设置Window对象的unload属性为一个函数</p>
+
+  <p class="ziti5">//该函数是事件处理程序：当文档加载完毕时调用它</p>
+
+  <p class="ziti5">window.onload=function(){//查找一个＜form＞元素</p>
+
+  <p class="ziti5">var elt=document.getElementById("shipping_address");//注册事件处理程序函数，</p>
+
+  <p class="ziti5">//在表单提交之前调用它</p>
+
+  <p class="ziti5">elt.onsubmit=function(){return validate(this);}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">这种事件处理程序注册技术适用于所有浏览器的所有常用事件类型。一般情况下，所有广泛实现的Web API定义的事件都允许通过设置事件处理程序属性来注册处理程序。</p>
+
+  <p class="ziti3">事件处理程序属性的缺点是其设计都是围绕着假设每个事件目标对于每种事件类型将最多只有一个处理程序。如果想编写能够在任意文档中都能使用的脚本库代码，更好的方式是使用一种不修改或覆盖任何已有注册处理程序的技术（比如addEventListener()）。</p>
+
+  <h4 class="p5" id="heading_id_10">17.2.2　设置HTML标签属性为事件处理程序</h4>
+
+  <p class="ziti3">用于设置的文档元素事件处理程序属性（property）也能换成对应HTML标签的属性（attribute）。如果这样做，属性值应该是JavaScript代码字符串。这段代码应该是事件处理程序函数的主体，而非完整的函数声明。也就是说，HTML事件处理程序代码不应该用大括号包围且使用function关键字作为前缀。例如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜button onclick="alert('Thank you');"＞点击这里＜/button＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">如果HTML事件处理程序属性包含多条JavaScript语句，要记住必须使用分号分隔这些语句或断开属性值使其跨多行。</p>
+
+  <p class="ziti3">某些事件类型通常直接在浏览器而非任何特定文档元素上触发。在JavaScript中，这些事件处理程序在Window对象上注册。在HTML中，会把它们放到＜body＞标签上，但浏览器会在Window对象上注册它们。下面是HTML5规范草案定义的这类事件处理程序的完整列表：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00039.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">当指定一串JavaScript代码作为HTML事件处理程序属性的值时，浏览器会把代码串转换为类似如下的函数中：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">function(event){</p>
+
+  <p class="ziti5">with(document){</p>
+
+  <p class="ziti5">with(this.form||{}){</p>
+
+  <p class="ziti5">with(this){/*这里是编码*/</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">如果浏览器支持ES5，它将在非严格模式下定义这个函数（见5.7.3节）。当仔细研究17.3节的事件处理程序调用时，我们将看到关于event参数和with语句的更多内容。</p>
+
+  <p class="ziti3">客户端编程的通用风格是保持HTML内容和JavaScript行为分离，遵循这条规则的程序员应禁止（或至少避免）使用HTML事件处理程序属性，因为这些属性直接混合了JavaScript和HTML。</p>
+
+  <h4 class="p5" id="heading_id_11">17.2.3　addEventListener()</h4>
+
+  <p class="ziti3">在除IE8及之前版本外的所有浏览器都支持的标准事件模型中，任何能成为事件目标的对象——这些对象包括Window对象、Document对象和所有文档元素——都定义了一个名叫addEventListener()的方法，使用这个方法可以为事件目标注册事件处理程序。addEventListener()接受三个参数。第一个是要注册处理程序的事件类型，这个事件类型（或名字）是字符串，但它不应该包括用于设置事件处理程序属性的前缀"on"。第二个参数是当指定类型的事件发生时应该调用的函数。最后一个参数是布尔值。通常情况下，会给这个参数传递false。如果相反传递了true，那么函数将注册为捕获事件处理程序，并在事件不同的调度阶段调用。17.3.6节涵盖事件捕获。你应该可以忽略第三个参数并无须传递false，同时规范最终应该会改变从而允许这么做，但在写本章时，忽略这个参数会在当前某些浏览器中出错。</p>
+
+  <p class="ziti3">下面这段代码在＜button＞元素上注册了click事件的两个处理程序。注意所用两个技术之间的不同：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜button id="my button"＞click me＜/button＞</p>
+
+  <p class="ziti5">＜script＞</p>
+
+  <p class="ziti5">var b=document.getElementById("mybutton");</p>
+
+  <p class="ziti5">b.onclick=function(){alert("Thanks for clicking me！");};</p>
+
+  <p class="ziti5">b.addEventListener("click",function(){alert("Thanks again！");},false);</p>
+
+  <p class="ziti5">＜/script＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">用"click"作为第一个参数调用addEventListener()不会影响onclick属性的值。在前面的代码中，单击按钮会产生两个alert()对话框。更重要的是，能通过多次调用addEventListener()为同一个对象注册同一事件类型的多个处理程序函数。当对象上发生事件时，所有该事件类型的注册处理程序都会按照注册的顺序调用。使用相同的参数在同一个对象上多次调用addEventListener()是没用的，处理程序仍然只注册一次，同时重复调用也不会改变调用处理程序的顺序。</p>
+
+  <p class="ziti3">相对addEventListener()的是removeEventListener()方法，它同样有三个参数，从对象中删除事件处理程序函数而非添加，它常用于临时注册事件处理程序，然后不久就删除它。例如，当你要得到mousedown事件时，可以为mousemove和mouseup事件注册临时捕获事件处理程序来看看用户是否拖动鼠标。当mouseup事件到来后，可以注销这些事件处理程序。在这种情况下，事件处理程序移除代码如下所示：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">document.removeEventListener("mousemove",handleMouseMove,true);</p>
+
+  <p class="ziti5">document.removeEventListener("mouseup",handleMouseUp,true);</p>
+  <hr class="calibre4"/>
+
+  <h4 class="p5" id="heading_id_12">17.2.4　attachEvent()</h4>
+
+  <p class="ziti3">IE9之前的IE不支持addEventListener()和removeEventListener()。IE5及以后版本定义了类似的方法attachEvent()和detachEvent()。</p>
+
+  <p class="ziti3">attachEvent()和detachEvent()方法的工作原理与addEventListener()和removeEventListener()类似，但有如下例外：</p>
+
+  <p class="ziti3">·因为IE事件模型不支持事件捕获，所以attachEvent()和detachEvent()要求只有两个参数：事件类型和处理程序函数。</p>
+
+  <p class="ziti3">·IE方法的第一个参数使用了带"on"前缀的事件处理程序属性名，而非没有前缀的事件类型。例如，当给addEventListener()传递"click"时，要给attachEvent()传递"onclick"。</p>
+
+  <p class="ziti3">·attachEvent()允许相同的事件处理程序函数注册多次。当特定的事件类型发生时，注册函数的调用次数和注册次数一样。</p>
+
+  <p class="ziti3">经常可以看到的事件处理程序注册代码是在支持addEventListener()的浏览器中就调用它，否则就用attachEvent()：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var b=document.getElementById("mybutton");</p>
+
+  <p class="ziti5">var handler=function(){alert("Thanks！");};</p>
+
+  <p class="ziti5">if(b.addEventListener)</p>
+
+  <p class="ziti5">b.addEventListener("click",handler,false);</p>
+
+  <p class="ziti5">else if(b.attachEvent)</p>
+
+  <p class="ziti5">b.attachEvent("onclick",handler);</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_13">17.3　事件处理程序的调用</h3>
+
+  <p class="ziti3">一旦注册了事件处理程序，浏览器就会在指定对象上发生指定类型事件时自动调用它。本节会详细介绍事件处理程序的调用，说明事件处理程序的参数、调用上下文（this值）、调用作用域和事件处理程序返回值的意义。遗憾的是，这些内容中的一部分在IE8及以前版本中和在其他浏览器中是不同的。</p>
+
+  <p class="ziti3">除了介绍单个处理程序如何调用，本节也会说明事件传播的机制，即单个事件如何能在原始事件目标和文档的容器元素上触发多个处理程序的调用。</p>
+
+  <h4 class="p5" id="heading_id_14">17.3.1　事件处理程序的参数</h4>
+
+  <p class="ziti3">通常调用事件处理程序时把事件对象作为它们的一个参数（有一个例外，后面会介绍）。事件对象的属性提供了有关事件的详细信息。例如，type属性指定了发生的事件类型。17.1节提到了各种事件类型的一些其他事件对象属性。</p>
+
+  <p class="ziti3">在IE8及以前版本中，通过设置属性注册事件处理程序，当调用它们时并未传递事件对象。取而代之，需要通过全局对象window.event来获得事件对象。出于互通性，你能像如下那样编写事件处理程序，这样如果没有参数就使用window.event：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">function handler(event){</p>
+
+  <p class="ziti5">event=event||window.event;//处理程序代码出现在这里</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">向使用attachEvent()注册的事件处理程序传递事件对象，但它们也能使用window.event。</p>
+
+  <p class="ziti3">记得17.2.2节中的介绍，当通过设置HTML属性注册事件处理程序时，浏览器会把JavaScript编码转换到一个函数中。非IE浏览器使用event参数来构造函数，而IE在构造函数时没有要求参数。如果在这样的函数中使用event标识符，那么引用的正是window.event。在这两种情况下，HTML事件处理程序都能作为event引用事件对象。</p>
+
+  <h4 class="p5" id="heading_id_15">17.3.2　事件处理程序的运行环境</h4>
+
+  <p class="ziti3">当通过设置属性注册事件处理程序时，这看起来好像是在文档元素上定义了新方法：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">e.onclick=function(){/*处理程序代码*/};</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">事件处理程序在事件目标上定义，所以它们作为这个对象的方法来调用（后面会介绍一个和IE相关的例外）并不出人意料。这就是说，在事件处理程序内，this关键字指的是事件目标。</p>
+
+  <p class="ziti3">甚至当使用addEventListener()注册时，调用的处理程序使用事件目标作为它们的this值。但是，对于attachEvent()来讲这是不对的：使用attachEvent()注册的处理程序作为函数调用，它们的this值是全局（Window）对象。可以用如下代码来解决这个问题：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">/*</p>
+
+  <p class="ziti5">*在指定的事件目标上注册用于处理指定类型事件的指定处理程序函数</p>
+
+  <p class="ziti5">*确保处理程序一直作为事件目标的方法调用</p>
+
+  <p class="ziti5">*/</p>
+
+  <p class="ziti5">function addEvent(target,type,handler){</p>
+
+  <p class="ziti5">if(target.addEventListener)</p>
+
+  <p class="ziti5">target.addEventListener(type,handler,false);</p>
+
+  <p class="ziti5">else</p>
+
+  <p class="ziti5">target.attachEvent("on"+type,</p>
+
+  <p class="ziti5">function(event){//把处理程序作为事件目标的方法调用，</p>
+
+  <p class="ziti5">//传递事件对象</p>
+
+  <p class="ziti5">return handler.call(target,event);</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">注意使用这个方法注册的事件处理程序不能删除，因为传递给attachEvent()的包装函数没有保留下来传递给detachEvent()。</p>
+
+  <h4 class="p5" id="heading_id_16">17.3.3　事件处理程序的作用域</h4>
+
+  <p class="ziti3">像所有的JavaScript函数一样，事件处理程序从词法上讲也是作用域。它们在其定义时的作用域而非调用时的作用域中执行，并且它们能存取那个作用域中的任何一个本地变量。例如，之前的addEvent()函数就证明过。</p>
+
+  <p class="ziti3">但是，通过HTML属性来注册事件处理程序是一个例外。它们被转换为能存取全局变量的顶级函数而非任何本地变量。但因为历史原因，它们运行在一个修改后的作用域链中。通过HTML属性定义的事件处理程序能好像本地变量一样使用目标对象、容器＜form＞对象（如果有）和Document对象的属性。17.2.2节展示了如何从HTML事件处理程序属性中创建事件处理程序函数，以及其代码近似于使用with语句修改后的作用域链。</p>
+
+  <p class="ziti3">HTML属性最不自然的地方包括冗长的代码串和修改后的作用域链允许有用的快捷方式。可以使用tagName替代this.tagName，使用getElementById()替代document.getElementById()。并且，对于＜form＞中的文档元素，能通过ID引用任何其他的表单元素，例如，用zipcode替代this.form.zipcode。</p>
+
+  <p class="ziti3">另一方面，HTML事件处理程序中修改的作用域链是陷阱之源，因为作用域链中每个对象的属性在全局对象中都有相同名字的属性。例如，由于Document对象定义（很少使用）open()方法，因此HTML事件处理程序想调用Window对象的open()方法就必须显式地写window.open而不是open。表单有类似的问题但破坏性更大，因为表单元素的名字和ID在包含的表单元素上定义属性（见15.9.1节）。例如，如果表单包含一个ID是"location"的元素，那么要是表单的所有HTML事件处理程序想引用window的location对象，就必须使用window.location而不能是location。</p>
+
+  <h4 class="p5" id="heading_id_17">17.3.4　事件处理程序的返回值</h4>
+
+  <p class="ziti3">通过设置对象属性或HTML属性注册事件处理程序的返回值有时是非常有意义的。通常情况下，返回值false就是告诉浏览器不要执行这个事件相关的默认操作。例如，表单提交按钮的onclick事件处理程序能返回false阻止浏览器提交表单。（当用户的输入在客户端验证失败时，这是有用的。）类似地，如果用户输入不合适的字符，输入域上的onkeypress事件处理程序能通过返回false来过滤键盘输入。（例17-6就是用这种方式过滤键盘输入。）</p>
+
+  <p class="ziti3">Window对象的onbeforeunload事件处理程序的返回值也非常有意义。当浏览器将要跳转到新页面时触发这个事件。如果事件处理程序返回一个字符串，那么它将出现在询问用户是否想离开当前页面的标准对话框中。</p>
+
+  <p class="ziti3">理解事件处理程序的返回值只对通过属性注册的处理程序才有意义这非常重要。接下来我们将看到使用addEventListener()或attachEvent()注册事件处理程序转而必须调用preventDefault()方法或设置事件对象的returnValue属性。</p>
+
+  <h4 class="p5" id="heading_id_18">17.3.5　调用顺序</h4>
+
+  <p class="ziti3">文档元素或其他对象可以为指定事件类型注册多个事件处理程序。当适当的事件发生时，浏览器必须按照如下规则调用所有的事件处理程序：</p>
+
+  <p class="ziti3">·通过设置对象属性或HTML属性注册的处理程序一直优先调用。</p>
+
+  <p class="ziti3">·使用addEventListener()注册的处理程序按照它们的注册顺序调用<sup class="calibre2"><a id="ch4" href="part0026.html#ch4-back" class="pcalibre calibre1">[4]</a></sup>。</p>
+
+  <p class="ziti3">·使用attachEvent()注册的处理程序可能按照任何顺序调用，所以代码不应该依赖于调用顺序。</p>
+
+  <h4 class="p5" id="heading_id_19">17.3.6　事件传播</h4>
+
+  <p class="ziti3">当事件目标是Window对象或其他一些单独对象（比如XMLHttpRequest）时，浏览器简单地通过调用对象上适当的处理程序响应事件。当事件目标是文档或文档元素时，情况比较复杂。</p>
+
+  <p class="ziti3">在调用在目标元素上注册的事件处理函数后，大部分事件会“冒泡”到DOM树根。调用目标的父元素的事件处理程序，然后调用在目标的祖父元素上注册的事件处理程序。这会一直到Document对象，最后到达Window对象。事件冒泡为在大量单独文档元素上注册处理程序提供了替代方案，即在共同的祖先元素上注册一个处理程序来处理所有的事件。例如，可以在＜form＞元素上注册"change"事件处理程序来取代在表单的每个元素上注册"change"事件处理程序。</p>
+
+  <p class="ziti3">发生在文档元素上的大部分事件都会冒泡，值得注意的例外是focus、blur和scroll事件。文档元素上的load事件会冒泡，但它会在Document对象上停止冒泡而不会传播到Window对象。只有当整个文档都加载完毕时才会触发Window对象的load事件。</p>
+
+  <p class="ziti3">事件冒泡是事件传播的第三个“阶段”。目标对象本身的事件处理程序调用是第二个阶段。第一个阶段甚至发生在目标处理程序调用之前，称为“捕获”阶段。回顾之前addEventListener()把一个布尔值作为其第三个参数。如果这个参数是true，那么事件处理程序被注册为捕获事件处理程序，它会在事件传播的第一个阶段调用。事件冒泡得到广泛的支持，它能用在包括IE在内的所有浏览器中，且无论事件处理程序用哪种方式注册（除非它们被注册为捕获事件处理程序）。而事件捕获只能用于以addEventListener()注册且第三个参数是true的事件处理程序中。这意味着事件捕获无法在IE9之前的IE中使用，所以在写本章时，它还不是通用的技术。</p>
+
+  <p class="ziti3">事件传播的捕获阶段像反向的冒泡阶段。最先调用Window对象的捕获处理程序，然后是Document对象的捕获处理程序，接着是body对象的，再然后是DOM树向下，以此类推，直到调用事件目标的父元素的捕获事件处理程序。在目标对象本身上注册的捕获事件处理程序不会被调用。</p>
+
+  <p class="ziti3">事件捕获提供了在事件没有送达目标之前查看它们的机会。事件捕获能用于程序调试，或用于后面介绍的事件取消技术，过滤掉事件从而使目标事件处理程序绝不会被调用。事件捕获常用于处理鼠标拖放，因为要处理拖放事件的位置不能是这个元素内部的子元素。请看例17-2。</p>
+
+  <h4 class="p5" id="heading_id_20">17.3.7　事件取消</h4>
+
+  <p class="ziti3">17.3.4节介绍了用属性注册的事件处理程序的返回值能用于取消事件的浏览器默认操作。在支持addEventListener()的浏览器中，也能通过调用事件对象的preventDefault()方法取消事件的默认操作。不过，在IE 9之前的IE中，可以通过设置事件对象的returnValue属性为false来达到同样的效果。下面的代码假设一个事件处理程序，它使用全部三种取消技术：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">function cancelHandler(event){</p>
+
+  <p class="ziti5">var event=event||window.event;//用于IE/*这里是处理事件的代码*/</p>
+
+  <p class="ziti5">//现在取消事件相关的默认行为</p>
+
+  <p class="ziti5">if(event.preventDefault)event.preventDefault();//标准技术</p>
+
+  <p class="ziti5">if(event.returnValue)event.returnValue=false;//IE</p>
+
+  <p class="ziti5">return false;//用于处理使用对象属性注册的处理程序</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">当前的DOM事件模型草案定义了Event对象属性defaultPrevented。它尚未得到广泛支持，但其目的是常态下这个属性是false，但如果preventDefaut()被调用则它将变成true<sup class="calibre2"><a id="ch5" href="part0026.html#ch5-back" class="pcalibre calibre1">[5]</a></sup>。</p>
+
+  <p class="ziti3">取消事件相关的默认操作只是事件取消中的一种，我们也能取消事件传播。在支持addEventListener()的浏览器中，可以调用事件对象的一个stopPropagation()方法以阻止事件的继续传播。如果在同一对象上定义了其他处理程序，剩下的处理程序将依旧被调用，但调用stopPropagation()之后任何其他对象上的事件处理程序将不会被调用。stopPropagation()方法可以在事件传播期间的任何时间调用，它能工作在捕获期阶段、事件目标本身中和冒泡阶段。</p>
+
+  <p class="ziti3">IE9之前的IE不支持stopPropagation()方法。相反，IE事件对象有一个cancelBubble属性，设置这个属性为true能阻止事件进一步传播。（IE8及之前版本不支持事件传播的捕获阶段，所以冒泡是唯一待取消的事件传播。）</p>
+
+  <p class="ziti3">当前的DOM事件规范草案在Event对象上定义另一个方法，命名为stopImmediatePropagation()。类似stopPropagation()，这个方法阻止了任何其他对象的事件传播，但也阻止了在相同对象上注册的任何其他事件处理程序的调用。在写本章时，某些浏览器支持stopImmediatePropagation()，但另外的都不支持。一些像jQuery和YUI之类的工具库定义了跨平台的stopImmediatePropagation()方法。</p>
+
+  <h3 class="p1" id="heading_id_21">17.4　文档加载事件</h3>
+
+  <p class="ziti3">现在已经介绍了JavaScript事件处理的基本原理，我们将开始深入探索具体事件类别，本节将从文档load事件开始。</p>
+
+  <p class="ziti3">大部分Web应用都需要Web浏览器通知它们文档加载完毕和为操作准备就绪的时间。Window对象的load事件就是为了这个目的，第13章详细地讨论过它，同时那章的示例13-5使用了onLoad()工具函数。load事件直到文档和所有图片加载完毕时才发生。然而，在文档完全解析之后但在所有图片全部加载完毕之前开始运行脚本通常是安全的，所以如果基于"load"发生之前的事件触发脚本会提升Web应用的启动时间。</p>
+
+  <p class="ziti3">当文档加载解析完毕且所有延迟（deferred）脚本都执行完毕时会触发DOMContentLoaded事件，此时图片和异步（async）脚本可能依旧在加载，但是文档已经为操作准备就绪了。（13.3.1节介绍过延迟脚本和异步脚本。）Firefox引入了这个事件，然后它被包括Microsoft的IE9在内的所有其他浏览器厂商采用。尽管其名字中有"DOM"，并属于3级DOM事件标准的一部分，但HTML5标准化了它。</p>
+
+  <p class="ziti3">正如13.3.4节所述，document.readyState属性随着文档加载过程而变。在IE中，每次状态改变都伴随着Document对象上的readystatechange事件，当IE接收到"complete"状态时使用这个事件来做判断是可行的。HTML5标准化了readystatechange事件，但它仅在load事件之前立即触发，所以目前尚不清楚监听"readystatechange"取代"load"会带来多大好处。</p>
+
+  <p class="ziti3">例17-1定义了whenReady()函数，它非常像示例13-5的onLoad()函数。当文档为操作准备就绪时，传递给whenReady()的函数将会作为Document对象的方法调用。和之前的onLoad()函数不同，whenReady()监听DOMContentLoaded和readystatechange事件，而使用load事件仅仅是为了兼容那些不支持之前事件的较老浏览器。接下来本节及后面章节的一些例子都使用whenReady()函数。</p>
+
+  <p class="ziti3">例17-1：当文档准备就绪时调用函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">/*</p>
+
+  <p class="ziti5">*传递函数给whenReady()，当文档解析完毕且为操作准备就绪时，</p>
+
+  <p class="ziti5">*函数将作为文档对象的方法调用</p>
+
+  <p class="ziti5">*DOMContentLoaded、readystatechange或load事件发生时会触发注册函数</p>
+
+  <p class="ziti5">*一旦文档准备就绪，所有函数都将被调用，任何传递给whenReady()的函数都将立即调用</p>
+
+  <p class="ziti5">*/</p>
+
+  <p class="ziti5">var whenReady=(function(){//这个函数返回whenReady()函数</p>
+
+  <p class="ziti5">var funcs=[];//当获得事件时，要运行的函数</p>
+
+  <p class="ziti5">var ready=false;//当触发事件处理程序时，切换到true</p>
+
+  <p class="ziti5">//当文档准备就绪时，调用事件处理程序</p>
+
+  <p class="ziti5">function handler(e){//如果已经运行过一次，只需要返回</p>
+
+  <p class="ziti5">if(ready)return;//如果发生readystatechange事件，</p>
+
+  <p class="ziti5">//但其状态不是"complete"的话，那么文档尚未准备好</p>
+
+  <p class="ziti5">if(e.type==="readystatechange"＆＆document.readyState!=="complete")</p>
+
+  <p class="ziti5">return;//运行所有注册函数</p>
+
+  <p class="ziti5">//注意每次都要计算funcs.length，</p>
+
+  <p class="ziti5">//以防这些函数的调用可能会导致注册更多的函数</p>
+
+  <p class="ziti5">for(var i=0;i＜funcs.length;i++)</p>
+
+  <p class="ziti5">funcs[i].call(document);//现在设置ready标识为true，并移除所有函数</p>
+
+  <p class="ziti5">ready=true;</p>
+
+  <p class="ziti5">funcs=null;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//为接收到的任何事件注册处理程序</p>
+
+  <p class="ziti5">if(document.addEventListener){</p>
+
+  <p class="ziti5">document.addEventListener("DOMContentLoaded",handler,false);</p>
+
+  <p class="ziti5">document.addEventListener("readystatechange",handler,false);</p>
+
+  <p class="ziti5">window.addEventListener("load",handler,false);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else if(document.attachEvent){</p>
+
+  <p class="ziti5">document.attachEvent("onreadystatechange",handler);</p>
+
+  <p class="ziti5">window.attachEvent("onload",handler);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//返回whenReady()函数</p>
+
+  <p class="ziti5">return function whenReady(f){</p>
+
+  <p class="ziti5">if(ready)f.call(document);//若准备完毕，只需要运行它</p>
+
+  <p class="ziti5">else funcs.push(f);//否则，加入队列等候</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}());</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_22">17.5　鼠标事件</h3>
+
+  <p class="ziti3">与鼠标相关的事件有不少，表17-1全部把它们列出了。除"mouseenter"和"mouseleave"外的所有鼠标事件都能冒泡。链接和提交按钮上的click事件都有默认操作且能够阻止。可以取消上下文菜单事件来阻止显示上下文菜单，但一些浏览器有配置选项导致不能取消上下文菜单。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00040.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">传递给鼠标事件处理程序的事件对象有clientX和clientY属性，它们指定了鼠标指针相对于包含窗口的坐标。加入窗口的滚动偏移量（见示例15-8）就可以把鼠标位置转换成文档坐标。</p>
+
+  <p class="ziti3">altKey、ctrlKey、metaKey和shiftKey属性指定了当事件发生时是否有各种键盘辅助键按下。例如，这让你能够区分普通单击和按着Shift键的单击。</p>
+
+  <p class="ziti3">button属性指定当事件发生时哪个鼠标按键按下，但是，不同浏览器给这个属性赋不同的值，所以它很难用，更多详细信息请看Event参考页。某些浏览器只在单击左键时才触发click事件，所以如果需要探测其他键的单击需要监听mousedown和mouseup事件。通常contextmenu事件发生的标志是右击，但如上所述，当事件发生时可能无法阻止上下文菜单的显示。</p>
+
+  <p class="ziti3">鼠标事件对象有一些其他的鼠标特定属性，但它们并不常用，具体请看Event参考页的列表。</p>
+
+  <p class="ziti3">例17-2展示了JavaScript函数drag()，它会在mousedown事件处理程序中调用，其允许用户拖放绝对定位的文档元素。drag()能够在DOM和IE事件模型中运行。</p>
+
+  <p class="ziti3">drag()接受两个参数。第一个是要拖动的元素，它可以是发生mousedown事件的元素或包含元素（例如，你可能允许用户拖动的元素看起来像标题栏，而拖动的包含元素像窗口）。然而，无论是哪种情况，它必须是使用CSS position属性绝对定位的文档元素。第二个参数是触发mousedown事件的事件对象。下面是一个使用drag()的简单例子，它定义了用户在按下Shift键时能够拖动的＜img＞：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜img src="draggable.gif"</p>
+
+  <p class="ziti5">style="position:absolute;left:100px;top:100px;"</p>
+
+  <p class="ziti5">onmousedown="if(event.shiftKey)drag(this,event);"＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">drag()函数把mousedown事件发生的位置转换为文档坐标，这是为了计算鼠标指针到正在移动的元素左上角之间的距离。示例15-8使用getScrollOffsets()帮助坐标转换。然后，drag()注册了接着mousedown事件发生的mousemove和mouseup事件的事件处理程序。mousemove事件处理程序用于响应文档元素的移动，而mouseup事件处理程序用于注销自己和mousemove事件处理程序。</p>
+
+  <p class="ziti3">值得注意的是mousemove和mouseup处理程序注册为捕获事件处理程序。这是因为用户可能移动鼠标比其后的文档元素更快，如果这种情况发生，某些mousemove事件会发生在原始目标元素之外。没有捕获，这些事件将无法分派正确的处理程序。IE事件模型无法像标准事件模型那样提供事件捕获，但它在这种情况下有一个专门用于捕获鼠标事件的setCapture()方法。下面的示例代码会展示它是如何工作的。</p>
+
+  <p class="ziti3">最后，注意drag()中定义的moveHandler()和upHandler()函数。由于在嵌套的作用域中定义它们，因此它们能使用drag()的参数和本地变量，这将大大简化它们的实现。</p>
+
+  <p class="ziti3">例17-2：拖动文档元素</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">/**</p>
+
+  <p class="ziti5">*Drag.js：拖动绝对定位的HTML元素</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*这个模块定义了一个drag()函数，它用于mousedown事件处理程序的调用</p>
+
+  <p class="ziti5">*随后的mousemove事件将移动指定元素，mouseup事件将终止拖动</p>
+
+  <p class="ziti5">*这些实现能同标准和IE两种事件模型一起工作</p>
+
+  <p class="ziti5">*它需要用到本书其他地方介绍的getScrollOffsets()方法</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*参数：</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*elementToDrag：接收mousedown事件的元素或某些包含元素</p>
+
+  <p class="ziti5">*它必须是绝对定位的元素</p>
+
+  <p class="ziti5">*它的style.left和style.top值将随着用户的拖动而改变</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*event：mousedown事件对象</p>
+
+  <p class="ziti5">**/</p>
+
+  <p class="ziti5">function drag(elementToDrag,event){//初始鼠标位置，转换为文档坐标</p>
+
+  <p class="ziti5">var scroll=getScrollOffsets();//来自其他地方的工具函数</p>
+
+  <p class="ziti5">var startX=event.clientX+scroll.x;</p>
+
+  <p class="ziti5">var startY=event.clientY+scroll.y;//在文档坐标下，待拖动元素的初始位置</p>
+
+  <p class="ziti5">//因为elementToDrag是绝对定位的，</p>
+
+  <p class="ziti5">//所以我们可以假设它的offsetParent就是文档的body元素</p>
+
+  <p class="ziti5">var origX=elementToDrag.offsetLeft;</p>
+
+  <p class="ziti5">var origY=elementToDrag.offsetTop;//计算mousedown事件和元素左上角之间的距离</p>
+
+  <p class="ziti5">//我们将它另存为鼠标移动的距离</p>
+
+  <p class="ziti5">var deltaX=startX-origX;</p>
+
+  <p class="ziti5">var deltaY=startY-origY;//注册用于响应接着mousedown事件发生的mousemove和mouseup事件的事件处理程序</p>
+
+  <p class="ziti5">if(document.addEventListener){//标准事件模型</p>
+
+  <p class="ziti5">//在document对象上注册捕获事件处理程序</p>
+
+  <p class="ziti5">document.addEventListener("mousemove",moveHandler,true);</p>
+
+  <p class="ziti5">document.addEventListener("mouseup",upHandler,true);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else if(document.attachEvent){//用于IE5～8的IE事件模型</p>
+
+  <p class="ziti5">//在IE事件模型中，</p>
+
+  <p class="ziti5">//捕获事件是通过调用元素上的setCapture()捕获它们</p>
+
+  <p class="ziti5">elementToDrag.setCapture();</p>
+
+  <p class="ziti5">elementToDrag.attachEvent("onmousemove",moveHandler);</p>
+
+  <p class="ziti5">elementToDrag.attachEvent("onmouseup",upHandler);//作为mouseup事件看待鼠标捕获的丢失</p>
+
+  <p class="ziti5">elementToDrag.attachEvent("onlosecapture",upHandler);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//我们处理了这个事件，不让任何其他元素看到它</p>
+
+  <p class="ziti5">if(event.stopPropagation)event.stopPropagation();//标准模型</p>
+
+  <p class="ziti5">else event.cancelBubble=true;//IE</p>
+
+  <p class="ziti5">//现在阻止任何默认操作</p>
+
+  <p class="ziti5">if(event.preventDefault)event.preventDefault();//标准模型</p>
+
+  <p class="ziti5">else event.returnValue=false;//IE/**</p>
+
+  <p class="ziti5">*当元素正在被拖动时，这就是捕获mousemove事件的处理程序</p>
+
+  <p class="ziti5">*它用于移动这个元素</p>
+
+  <p class="ziti5">**/</p>
+
+  <p class="ziti5">function moveHandler(e){</p>
+
+  <p class="ziti5">if(!e)e=window.event;//IE事件模型</p>
+
+  <p class="ziti5">//移动这个元素到当前鼠标位置，</p>
+
+  <p class="ziti5">//通过滚动条的位置和初始单击的偏移量来调整</p>
+
+  <p class="ziti5">var scroll=getScrollOffsets();</p>
+
+  <p class="ziti5">elementToDrag.style.left=(e.clientX+scroll.x-deltaX)+"px";</p>
+
+  <p class="ziti5">elementToDrag.style.top=(e.clientY+scroll.y-deltaY)+"px";//同时不让任何其他元素看到这个事件</p>
+
+  <p class="ziti5">if(e.stopPropagation)e.stopPropagation();//标准</p>
+
+  <p class="ziti5">else e.cancelBubble=true;//IE</p>
+
+  <p class="ziti5">}/**</p>
+
+  <p class="ziti5">*这是捕获在拖动结束时发生的最终mouseup事件的处理程序</p>
+
+  <p class="ziti5">**/</p>
+
+  <p class="ziti5">function upHandler(e){</p>
+
+  <p class="ziti5">if(!e)e=window.event;//IE事件模型</p>
+
+  <p class="ziti5">//注销捕获事件处理程序</p>
+
+  <p class="ziti5">if(document.removeEventListener){//DOM事件模型</p>
+
+  <p class="ziti5">document.removeEventListener("mouseup",upHandler,true);</p>
+
+  <p class="ziti5">document.removeEventListener("mousemove",moveHandler,true);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else if(document.detachEvent){//IE 5+事件模型</p>
+
+  <p class="ziti5">elementToDrag.detachEvent("onlosecapture",upHandler);</p>
+
+  <p class="ziti5">elementToDrag.detachEvent("onmouseup",upHandler);</p>
+
+  <p class="ziti5">elementToDrag.detachEvent("onmousemove",moveHandler);</p>
+
+  <p class="ziti5">elementToDrag.releaseCapture();</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//并且不让事件进一步传播</p>
+
+  <p class="ziti5">if(e.stopPropagation)e.stopPropagation();//标准模型</p>
+
+  <p class="ziti5">else e.cancelBubble=true;//IE</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">下面的代码展示了在HTML文件中如何使用drag()（它是示例16-2带拖动功能的简化版）：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜script src="getScrollOffsets.js"＞＜/script＞＜!--drag()需要这个--＞</p>
+
+  <p class="ziti5">＜script src="Drag.js"＞＜/script＞</p>
+
+  <p class="ziti5">＜!--定义drag()--＞</p>
+
+  <p class="ziti5">＜!--要拖动的元素--＞</p>
+
+  <p class="ziti5">＜div style="position:absolute;left:100px;top:100px;width:250px;</p>
+
+  <p class="ziti5">background-color:white;border:solid black;"＞</p>
+
+  <p class="ziti5">＜!--通过"标题栏"拖动整个元素，注意onmousedown属性--＞</p>
+
+  <p class="ziti5">＜div style="background-color:gray;border-bottom:dotted black;</p>
+
+  <p class="ziti5">padding:3px;font-family:sans-serif;font-weight:bold;"</p>
+
+  <p class="ziti5">onmousedown="drag(this.parentNode,event);"＞</p>
+
+  <p class="ziti5">拖动我＜!--标题栏的内容--＞</p>
+
+  <p class="ziti5">＜/div＞</p>
+
+  <p class="ziti5">＜!--可拖动元素的内容--＞</p>
+
+  <p class="ziti5">＜p＞这是一个测试。测试中，测试中，测试中，＜/p＞＜p＞测试＜/p＞＜p＞测试＜/p＞</p>
+
+  <p class="ziti5">＜/div＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">这里的关键是内部＜div＞元素的onmousedown属性。注意，它使用this.parentNode指定整个容器元素将被拖动。</p>
+
+  <h3 class="p1" id="heading_id_23">17.6　鼠标滚轮事件</h3>
+
+  <p class="ziti3">所有的现代浏览器都支持鼠标滚轮，并在用户滚动滚轮时触发事件。浏览器通常使用鼠标滚轮滚动或缩放文档，但可以通过取消mousewheel事件来阻止这些默认操作。</p>
+
+  <p class="ziti3">有一些互用性问题影响滚轮事件，但编写跨平台的代码依旧可行。在写本章时，除Firefox之外的所有浏览器都支持"mousewheel"事件，但Firefox使用"DOMMouseScroll"，而3级DOM事件规范草案建议使用事件名"wheel"替代"mousewheel"。除了事件名的不同，向各种事件传递的事件对象也使用了不同的属性名来指定滚轮发生的旋转量。最后注意，基础硬件也会导致鼠标滚轮之间的区别。某些硬件允许向前向后的一维滚动，而另一些（尤其是在Mac上）也允许向左向右滚动（在这些鼠标上，“滚轮”其实是轨迹球）。3级DOM规范草案甚至包括支持三维鼠标“滚轮”，除了上下左右，它还能报告顺时针或逆时针旋转。</p>
+
+  <p class="ziti3">传递给"mousewheel"处理程序的事件对象有wheelDelta属性，其指定用户滚动滚轮有多远。远离用户方向的一次鼠标滚轮“单击”的wheelDelta值通常是120，而接近用户方向的一次“单击”的值是-120<sup class="calibre2"><a id="ch6" href="part0026.html#ch6-back" class="pcalibre calibre1">[6]</a></sup>。在Safari和Chrome中，为了支持使用二维轨迹球而非一维滚轮的Apple鼠标，除了wheelDelta属性外，事件对象还有wheelDeltaX和wheelDeltaY，而wheelDelta和wheelDeltaY的值一直相同。</p>
+
+  <p class="ziti3">在Firefox中，可以使用非标准的DOMMouseScroll事件取代mousewheel，使用事件对象的detail属性取代wheelDelta。但是，detail属性值的缩放比率和正负符号不同于wheelDelta，detail值乘以-40和wheelDelta值相等。</p>
+
+  <p class="ziti3">在写本章时，3级DOM事件规范草案标准定义了wheel事件作为mousewheel和DOMMouseScroll的标准版本。传递给wheel事件处理程序的事件对象将有deltaX、deltaY和deltaZ属性，以指定三个维度的旋转。这些值必须乘以-120才和mousewheel事件的wheelDelta值和正负符号相匹配。</p>
+
+  <p class="ziti3">对于所有这些事件类型来说，其事件对象就像鼠标事件对象：它包括鼠标指针的坐标和键盘辅助键的状态。</p>
+
+  <p class="ziti3">例17-3演示了如何使用鼠标滚轮事件和如何实现跨平台的互用性。它定义了enclose()函数在一个较大的内容元素（比如图片）周围包装了一个指定尺寸的“窗体”或“视口”，并定义了鼠标滚轮事件处理程序让用户既能在视口内移动内容元素也能调整视口大小。可以像下面这样在代码中使用enclose()函数：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜script src="whenReady.js"＞＜/script＞</p>
+
+  <p class="ziti5">＜script src="Enclose.js"＞＜/script＞</p>
+
+  <p class="ziti5">＜script＞</p>
+
+  <p class="ziti5">whenReady(function(){</p>
+
+  <p class="ziti5">enclose(document.getElementById("content"),400,200,-200,-300);</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">＜/script＞</p>
+
+  <p class="ziti5">＜style＞div.enclosure{border:solid black 10px;margin:10px;}＜/style＞</p>
+
+  <p class="ziti5">＜img id="content"src="testimage.jpg"/＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">为了能够在所有常用浏览器中正确地工作，例17-3必须执行一些浏览器测试（参见13.4.5节）。这个示例提前使用了3级DOM事件规范草案，包括在代码中使用了wheel事件，当浏览器实现它时即可使用<sup class="calibre2"><a id="ch7" href="part0026.html#ch7-back" class="pcalibre calibre1">[7]</a></sup>。它也包含未来的一些证明，当Firefox开始支持wheel或mousewheel事件时就停止使用DOMMouseScroll。注意，例17-3也是演示元素几何形状和CSS定位技术的示例，这些技术会在15.8节和16.2.1节中说明。</p>
+
+  <p class="ziti3">例17-3：处理鼠标滚轮事件</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//把内容元素装入到一个指定大小（最小是50×50）的窗体或视口内</p>
+
+  <p class="ziti5">//可选参数contentX和contentY指定内容相对于窗体的初始偏移量</p>
+
+  <p class="ziti5">//（如果指定，它们必须＜=0）</p>
+
+  <p class="ziti5">//这个窗体有mousewheel事件处理程序，</p>
+
+  <p class="ziti5">//它允许用户平移元素和缩放窗体</p>
+
+  <p class="ziti5">function enclose(content,framewidth,frameheight,contentX,contentY){//这些参数不仅仅是初始值，</p>
+
+  <p class="ziti5">//它们保存当前状态，能被mousewheel处理程序使用和修改</p>
+
+  <p class="ziti5">framewidth=Math.max(framewidth,50);</p>
+
+  <p class="ziti5">frameheight=Math.max(frameheight,50);</p>
+
+  <p class="ziti5">contentX=Math.min(contentX,0)||0;</p>
+
+  <p class="ziti5">contentY=Math.min(contentY,0)||0;//创建frame元素，且设置CSS类名和样式</p>
+
+  <p class="ziti5">var frame=document.createElement("div");</p>
+
+  <p class="ziti5">frame.className="enclosure";//这样我们能在样式表中定义样式</p>
+
+  <p class="ziti5">frame.style.width=framewidth+"px";//设置frame的尺寸</p>
+
+  <p class="ziti5">frame.style.height=frameheight+"px";</p>
+
+  <p class="ziti5">frame.style.overflow="hidden";//没有滚动条，不能溢出</p>
+
+  <p class="ziti5">frame.style.boxSizing="border-box";//border-box简化了调整frame大小的计算</p>
+
+  <p class="ziti5">frame.style.webkitBoxSizing="border-box";</p>
+
+  <p class="ziti5">frame.style.MozBoxSizing="border-box";//把frame放入文档中，并把内容移入frame中</p>
+
+  <p class="ziti5">content.parentNode.insertBefore(frame,content);</p>
+
+  <p class="ziti5">frame.appendChild(content);//确定元素相对于frame的位置</p>
+
+  <p class="ziti5">content.style.position="relative";</p>
+
+  <p class="ziti5">content.style.left=contentX+"px";</p>
+
+  <p class="ziti5">content.style.top=contentY+"px";//我们将需要针对下面一些特定浏览器怪癖进行处理</p>
+
+  <p class="ziti5">var isMacWebkit=(navigator.userAgent.indexOf("Macintosh")!==-1＆＆</p>
+
+  <p class="ziti5">navigator.userAgent.indexOf("WebKit")!==-1);</p>
+
+  <p class="ziti5">var isFirefox=(navigator.userAgent.indexOf("Gecko")!==-1);//注册mousewheel事件处理程序</p>
+
+  <p class="ziti5">frame.onwheel=wheelHandler;//未来浏览器</p>
+
+  <p class="ziti5">frame.onmousewheel=wheelHandler;//大多数当前浏览器</p>
+
+  <p class="ziti5">if(isFirefox)//仅Firefox</p>
+
+  <p class="ziti5">frame.addEventListener("DOMMouseScroll",wheelHandler,false);</p>
+
+  <p class="ziti5">function wheelHandler(event){</p>
+
+  <p class="ziti5">var e=event||window.event;//标准或IE事件对象</p>
+
+  <p class="ziti5">//查找wheel事件对象、mousewheel事件对象（包括2D和1D形式）</p>
+
+  <p class="ziti5">//和Firefox的DOMMouseScroll事件对象的属性，</p>
+
+  <p class="ziti5">//从事件对象中提取旋转量</p>
+
+  <p class="ziti5">//绽放delta以便一次鼠标滚轮"单击"相对于屏幕的缩放增量是30像素</p>
+
+  <p class="ziti5">//如果未来浏览器在同一事件上同时触发"wheel"和"mousewheel"，</p>
+
+  <p class="ziti5">//这里最终会重复计算，</p>
+
+  <p class="ziti5">//所以，希望取消wheel事件将阻止mousewheel事件的产生</p>
+
+  <p class="ziti5">var deltaX=e.deltaX*-30||//wheel事件</p>
+
+  <p class="ziti5">e.wheelDeltaX/4||//mousewheel</p>
+
+  <p class="ziti5">0;//属性未定义</p>
+
+  <p class="ziti5">var deltaY=e.deltaY*-30||//wheel事件</p>
+
+  <p class="ziti5">e.wheelDeltaY/4||//Webkit中的mousewheel事件</p>
+
+  <p class="ziti5">(e.wheelDeltaY===undefined＆＆//如果没有2D属性，</p>
+
+  <p class="ziti5">e.wheelDelta/4)||//那么就用1D的滚轮属性</p>
+
+  <p class="ziti5">e.detail*-10||//Firefox的DOMMouseScroll事件</p>
+
+  <p class="ziti5">0;//属性未定义</p>
+
+  <p class="ziti5">//在大多数浏览器中，每次鼠标滚轮单击对应的delta是120</p>
+
+  <p class="ziti5">//但是，在Mac中，鼠标滚轮似乎对速度更敏感，</p>
+
+  <p class="ziti5">//其delta值通常要大120倍，使用Apple鼠标至少如此</p>
+
+  <p class="ziti5">//使用浏览器测试解决这个问题</p>
+
+  <p class="ziti5">if(isMacWebkit){</p>
+
+  <p class="ziti5">deltaX/=30;</p>
+
+  <p class="ziti5">deltaY/=30;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//如果在Firefox（未来版本）中得到mousewheel或wheel事件，</p>
+
+  <p class="ziti5">//那么就不再需要DOMMouseScroll</p>
+
+  <p class="ziti5">if(isFirefox＆＆e.type!=="DOMMouseScroll")</p>
+
+  <p class="ziti5">frame.removeEventListener("DOMMouseScroll",wheelHandler,false);//获取内容元素的当前尺寸</p>
+
+  <p class="ziti5">var contentbox=content.getBoundingClientRect();</p>
+
+  <p class="ziti5">var contentwidth=contentbox.right-contentbox.left;</p>
+
+  <p class="ziti5">var contentheight=contentbox.bottom-contentbox.top;</p>
+
+  <p class="ziti5">if(e.altKey){//如果按下Alt键，就可以调整frame大小</p>
+
+  <p class="ziti5">if(deltaX){</p>
+
+  <p class="ziti5">framewidth-=deltaX;//新宽度，但不能比内容大</p>
+
+  <p class="ziti5">framewidth=Math.min(framwidth,contentwidth);</p>
+
+  <p class="ziti5">framewidth=Math.max(framewidth,50);//且也不能比50小</p>
+
+  <p class="ziti5">frame.style.width=framewidth+"px";//在frame上设置它</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">if(deltaY){</p>
+
+  <p class="ziti5">frameheight-=deltaY;//同样的操作对frame的高度做一遍</p>
+
+  <p class="ziti5">frameheight=Math.min(frameheight,contentheight);</p>
+
+  <p class="ziti5">frameheight=Math.max(frameheight-deltaY,50);</p>
+
+  <p class="ziti5">frame.style.height=frameheight+"px";</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else{//没有按下Alt辅助键，就可以平移frame中的内容</p>
+
+  <p class="ziti5">if(deltaX){//不能再滚动了</p>
+
+  <p class="ziti5">var minoffset=Math.min(framewidth-contentwidth,0);//把deltaX添加到contentX中，但不能小于minoffset</p>
+
+  <p class="ziti5">contentX=Math.max(contentX+deltaX,minoffset);</p>
+
+  <p class="ziti5">contentX=Math.min(contentX,0);//或比0大</p>
+
+  <p class="ziti5">content.style.left=contentX+"px";//设置新的偏移量</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">if(deltaY){</p>
+
+  <p class="ziti5">var minoffset=Math.min(frameheight-contentheight,0);//把deltaY添加到contentY，但不能小于minoffset</p>
+
+  <p class="ziti5">contentY=Math.max(contentY+deltaY,minoffset);</p>
+
+  <p class="ziti5">contentY=Math.min(contentY,0);//或比0大</p>
+
+  <p class="ziti5">content.style.top=contentY+"px";//设置新的偏移量</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//不让这个事件冒泡，阻止任何默认操作</p>
+
+  <p class="ziti5">//这会阻止浏览器使用mousewheel事件滚动文档</p>
+
+  <p class="ziti5">//希望对于相同的鼠标滚动，</p>
+
+  <p class="ziti5">//调用wheel事件上的preventDefault()也能阻止mousewheel事件的产生</p>
+
+  <p class="ziti5">if(e.preventDefault)e.preventDefault();</p>
+
+  <p class="ziti5">if(e.stopPropagation)e.stopPropagation();</p>
+
+  <p class="ziti5">e.cancelBubble=true;//IE事件</p>
+
+  <p class="ziti5">e.returnValue=false;//IE事件</p>
+
+  <p class="ziti5">return false;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_24">17.7　拖放事件</h3>
+
+  <p class="ziti3">例17-2展示了如何在应用中响应鼠标拖动。使用像那样的技术允许在网页中拖起和“放置”元素，但真正的“拖放”是另一回事。拖放（Drag-and-Drop，DnD）是在“拖放源（drag source）”和“拖放目标（drop target）”之间传输数据的用户界面，它可以存在相同应用之间也可是不同应用之间。拖放是复杂的人机交互，用于实现拖放的API总是很复杂：</p>
+
+  <p class="ziti3">·它们必须和底层OS结合，使它们能够在不相关的应用间工作。</p>
+
+  <p class="ziti3">·它们必须适用于“移动”、“复制”和“链接”数据传输操作，允许拖放源和拖放目标通过设置限制允许的操作，然后让用户选择（通常使用键盘辅助键）许可设置。</p>
+
+  <p class="ziti3">·它们必须为拖放源提供一种方式指定待拖动的图标或图像。</p>
+
+  <p class="ziti3">·它们必须为拖放源和拖放目标的DnD交互过程提供基于事件的通知。</p>
+
+  <p class="ziti3">在Microsoft在IE的早期版本引入了DnD API。它并不是精心设计且良好归档的API，但其他浏览器都尝试复制它，且HTML5标准化了类似IE DnD API的东西并增加了使API更易于使用的新特性。在写本章时，这些新的易于使用的DnD API尚未实现，所以本节包括了IE API来表示对HTM5标准祝福。</p>
+
+  <p class="ziti3">IE DnD API难以使用以及当前浏览器的不同实现使得无法共同使用API一些较复杂的部分，但它允许Web应用像普通的桌面应用一样参与应用间DnD。浏览器一直能够实现简单的DnD。如果在Web浏览器中选择了文本，非常容易把文本拖到字处理器中。同时如果在字处理器中选择一个URL，你能把它拖到浏览器中并使浏览器访问这个URL。本节演示了如何创建自定义拖放源和自定义拖放目标，前者传输数据而不是其文本内容，后者以某种方式响应拖放数据而不是仅显示它。</p>
+
+  <p class="ziti3">DnD总是基于事件且JavaScript API包含两个事件集，一个在拖放源上触发，另一个在拖放目标上触发。所有传递给DnD事件处理程序的事件对象都类似鼠标事件对象，另外它拥有dataTransfer属性。这个属性引用DataTransfer对象，该对象定义DnD API的方法和属性。</p>
+
+  <p class="ziti3">拖放源事件相当简单，我们就从它们开始。任何有HTML draggab le属性的文档元素都是拖放源。当用户开始用鼠标在拖放源上拖动时，浏览器并没有选择元素内容，相反，它在这个元素上触发dragstart事件。这个事件的处理程序就调用dataTransfer.setData()指定当前可用的拖放源数据（和数据类型）。（当新的HTML5 API实现时，可以用dataTransfer.items.add()代替。）这个事件处理程序也可以设置dataTransfer.effectAllowed来指定支持“移动”、“复制”和“链接”传输操作中的几种，同时它可以调用dataTransfer.setDragImage()或dataTransfer.addElement()（在那些支持这些方法的浏览器中）指定图片或文档元素用做拖动时的视觉表现。</p>
+
+  <p class="ziti3">在拖动的过程中，浏览器在拖放源上触发拖动事件。如果想更新拖动图片或修改提供的数据，可以监听这些事件，但一般不需要注册“拖动”事件处理程序。</p>
+
+  <p class="ziti3">当放置数据发生时会触发dragend事件。如果拖放源支持“移动”操作，它就会检查dataTransfer.dropEffect去看看是否实际执行了移动操作。如果执行了，数据就被传输到其他地方，你应该从拖放源中删除它。</p>
+
+  <p class="ziti3">实现简单的自定义拖放源只需要dragstart事件。例17-4就是这样的例子，它在＜span＞元素中用"hh:mm"格式显示当前时间，并每分钟更新一次时间。假设这是示例要做的一切，用户能选择时钟中显示的文本，然后拖动这个时间。但在这个例子中JavaScript代码通过设置时钟元素的draggable属性为true和定义ondragstart事件处理程序函数来使得时钟成为自定义拖放源。事件处理程序使用dataTransfer.setData()指定一个完整的时间戳字符串（包括日期、秒和时区信息）作为待拖动的数据。它还调用dataTransfer.setDragIcon()指定待拖动的图片（一个时钟图标）。</p>
+
+  <p class="ziti3">例17-4：一个自定义拖放源</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜script src="whenReady.js"＞＜/script＞</p>
+
+  <p class="ziti5">＜script＞</p>
+
+  <p class="ziti5">whenReady(function(){</p>
+
+  <p class="ziti5">var clock=document.getElementById("clock");//时钟元素</p>
+
+  <p class="ziti5">var icon=new Image();//用于拖动的图片</p>
+
+  <p class="ziti5">icon.src="clock-icon.png";//图片URL</p>
+
+  <p class="ziti5">//每分钟显示一次时间</p>
+
+  <p class="ziti5">function displayTime(){</p>
+
+  <p class="ziti5">var now=new Date();//获取当前时间</p>
+
+  <p class="ziti5">var hrs=now.getHours(),mins=now.getMinutes();</p>
+
+  <p class="ziti5">if(mins＜10)mins="0"+mins;</p>
+
+  <p class="ziti5">clock.innerHTML=hrs+":"+mins;//显示当前时间</p>
+
+  <p class="ziti5">setTimeout(displayTime,60000);//一分钟后将再次运行</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">displayTime();//使时钟能够拖动</p>
+
+  <p class="ziti5">//我们也能通过HTML属性实现这个目的：＜span draggable="true"＞...</p>
+
+  <p class="ziti5">clock.draggable=true;//设置拖动事件处理程序</p>
+
+  <p class="ziti5">clock.ondragstart=function(event){</p>
+
+  <p class="ziti5">var event=event||window.event;//用于IE兼容性</p>
+
+  <p class="ziti5">//dataTransfer属性是拖放API的关键</p>
+
+  <p class="ziti5">var dt=event.dataTransfer;//告诉浏览器正在拖动的是什么</p>
+
+  <p class="ziti5">//把Date()构造函数用做一个返回时间戳字符串的函数</p>
+
+  <p class="ziti5">dt.setData("Text",Date()+"\n");//在支持的浏览器中，告诉它拖动图标来表现时间戳</p>
+
+  <p class="ziti5">//没有这行代码，浏览器也可以使用时钟文本图像作为拖动的值</p>
+
+  <p class="ziti5">if(dt.setDragImage)dt.setDragImage(icon,0,0);</p>
+
+  <p class="ziti5">};</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">＜/script＞</p>
+
+  <p class="ziti5">＜style＞</p>
+
+  <p class="ziti5">#clock{/*使时钟好看一些*/</p>
+
+  <p class="ziti5">font:bold 24pt sans;background:#ddf;padding:10px;</p>
+
+  <p class="ziti5">border:solid black 2px;border-radius:10px;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">＜/style＞</p>
+
+  <p class="ziti5">＜h1＞从时钟中拖出时间戳＜/h1＞</p>
+
+  <p class="ziti5">＜span id="clock"＞＜/span＞＜!--时间显示在这里--＞</p>
+
+  <p class="ziti5">＜textarea cols=60 rows=20＞＜/textarea＞＜!--把时间戳放置在这里--＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">拖放目标比拖放源更棘手。任何文档元素都可以是拖放目标，这不需要像拖放源一样设置HTML属性，只需要简单地定义合适的事件监听程序。（但是使用新的HTML5 DnD API，将可以在拖放目标上定义dropzone属性来取代定义后面介绍的一部分事件处理程序。）有4个事件在拖放目标上触发。当拖放对象（dragged object）进入文档元素时，浏览器在这个元素上触发dragenter事件。拖放目标应该使用dataTransfer.types属性确定拖放对象的可用数据是否是它能理解的格式。（也可以检查data Transfer.effectAllowed确保拖放源和拖放目标同意使用移动、复制和链接操作中的一个。）如果检查成功，拖放目标必须要让用户和浏览器都知道它对放置感兴趣。可以通过改变它的边框或背景颜色来向用户反馈。令人吃惊的是，拖放目标通过取消事件来告知浏览器它对放置感兴趣。</p>
+
+  <p class="ziti3">如果元素不取消浏览器发送给它的dragenter事件，浏览器将不会把它作为这次拖放的拖放目标，并不会向它再发送任何事件。但如果拖放目标取消了dragenter事件，浏览器将发送dragover事件表示用户继续在目标上拖动对象。再一次令人吃惊的是，拖放目标必须监听且取消所有这些事情来表明它继续对放置感兴趣。如果拖放目标想指定它只允许移动、复制或链接操作，它应该使用dragover事件处理程序来设置dataTransfrer.dropEffect。</p>
+
+  <p class="ziti3">如果用户移动拖放对象离开通过取消事件表明有兴趣的拖放目标，那么在拖放目标上将触发dragleave事件。这个事件的处理程序应该恢复元素的边框或背景颜色或取消任何其他为响应dragenter事件而执行的可视化反馈。遗憾的是，dragenter和dragleave事件会冒泡，如果拖放目标内部有嵌套元素，想知道dragleave事件表示拖放对象从拖放目标离开到目标外的事件还是到目标内的事件非常困难。</p>
+
+  <p class="ziti3">最后，如果用户把拖放对象放置到拖放目标上，在拖放目标上会触发drop事件。这个事件的处理程序应该使用dataTransfer.getData()获取传输的数据并做一些适当的处理。另外，如果用户在拖放目标放置一或多个文件，dataTransfer.files属性将是一个类数组的File对象。（见例18-11的说明。）使用新的HTML5 API，drop事件处理程序将能遍历dataTransfer.items[]的元素去检查文件和非文件数据。</p>
+
+  <p class="ziti3">例17-5演示如何使＜ul＞元素成为拖放目标，同时如何使它们中的＜li＞元素成为拖放源。这个示例是一段不唐突的JavaScript<sup class="calibre2"><a id="ch8" href="part0026.html#ch8-back" class="pcalibre calibre1">[8]</a></sup>代码，它查找class属性包含"dnd"的＜ul＞元素，在它找到的此类列表上注册DnD事件处理程序。这些事件处理程序使列表本身成为拖放目标，在这个列表上放置的任何文本会变成新的列表项并插入到列表尾部。这些事件处理程序也监听列表项的拖动，使得每个列表项的文本可用于传输。拖放源事件处理程序允许“复制”和“移动”操作，并在移动操作下放置对象时会删除原有列表项。（但是，请注意并不是所有的浏览器都支持移动操作。）</p>
+
+  <p class="ziti3">例17-5：作为拖放目标和拖放源的列表</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">/*</p>
+
+  <p class="ziti5">*DnD API相当复杂，且浏览器也不完全兼容</p>
+
+  <p class="ziti5">*这个例子基本正确，但每个浏览器会有一点不同，每个似乎都有自身独有的bug</p>
+
+  <p class="ziti5">*这些代码不会尝试浏览器特有的解决方案</p>
+
+  <p class="ziti5">*/</p>
+
+  <p class="ziti5">whenReady(function(){//当文档准备就绪时运行这个函数</p>
+
+  <p class="ziti5">//查找所有的＜ul class='dnd'＞元素，并对其调用dnd()函数</p>
+
+  <p class="ziti5">var lists=document.getElementsByTagName("ul");</p>
+
+  <p class="ziti5">var regexp=/\bdnd\b/;</p>
+
+  <p class="ziti5">for(var i=0;i＜lists.length;i++)</p>
+
+  <p class="ziti5">if(regexp.test(lists[i].className))dnd(lists[i]);//为列表元素添加拖放事件处理程序</p>
+
+  <p class="ziti5">function dnd(list){</p>
+
+  <p class="ziti5">var original_class=list.className;//保存原始CSS类</p>
+
+  <p class="ziti5">var entered=0;//跟踪进入和离开</p>
+
+  <p class="ziti5">//当拖放对象首次进入列表时调用这个处理程序</p>
+
+  <p class="ziti5">//它会检查拖放对象包含的数据格式它是否能处理</p>
+
+  <p class="ziti5">//如果能，它返回false来表示有兴趣放置</p>
+
+  <p class="ziti5">//在这种情况下，它会高亮拖放目标，让用户知道该兴趣</p>
+
+  <p class="ziti5">list.ondragenter=function(e){</p>
+
+  <p class="ziti5">e=e||window.event;//标准或IE事件</p>
+
+  <p class="ziti5">var from=e.relatedTarget;//dragenter和dragleave事件冒泡，</p>
+
+  <p class="ziti5">//它使得在像＜ul＞元素有＜li＞子元素的情况下，</p>
+
+  <p class="ziti5">//何时高亮显示或取消高亮显示元素变得棘手</p>
+
+  <p class="ziti5">//在定义relatedTarget的浏览器中，我们能跟踪它</p>
+
+  <p class="ziti5">//否则，我们需要通过统计进入和离开的次数</p>
+
+  <p class="ziti5">//如果从列表外面进入或第一次进入，</p>
+
+  <p class="ziti5">//那么需要做一些处理</p>
+
+  <p class="ziti5">entered++;</p>
+
+  <p class="ziti5">if((from＆＆!ischild(from,list))||entered==1){//所有的DnD信息都在dataTransfer对象上</p>
+
+  <p class="ziti5">var dt=e.dataTransfer;//dt.types对象列出可用的拖放数据的类型或格式</p>
+
+  <p class="ziti5">//HTML5定义这个对象有contains()方法</p>
+
+  <p class="ziti5">//在一些浏览器中，它是一个有indexOf()方法的数组</p>
+
+  <p class="ziti5">//在IE8以及之前版本中，它根本不存在</p>
+
+  <p class="ziti5">var types=dt.types;//可用数据格式是什么</p>
+
+  <p class="ziti5">//如果没有任何类型的数据或可用数据是纯文本格式，</p>
+
+  <p class="ziti5">//那么高亮显示列表让用户知道我们正在监听拖放，</p>
+
+  <p class="ziti5">//同时返回false让浏览器知晓</p>
+
+  <p class="ziti5">if(!types||//IE</p>
+
+  <p class="ziti5">(types.contains＆＆types.contains("text/plain"))||//HTML5</p>
+
+  <p class="ziti5">(types.indexOf＆＆types.indexOf("text/plain")!=-1))//Webkit</p>
+
+  <p class="ziti5">{</p>
+
+  <p class="ziti5">list.className=original_class+"droppable";</p>
+
+  <p class="ziti5">return false;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//如果我们无法识别数据类型，我们不希望拖放</p>
+
+  <p class="ziti5">return;//没有取消</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">return false;//如果不是第一次进入，我们继续保持兴趣</p>
+
+  <p class="ziti5">};//当鼠标指针悬停在列表上时，会调用这个处理程序</p>
+
+  <p class="ziti5">//我们必须定义这个处理程序并返回false，否则这个拖放操作将取消</p>
+
+  <p class="ziti5">list.ondragover=function(e){return false;};//当拖放对象移出列表或从其子元素中移出时，会调用这个处理程序</p>
+
+  <p class="ziti5">//如果我们真正离开这个列表（不是仅仅从一个列表项到另一个），</p>
+
+  <p class="ziti5">//那么取消高亮显示它</p>
+
+  <p class="ziti5">list.ondragleave=function(e){</p>
+
+  <p class="ziti5">e=e||window.event;</p>
+
+  <p class="ziti5">var to=e.relatedTarget;//如果我们要到列表以外的元素或打破离开和进入次数的平衡，</p>
+
+  <p class="ziti5">//那么取消高亮显示列表</p>
+
+  <p class="ziti5">entered--;</p>
+
+  <p class="ziti5">if((to＆＆!ischild(to,list))||entered＜=0){</p>
+
+  <p class="ziti5">list.className=original_class;</p>
+
+  <p class="ziti5">entered=0;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">return false;</p>
+
+  <p class="ziti5">};//当实际放置时，会调用这个程序</p>
+
+  <p class="ziti5">//我们会接受放下的文本并将其放到一个新的＜li＞元素中</p>
+
+  <p class="ziti5">list.ondrop=function(e){</p>
+
+  <p class="ziti5">e=e||window.event;//获得事件</p>
+
+  <p class="ziti5">//获得放置的纯文本数据</p>
+
+  <p class="ziti5">//"Text"是"text/plain"的昵称，</p>
+
+  <p class="ziti5">//IE不支持"text/plain"，所以在这里使用"Text"</p>
+
+  <p class="ziti5">var dt=e.dataTransfer;//dataTransfer对象</p>
+
+  <p class="ziti5">var text=dt.getData("Text");//获取放置的纯文本数据</p>
+
+  <p class="ziti5">//如果得到一些文本，把它放入列表尾部的新项中</p>
+
+  <p class="ziti5">if(text){</p>
+
+  <p class="ziti5">var item=document.createElement("li");//创建新＜li＞</p>
+
+  <p class="ziti5">item.draggable=true;//使它可拖动</p>
+
+  <p class="ziti5">item.appendChild(document.createTextNode(text));//添加文本</p>
+
+  <p class="ziti5">list.appendChild(item);//把它添加到列表中</p>
+
+  <p class="ziti5">//恢复列表的原始样式且重置进入次数</p>
+
+  <p class="ziti5">list.className=original_class;</p>
+
+  <p class="ziti5">entered=0;</p>
+
+  <p class="ziti5">return false;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">};//使原始所有列表项都可拖动</p>
+
+  <p class="ziti5">var items=list.getElementsByTagName("li");</p>
+
+  <p class="ziti5">for(var i=0;i＜items.length;i++)</p>
+
+  <p class="ziti5">items[i].draggable=true;//为拖动列表项注册事件处理程序</p>
+
+  <p class="ziti5">//注意我们把处理程序放在列表上，</p>
+
+  <p class="ziti5">//让事件从列表项向上冒泡</p>
+
+  <p class="ziti5">//当在列表中开始拖动对象，会调用这个处理程序</p>
+
+  <p class="ziti5">list.ondragstart=function(e){</p>
+
+  <p class="ziti5">var e=e||window.event;</p>
+
+  <p class="ziti5">var target=e.target||e.srcElement;//如果它不是从＜li＞向上冒泡，那么忽略它</p>
+
+  <p class="ziti5">if(target.tagName!=="LI")return false;//获得最重要的dataTransfer对象</p>
+
+  <p class="ziti5">var dt=e.dataTransfer;//设置拖动的数据和数据类型</p>
+
+  <p class="ziti5">dt.setData("Text",target.innerText||target.textContent);//设置允许复制和移动这些数据</p>
+
+  <p class="ziti5">dt.effectAllowed="copyMove";</p>
+
+  <p class="ziti5">};//当成功的放置后，将调用这个处理程序</p>
+
+  <p class="ziti5">list.ondragend=function(e){</p>
+
+  <p class="ziti5">e=e||window.event;</p>
+
+  <p class="ziti5">var target=e.target||e.srcElement;//如果这个拖放操作是move，那么要删除列表项</p>
+
+  <p class="ziti5">//在IE8中，它将是"none"，除非在之前的ondrop处理程序中显式设置它为move</p>
+
+  <p class="ziti5">//但为IE强制设置"move"会阻止其他浏览器给用户选择复制还是移动的机会</p>
+
+  <p class="ziti5">if(e.dataTransfer.dropEffect==="move")</p>
+
+  <p class="ziti5">target.parentNode.removeChild(target);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//这是在ondragenter和ondragleave使用的工具函数</p>
+
+  <p class="ziti5">//如果a是b的子元素则返回true</p>
+
+  <p class="ziti5">function ischild(a,b){</p>
+
+  <p class="ziti5">for(;a;a=a.parentNode)if(a===b)return true;</p>
+
+  <p class="ziti5">return false;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">});</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_25">17.8　文本事件</h3>
+
+  <p class="ziti3">浏览器有3个传统的键盘输入事件。keydown事件和keyup事件是低级事件，下一节会介绍。不过，keypress事件是较高级的事件，它表示产生了一个可打印字符。3级DOM事件规范草案定义一个更通用的textinput事件，不管来源（例如：键盘、粘贴或拖放形式的数据传输、亚洲语言输入法、声音或手写识别系统），无论何时用户输入文本时都会触发它。在写本章时，textinput事件尚未得到支持，但Webkit浏览器支持一个非常类似的"textInput"（使用大写字母I）事件。</p>
+
+  <p class="ziti3">建议中的textinput事件和已经实现的textInput事件都传递一个简单的事件对象，它有一个用于保存输入文本的data属性。（另一个属性inputMethod是建议用于指定输入源，但它尚未实现。）对于键盘输入，data属性通常只保存单个字符，但其他输入源通常可能包含多个字符。</p>
+
+  <p class="ziti3">通过keypress事件传递的对象更加混乱。一个keypress事件表示输入的单个字符。事件对象以数字Unicode编码的形式指定字符，所以必须用String.fromCharCode()把它转换成字符串。在大多数浏览器中，事件对象的keyCode属性指定了输入字符的编码。但是由于历史的原因，Firefox使用的是charCode属性。大多数浏览器只在当产生可打印字符时触发keypress事件。但是Firefox在产生非打印字符时也触发keypress事件。为了检测这种情况（这样就能忽略非打印字符），可以查找有charCode属性但值为0的事件对象。</p>
+
+  <p class="ziti3">可以通过取消textinput、textInput和keypress事件来阻止字符输入，这意味着可以使用这些事件来过滤输入。例如，你可能想阻止用户在只接受数字数据的域中输入字母。例17-6是一段不唐突的JavaScript代码模块，它恰好实现了这种过滤。它查找有额外属性（非标准）data-allowed-chars的＜input type=text＞元素。这个模块在这类文本输入域上注册了textinput、textInput和keypress事件的处理程序来限制用户只能输入出现在许可属性值中的字符。例17-6顶部注释的开头部分包含使用这个模块的一些HTML代码示例。</p>
+
+  <p class="ziti3">例17-6：过滤用户输入</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">/**</p>
+
+  <p class="ziti5">*InputFilter.js：不唐突地过滤＜input＞元素的键盘输入</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*这个模块查找文档中拥有"data-allowed-chars"属性的所有＜input type="text"＞元素</p>
+
+  <p class="ziti5">*它为所有这类元素都注册keypress、textInput和textinput事件处理程序，</p>
+
+  <p class="ziti5">*来限制用户只能输入出现在许可属性值中的字符</p>
+
+  <p class="ziti5">*如果＜input＞元素也有一个"data-messageid"属性，</p>
+
+  <p class="ziti5">*那么认为这个值是另一个文档元素的id</p>
+
+  <p class="ziti5">*如果用户输入了不允许的字符，那么会显示消息元素</p>
+
+  <p class="ziti5">*如果用户输入了允许的字符，那么会隐藏消息元素</p>
+
+  <p class="ziti5">*这个信息id元素用于向用户说明拒绝输入的原因</p>
+
+  <p class="ziti5">*它通常应该由CSS控制样式，所以它开始不可见</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*下面是使用这个模块的HTML代码示例</p>
+
+  <p class="ziti5">*邮政编码：＜input id="zip"type="text"</p>
+
+  <p class="ziti5">*data-allowed-chars="0123456789"data-messageid="zipwarn"＞</p>
+
+  <p class="ziti5">*＜span id="zipwarn"style="color:red;visibility:hidden"＞只支持数字＜/span＞</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*这个模块相当地不唐突，它没有定义全局命名空间中的任何符号</p>
+
+  <p class="ziti5">*/</p>
+
+  <p class="ziti5">whenReady(function(){//当文档加载完毕时，运行这个函数</p>
+
+  <p class="ziti5">//查找所有＜input＞元素</p>
+
+  <p class="ziti5">var inputelts=document.getElementsByTagName("input");//遍历它们</p>
+
+  <p class="ziti5">for(var i=0;i＜inputelts.length;i++){</p>
+
+  <p class="ziti5">var elt=inputelts[i];//跳过不是文本域或没有data-allowed-chars属性的元素</p>
+
+  <p class="ziti5">if(elt.type!="text"||!elt.getAttribute("data-allowed-chars"))</p>
+
+  <p class="ziti5">continue;//在input元素上注册事件处理程序函数</p>
+
+  <p class="ziti5">//传统的keypress事件处理程序能够在任何地方运行</p>
+
+  <p class="ziti5">//textInput（混合大小写）在2010年后Safari和Chrome支持</p>
+
+  <p class="ziti5">//textinput（小写）是3级DOM事件规范草案中的版本</p>
+
+  <p class="ziti5">if(elt.addEventListener){</p>
+
+  <p class="ziti5">elt.addEventListener("keypress",filter,false);</p>
+
+  <p class="ziti5">elt.addEventListener("textInput",filter,false);</p>
+
+  <p class="ziti5">elt.addEventListener("textinput",filter,false);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else{//不支持addEventListener()的IE也不会支持textinput</p>
+
+  <p class="ziti5">elt.attachEvent("onkeypress",filter);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//这是用于过滤用户输入的keypress、textInput和textinput事件处理程序</p>
+
+  <p class="ziti5">function filter(event){//获取事件对象和目标元素对象</p>
+
+  <p class="ziti5">var e=event||window.event;//标准或IE模型</p>
+
+  <p class="ziti5">var target=e.target||e.srcElement;//标准或IE模型</p>
+
+  <p class="ziti5">var text=null;//输入的文本</p>
+
+  <p class="ziti5">//获取输入的字符或文本</p>
+
+  <p class="ziti5">if(e.type==="textinput"||e.type==="textInput")text=e.data;</p>
+
+  <p class="ziti5">else{//这是传统的keypress事件</p>
+
+  <p class="ziti5">//对于可打印键的keypress事件，Firefox使用charCode</p>
+
+  <p class="ziti5">var code=e.charCode||e.keyCode;//如果按下的是任何形式的功能键，不要过滤它</p>
+
+  <p class="ziti5">if(code＜32||//ASCII控制字符</p>
+
+  <p class="ziti5">e.charCode==0||//功能键（仅指Firefox）</p>
+
+  <p class="ziti5">e.ctrlKey||e.altKey)//按下辅助键</p>
+
+  <p class="ziti5">return;//不过滤这个事件</p>
+
+  <p class="ziti5">//把字符编码转化为字符串</p>
+
+  <p class="ziti5">var text=String.fromCharCode(code);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//现在需要从input元素中寻找所需信息</p>
+
+  <p class="ziti5">var allowed=target.getAttribute("data-allowed-chars");//合法字符</p>
+
+  <p class="ziti5">var messageid=target.getAttribute("data-messageid");//信息元素id</p>
+
+  <p class="ziti5">if(messageid)//如果存在消息元素id，那么获取这个元素</p>
+
+  <p class="ziti5">var messageElement=document.getElementById(messageid);//遍历输入文本中的字符</p>
+
+  <p class="ziti5">for(var i=0;i＜text.length;i++){</p>
+
+  <p class="ziti5">var c=text.charAt(i);</p>
+
+  <p class="ziti5">if(allowed.indexOf(c)==-1){//这是不允许的字符吗？</p>
+
+  <p class="ziti5">//如果存在不合法字符，显示消息元素</p>
+
+  <p class="ziti5">if(messageElement)messageElement.style.visibility="visible";//取消默认行为，所有不会插入文本</p>
+
+  <p class="ziti5">if(e.preventDefault)e.preventDefault();</p>
+
+  <p class="ziti5">if(e.returnValue)e.returnValue=false;</p>
+
+  <p class="ziti5">return false;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//如果所有的字符都合法，隐藏存在的消息元素</p>
+
+  <p class="ziti5">if(messageElement)messageElement.style.visibility="hidden";</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">});</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">keypress和textinput事件是在新输入的文本真正插入到聚焦的文档元素前触发，这就是这些事件处理程序能够取消事件和阻止文本插入的原因。浏览器也实现了在文本插入到元素后才触发的input事件类型input。虽然这些事件不能取消，不能指定其事件对象中的最新文本，但它们能以某种形式提供元素文本内容发生改变的通知。例如，如果想确保输入框中输入的任何文本都是大写，那么可以像如下这样使用input事件：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">姓氏：＜input type="text"oninput="this.value=this.value.toUpperCase();"＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">HTML5标准化了input事件，除IE外的所有浏览器都支持它。在IE中，可以使用不标准的propertychange事件检测文本输入元素的value属性改变来实现相似的效果。例17-7展示可以用一种跨平台的方式强制所有输入都大写。</p>
+
+  <p class="ziti3">例17-7：使用propertychange事件探测文本输入</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">function forceToUpperCase(element){</p>
+
+  <p class="ziti5">if(typeof element==="string")element=document.getElementById(element);</p>
+
+  <p class="ziti5">element.oninput=upcase;</p>
+
+  <p class="ziti5">element.onpropertychange=upcaseOnPropertyChange;//简易案例：用于input事件的处理程序</p>
+
+  <p class="ziti5">function upcase(event){this.value=this.value.toUpperCase();}//疑难案例：用于propertychange事件的处理程序</p>
+
+  <p class="ziti5">function upcaseOnPropertyChange(event){</p>
+
+  <p class="ziti5">var e=event||window.event;//如果value属性发生改变</p>
+
+  <p class="ziti5">if(e.propertyName==="value"){//移除onpropertychange处理程序，避免循环调用</p>
+
+  <p class="ziti5">this.onpropertychange=null;//把值都变成大写</p>
+
+  <p class="ziti5">this.value=this.value.toUpperCase();//然后恢复原来的propertychange处理程序</p>
+
+  <p class="ziti5">this.onpropertychange=upcaseOnPropertyChange;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_26">17.9　键盘事件</h3>
+
+  <p class="ziti3">当用户在键盘上按下或释放按键时，会发生keydown和keyup事件。它们由辅助键、功能键和字母数字键产生<sup class="calibre2"><a id="ch9" href="part0026.html#ch9-back" class="pcalibre calibre1">[9]</a></sup>如果用户按键时间足够长会导致它开始重复，那么在keyup事件到达之前会收到多个keydown事件。</p>
+
+  <p class="ziti3">这些事件相关的事件对象都有数字属性keyCode，指定了按下的键是哪个。对于产生可打印字符的按键，keyCode值是按键上出现的主要字符的Unicode编码。无论Shift键处于什么状态，字母键总是产生大写keyCode值，这是因为它们出现在物理键盘上。类似地，即使为了输入标点字符而按下了Shift键，但数字键产生的keyCode值就是出现在对应键上的数字。对于不可打印键，keyCode属性将是一些其他值。keyCode值尚未标准化，但适当的跨浏览器兼容性是可行的。例17-8包含一个从keyCode值到功能键名字的映射。</p>
+
+  <p class="ziti3">类似鼠标事件对象，键盘事件对象有altKey、ctrlKey、metakey和shiftKey属性，当事件发生时，如果对应的辅助键被按下，那么它们会被设置为true。</p>
+
+  <p class="ziti3">keydown和keyup事件及keyCode属性已经使用了十多年，但从未标准化。3级DOM事件规范草案标准化了keydown和keyup事件类型，但没有尝试标准化keyCode。相反，它定义了新属性key，它会以字符串的形式包含键名。如果按键对应的是一个可打印字符，那么key属性将仅仅是这个可打印字符。如果按键是功能键，那么key属性将是像"F2"、"Home"或"Left"这样的值。</p>
+
+  <p class="ziti3">在写本章时，3级DOM事件的key属性尚未在任何浏览器中实现。但是，像Safari和Chrome这类基于Webkit的浏览器为这些事件的事件对象定义了一个keyIdentifier属性。类似key，keyIdentifier是字符串而非数字，并且对于功能键，它是像"Shift"、"Enter"这样有用的值。对于可打印字符，该属性保存了这个字符的Unicode编码的字符串表示形式，其用处要小一些。例如，对于A键，它是"U+0041"。</p>
+
+  <p class="ziti3">例17-8定义了一个Keymap类，把像"PageUp"、"Alt_Z"和"ctrl+alt+shift+F5"这些按键标识符映射到JavaScript函数，这些函数会作为按键的响应而调用。以JavaScript对象的形式把按键的绑定传给Keymap()构造函数，在对象中属性名是按键标识符，而属性值是处理程序函数。使用bind()和unbind()方法添加和移除绑定。使用install()方法在HTML元素（通常是Document对象）上配置Keymap。通过在元素上注册keydown事件处理程序配置Keymap。每次键被按下，处理程序检查是否有与按键相关的函数。如果有，就调用它。在keydown事件处理程序中如果能定义3级DOM事件的key属性就会优先使用它。如果没有，它会查找Webkit的keyIdentifier属性然后使用它。否则，它退回使用不标准的keyCode属性。例17-8开头有段很长的注释来解释这个模块的更多详细信息。</p>
+
+  <p class="ziti3">例17-8：键盘快捷键的Keymap类</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">/*</p>
+
+  <p class="ziti5">*Keymap.js：绑定键盘事件和处理程序函数</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*这个模块定义一个Keymap类</p>
+
+  <p class="ziti5">*这个类的实例表示按键标识符（下面有定义）到处理程序函数的映射</p>
+
+  <p class="ziti5">*Keymap能配置到HTML元素上以处理keydown事件</p>
+
+  <p class="ziti5">*当此类事件发生时，Keymap会使用它的映射来调用合适的处理程序</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*当创建Keymap时，</p>
+
+  <p class="ziti5">*能传入一个JavaScript对象，它表示Keymap绑定的初始设置</p>
+
+  <p class="ziti5">*对象的属性名是按键标识符，而属性值是处理程序函数</p>
+
+  <p class="ziti5">*在创建Keymap之后，</p>
+
+  <p class="ziti5">*通过给bind()方法传入按键标识符和处理程序函数可以添加一个新绑定</p>
+
+  <p class="ziti5">*能给unbind()方法传入按键标识符来移除绑定</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*通过给Keymap的install()方法传入像document对象这样的HTML元素，然后就可以使用它</p>
+
+  <p class="ziti5">*install()方法给指定的对象添加onkeydown事件处理程序</p>
+
+  <p class="ziti5">*当调用这个处理程序时，</p>
+
+  <p class="ziti5">*它判断按下键的按键标识符，</p>
+
+  <p class="ziti5">*如果有这个按键标识符的任何绑定，就调用对应的处理程序函数</p>
+
+  <p class="ziti5">*一个Keymap可以在多个HTML元素上配置</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*按键标识符</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*按键标识符是一个区分大小写的字符串，</p>
+
+  <p class="ziti5">*它表示按键加上同一时刻按下的辅助键</p>
+
+  <p class="ziti5">*按键的名字通常是按键上的字符（不会变）</p>
+
+  <p class="ziti5">*法定的键名包括"A"、"7"、"F2"、"PageUp"、"Left"、"Backspace"和"Esc"</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*请参阅模块的Keymap.keyCodeToKeyName对象中的键名列表</p>
+
+  <p class="ziti5">*这里有3级DOM规范定义的键名子集，</p>
+
+  <p class="ziti5">*并且当实现时这个类将使用事件对象的key属性</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*按键标识符也可能包含辅助键前缀</p>
+
+  <p class="ziti5">*这些前缀是Alt、Ctrl、Meta和Shift</p>
+
+  <p class="ziti5">*它们区分大小写，且必须使用空格、下划线、连字符或"+"来和按键名或彼此分开</p>
+
+  <p class="ziti5">*例如："SHIFT+A"、"Alt_F2"、"meta-v"和"ctrl alt left"</p>
+
+  <p class="ziti5">*在Mac中，Meta是Commnad键，Alt是Option键</p>
+
+  <p class="ziti5">*一些浏览器把Windows键映射到Meta辅助键</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*处理程序函数</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*处理程序在配置Keymap的文档或文档元素上作为其方法调用，</p>
+
+  <p class="ziti5">*并传入两个参数：</p>
+
+  <p class="ziti5">*1)keydown事件的事件对象</p>
+
+  <p class="ziti5">*2)按下的按键的标识符</p>
+
+  <p class="ziti5">*处理程序的返回值就是keydown处理程序的返回值</p>
+
+  <p class="ziti5">*如果处理程序函数返回false，</p>
+
+  <p class="ziti5">*Keymap将停止冒泡并取消和keydown事件相关的默认操作</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*限制</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*在所有按键上绑定一个事件处理函数是不可能的</p>
+
+  <p class="ziti5">*操作系统会限制一些按键序列（例如，Alt+F4）</p>
+
+  <p class="ziti5">*而浏览器本身也可能限制其他一些按键序列（比如：Ctrl+S）</p>
+
+  <p class="ziti5">*这些代码受限于浏览器、OS和本地设置。功能键和有辅助键的功能键工作得很好，</p>
+
+  <p class="ziti5">*而没有辅助键的字母数字键也工作得很好</p>
+
+  <p class="ziti5">*Ctrl和Alt与字母键盘键的结合非常强健</p>
+
+  <p class="ziti5">*</p>
+
+  <p class="ziti5">*在美国标准键盘布局上，</p>
+
+  <p class="ziti5">*能够支持大多数不需要Shift键的标点字符（=[];',./\但不包括连字符）</p>
+
+  <p class="ziti5">*但是它们不特别适合其他键盘布局，应该避免</p>
+
+  <p class="ziti5">*/</p>
+
+  <p class="ziti5">//这是构造函数</p>
+
+  <p class="ziti5">function Keymap(bindings){</p>
+
+  <p class="ziti5">this.map={};//定义按键标识符-＞处理程序映射</p>
+
+  <p class="ziti5">if(bindings){//给它复制初始绑定</p>
+
+  <p class="ziti5">for(name in bindings)this.bind(name,bindings[name]);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//绑定指定的按键标识符和指定的处理程序函数</p>
+
+  <p class="ziti5">Keymap.prototype.bind=function(key,func){</p>
+
+  <p class="ziti5">this.map[Keymap.normalize(key)]=func;</p>
+
+  <p class="ziti5">};//删除指定按键标识符的绑定</p>
+
+  <p class="ziti5">Keymap.prototype.unbind=function(key){</p>
+
+  <p class="ziti5">delete this.map[Keymap.normalize(key)];</p>
+
+  <p class="ziti5">};//在指定HTML元素上配置Keymap</p>
+
+  <p class="ziti5">Keymap.prototype.install=function(element){//这是事件处理程序函数</p>
+
+  <p class="ziti5">var keymap=this;</p>
+
+  <p class="ziti5">function handler(event){return keymap.dispatch(event,element);}//现在安装它</p>
+
+  <p class="ziti5">if(element.addEventListener)</p>
+
+  <p class="ziti5">element.addEventListener("keydown",handler,false);</p>
+
+  <p class="ziti5">else if(element.attachEvent)</p>
+
+  <p class="ziti5">element.attachEvent("onkeydown",handler);</p>
+
+  <p class="ziti5">};//这个方法基于Keymap绑定分派按键事件</p>
+
+  <p class="ziti5">Keymap.prototype.dispatch=function(event,element){//开始没有辅助键和键名</p>
+
+  <p class="ziti5">var modifiers=""</p>
+
+  <p class="ziti5">var keyname=null;//按照标准的小写字母顺序构建辅助键字符串</p>
+
+  <p class="ziti5">if(event.altKey)modifiers+="alt_";</p>
+
+  <p class="ziti5">if(event.ctrlKey)modifiers+="ctrl_";</p>
+
+  <p class="ziti5">if(event.metaKey)modifiers+="meta_";</p>
+
+  <p class="ziti5">if(event.shiftKey)modifiers+="shift_";//如果实现3级DOM规范的key属性，获取keyname很容易</p>
+
+  <p class="ziti5">if(event.key)keyname=event.key;//在Safari和Chrome上用keyIdentifier获取功能键键名</p>
+
+  <p class="ziti5">else if(event.keyIdentifier＆＆event.keyIdentifier.substring(0,2)!=="U+")</p>
+
+  <p class="ziti5">keyname=event.keyIdentifier;//否则，使用keyCode属性和后面编码到键名的映射</p>
+
+  <p class="ziti5">else keyname=Keymap.keyCodeToKeyName[event.keyCode];//如果不能找出键名，只能返回并忽略这个事件</p>
+
+  <p class="ziti5">if(!keyname)return;//标准的按键id是辅助键加上小写的键名</p>
+
+  <p class="ziti5">var keyid=modifiers+keyname.toLowerCase();//现在查看按键标识符是否绑定了任何东西</p>
+
+  <p class="ziti5">var handler=this.map[keyid];</p>
+
+  <p class="ziti5">if(handler){//如果这个键有处理程序，调用它</p>
+
+  <p class="ziti5">//调用处理程序函数</p>
+
+  <p class="ziti5">var retval=handler.call(element,event,keyid);//如果处理程序返回false，取消默认操作并阻止冒泡</p>
+
+  <p class="ziti5">if(retval===false){</p>
+
+  <p class="ziti5">if(event.stopPropagation)event.stopPropagation();//DOM模型</p>
+
+  <p class="ziti5">else event.cancelBubble=true;//IE模型</p>
+
+  <p class="ziti5">if(event.preventDefault)event.preventDefault();//DOM</p>
+
+  <p class="ziti5">else event.returnValue=false;//IE</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//返回处理程序的返回值</p>
+
+  <p class="ziti5">return retval;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">};//用于把按键标识符转换成标准形式的工具函数</p>
+
+  <p class="ziti5">//在非Mac硬件，我们这里把"meta"映射到"ctrl"，</p>
+
+  <p class="ziti5">//这样在Mac中"Meta+C"将变成"Command+C"，其他都是"Ctrl+C"</p>
+
+  <p class="ziti5">Keymap.normalize=function(keyid){</p>
+
+  <p class="ziti5">keyid=keyid.toLowerCase();//一切都小写</p>
+
+  <p class="ziti5">var words=keyid.split(/\s+|[\-+_]/);//分割辅助键和键名</p>
+
+  <p class="ziti5">var keyname=words.pop();//键名是最后一个</p>
+
+  <p class="ziti5">keyname=Keymap.aliases[keyname]||keyname;//它是别名吗？</p>
+
+  <p class="ziti5">words.sort();//排序剩下的辅助键</p>
+
+  <p class="ziti5">words.push(keyname);//添加到序列化名字后面</p>
+
+  <p class="ziti5">return words.join("_");//把它们拼接起来</p>
+
+  <p class="ziti5">};</p>
+
+  <p class="ziti5">Keymap.aliases={//把按键的常见别名映射到它们的"正式名"</p>
+
+  <p class="ziti5">"escape":"esc",//键名使用3级DOM规范的定义和后面的编码到键名的映射</p>
+
+  <p class="ziti5">"delete":"del",//所有的键和值都必须小写</p>
+
+  <p class="ziti5">"return":"enter",</p>
+
+  <p class="ziti5">"ctrl":"control",</p>
+
+  <p class="ziti5">"space":"spacebar",</p>
+
+  <p class="ziti5">"ins":"insert"</p>
+
+  <p class="ziti5">};//传统的keydown事件对象的keyCode属性是不标准的</p>
+
+  <p class="ziti5">//但下面的值似乎可以在大多数浏览器和OS中可行</p>
+
+  <p class="ziti5">Keymap.keyCodeToKeyName={//使用词或方向键的按键</p>
+
+  <p class="ziti5">8:"Backspace",9:"Tab",13:"Enter",16:"Shift",17:"Control",18:"Alt",</p>
+
+  <p class="ziti5">19:"Pause",20:"CapsLock",27:"Esc",32:"Spacebar",33:"PageUp",</p>
+
+  <p class="ziti5">34:"PageDown",35:"End",36:"Home",37:"Left",38:"Up",39:"Right",</p>
+
+  <p class="ziti5">40:"Down",45:"Insert",46:"Del",//主键盘（非数字小键盘）上的数字键</p>
+
+  <p class="ziti5">48:"0",49:"1",50:"2",51:"3",52:"4",53:"5",54:"6",55:"7",56:"8",57:"9",//字母按键，注意我们不区分大小写</p>
+
+  <p class="ziti5">65:"A",66:"B",67:"C",68:"D",69:"E",70:"F",71:"G",72:"H",73:"I",</p>
+
+  <p class="ziti5">74:"J",75:"K",76:"L",77:"M",78:"N",79:"O",80:"P",81:"Q",82:"R",</p>
+
+  <p class="ziti5">83:"S",84:"T",85:"U",86:"V",87:"W",88:"X",89:"Y",90:"Z",//数字小键盘的数字和标点符号按键（Opera不支持这些）</p>
+
+  <p class="ziti5">96:"0",97:"1",98:"2",99:"3",100:"4",101:"5",102:"6",103:"7",104:"8",105:"9",</p>
+
+  <p class="ziti5">106:"Multiply",107:"Add",109:"Subtract",110:"Decimal",111:"Divide",//功能键</p>
+
+  <p class="ziti5">112:"F1",113:"F2",114:"F3",115:"F4",116:"F5",117:"F6",</p>
+
+  <p class="ziti5">118:"F7",119:"F8",120:"F9",121:"F10",122:"F11",123:"F12",</p>
+
+  <p class="ziti5">124:"F13",125:"F14",126:"F15",127:"F16",128:"F17",129:"F18",</p>
+
+  <p class="ziti5">130:"F19",131:"F20",132:"F21",133:"F22",134:"F23",135:"F24",//不需要按下Shift键的标点符号键</p>
+
+  <p class="ziti5">//连字符不兼容，FF返回的编码和减号一样</p>
+
+  <p class="ziti5">59:";",61:"=",186:";",187:"=",//Firefox和Opera返回59,61</p>
+
+  <p class="ziti5">188:",",190:".",191:"/",192:"",219:"[",220:"\\",221:"]",222:"'"</p>
+
+  <p class="ziti5">};</p>
+  <hr class="calibre4"/>
+
+  <div class="fnote">
+    <a id="ch1-back" href="part0026.html#ch1" class="pcalibre calibre1">[1]</a>包括HTML5规范在内的一些资料基于它们注册的方式从技术上区分处理程序（handler）和监听程序（listener），但本书视这两个技术术语为同义词。
+  </div>
+
+  <div class="fnote">
+    <a id="ch2-back" href="part0026.html#ch2" class="pcalibre calibre1">[2]</a>标准为不同的事件类型定义了事件对象接口的等级层次。例如，Event接口定义了无额外详细信息的基础事件，MouseEvent子接口定义了在传递鼠标事件的事件对象中有用的附加字段，而KeyEvent子接口定义了可用于键盘事件的字段。在本书中，第四部分把所有的常用事件接口都并入到Event参考页。
+  </div>
+
+  <div class="fnote">
+    <a id="ch3-back" href="part0026.html#ch3" class="pcalibre calibre1">[3]</a>在名字中使用"DOM"的唯一常用事件就是DOMContentLoaded。这个事件由Mozilla引入，但绝不属于DOM事件标准的一部分。
+  </div>
+
+  <div class="fnote">
+    <a id="ch4-back" href="part0026.html#ch4" class="pcalibre calibre1">[4]</a>2级DOM事件规范并未定义调用顺序，但当前的浏览器都是按照注册顺序调用所有事件处理程序，并且3级DOM事件规范草案标准化了这种行为。
+  </div>
+
+  <div class="fnote">
+    <a id="ch5-back" href="part0026.html#ch5" class="pcalibre calibre1">[5]</a>第19章介绍的jQuery事件对象有一个defaultPrevented()方法而非属性。
+  </div>
+
+  <div class="fnote">
+    <a id="ch6-back" href="part0026.html#ch6" class="pcalibre calibre1">[6]</a>这里的“单击”指的是滚动滚轮的最小单位，所以我们得到的wheelDelta值都是120的整数倍，正负值表示滚轮的两个方向，其最小值皆为120。
+  </div>
+
+  <div class="fnote">
+    <a id="ch7-back" href="part0026.html#ch7" class="pcalibre calibre1">[7]</a>这是有风险的，如果未来的实现不匹配当前使用的规范草案，那么这将适得其反，示例将无法运行。
+  </div>
+
+  <div class="fnote">
+    <a id="ch8-back" href="part0026.html#ch8" class="pcalibre calibre1">[8]</a>英文为Unobtrusive Javascript，在网页中编写JavaScript的一种通用方法。详细内容请看http://en.wikipedia.org/wiki/Unobtrusive_JavaScript。
+  </div>
+
+  <div class="fnote">
+    <a id="ch9-back" href="part0026.html#ch9" class="pcalibre calibre1">[9]</a>辅助键（modifier key）一般是指Shift键、Ctrl（control）键、Alt键、AltGr（Alternate Graphic）键、Super键（Window键盘上指Window键，Mac OS键盘指的是Command键，Sun键盘指的是Meta键）和Fn键（Function，常见于笔记本键盘），更多细节请看http://en.wikipedia.org/wiki/Computer_keyboard。功能键（function key）一般是指类似F1、F2这些以F加数字组成的键，更多细节请看http://en.wikipedia.org/wiki/Function_Keys。
+  </div>
+</body></html>

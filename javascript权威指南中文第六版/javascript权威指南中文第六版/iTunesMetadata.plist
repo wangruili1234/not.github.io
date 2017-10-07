@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>artistName</key>
+	<string>(美)David Flanagan</string>
+	<key>book-info</key>
+	<dict>
+		<key>cover-image-hash</key>
+		<string>8E1B01121EC5A00E8A5789B2B3ACA2D8</string>
+		<key>cover-image-path</key>
+		<string>cover.jpeg</string>
+		<key>mime-type</key>
+		<string>application/epub+zip</string>
+		<key>package-file-hash</key>
+		<string>6BF2556B57C08B704B27AE1518E805C9</string>
+		<key>publisher-unique-id</key>
+		<string>def73247-65a0-457e-aa38-421b060785da</string>
+		<key>unique-id</key>
+		<integer>-59712013496984423</integer>
+		<key>update-level</key>
+		<integer>2</integer>
+	</dict>
+	<key>itemName</key>
+	<string>JavaScript权威指南（原书第6版）</string>
+	<key>playlistName</key>
+	<string>JavaScript权威指南（原书第6版）</string>
+	<key>releaseDate</key>
+	<string>2012-04-24T16:00:00+00:00</string>
+	<key>sort-artist</key>
+	<string>Flanagan, David</string>
+	<key>sort-artist-status</key>
+	<integer>3</integer>
+</dict>
+</plist>

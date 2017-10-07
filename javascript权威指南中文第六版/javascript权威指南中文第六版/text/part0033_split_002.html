@@ -1,0 +1,3507 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>第四部分　客户端JavaScript参考</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+<h3 class="p1" id="heading_id_57">HTMLElement</h3>
+
+  <p class="ziti3">参见Element</p>
+
+  <h3 class="p1" id="heading_id_58">HTMLFormControlsCollection</h3>
+
+  <p class="ziti3">表单控件的一个类数组对象</p>
+
+  <p class="ziti3">HTMLFormControlsCollection是一种特殊的HTMLCollection，用于Form元素表示表单控件的集合。类似于HTMLCollection，可以像数组一样使用数字作为它的索引，也可以将它看做一个对象并通过表单控件的name或id进行检索。HTML表单经常包含多个name属性值相同的控件（通常是单选按钮或复选框），HTMLFormControlsCollection处理它们的方式与普通的HTMLCollection不同。</p>
+
+  <p class="ziti3">读取HTMLFormControlsCollection的属性时，如果表单包含多个同名的元素，HTMLFormControlsCollection返回一个包含共享这个名字的所有表单控件组成的类数组对象。另外，返回的类数组对象有一个value属性，值为第一个选中的叫这个名字的单选按钮的value属性值。甚至还可以通过设置这个value属性来选中对应value的单选按钮。</p>
+
+  <h3 class="p1" id="heading_id_59">HTMLOptionsCollection</h3>
+
+  <p class="ziti3">Option元素的集合</p>
+
+  <p class="ziti3">HTMLCollection</p>
+
+  <p class="ziti3">HTMLOptionsCollection是一种特殊的HTMLCollection，表示一个Select元素中的Option元素。它重写了namedItem()方法以便处理同名的多个Option元素，它也定义了添加和删除元素的方法。由于历史原因，HTMLOptionsCollection定义了一个可写的length属性，可通过设置这个属性来截短或扩展对应的集合。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">unsigned long length</p>
+
+  <p class="ziti3">这个属性返回集合中的元素的数目。然而，与常规HTMLCollection的length属性不同的是，它不是只读的。如果将它设置为一个比当前值小的数字，Option元素的集合将被截短，不在集合中的元素将从包含的Select元素中移除。如果将length设置为一个比当前值大的数字，空＜option/＞元素将被创建并添加到Select元素以及对应的集合中。</p>
+
+  <p class="ziti3">long selectedIndex</p>
+
+  <p class="ziti3">集合中第一个被选中的Option的索引，如果没有Option被选中则为-1。可以通过设置这个属性来改变选中的元素。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void add(Element option,[any before])</p>
+
+  <p class="ziti3">将option（必须是一个＜option＞或者＜optgroup＞元素）插入到当前集合（以及当前Select元素）中before指定的位置处。如果before为null，将插入到尾部。如果before是一个整数索引，将插入到这个索引指定的元素的前面。如果before是另一个Element，option将被插入到这个元素前面。</p>
+
+  <p class="ziti3">Element item(unsigned long index)</p>
+
+  <p class="ziti3">HTMLOptionsCollection从HTMLCollection那儿继承了这个方法。它将返回指定index处的元素，如果index出界了则返回null。也可以用直接使用方括号检索集合的方式代替显示调用这个方法。</p>
+
+  <p class="ziti3">object namedItem(string name)</p>
+
+  <p class="ziti3">这个方法返回集合中具有指定名字或ID的所有Option元素。如果没有匹配元素，它将返回null。如果有一个Option匹配，它将返回这个元素。如果有多个元素匹配，它将返回由这些元素组成的一个NodeList。注意，可以通过使用name作为属性名的方式直接检索一个HTMLOptionsCollection而无须显式调用这个方法。</p>
+
+  <p class="ziti3">void remove(long index)</p>
+
+  <p class="ziti3">这个方法移除集合中位于指定index处的＜option＞元素。如果调用时没带参数或者参数越界了，它可能会移除集合中的第一个元素。</p>
+
+  <h3 class="p1" id="heading_id_60">IFrame</h3>
+
+  <p class="ziti3">HTML＜iframe＞</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">IFrame对象表示HTML文档中的一个＜iframe＞元素。如果使用getElementById()或类似的查询函数来查找一个＜iframe＞，将得到一个IFrame对象。但是，如果通过Window对象的frames属性来查找＜iframe＞，或者将＜iframe＞的name作为包含的窗口的属性来查找，得到的将是该＜iframe＞代表的Window对象。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly Document contentDocument</p>
+
+  <p class="ziti3">当前＜iframe＞元素包含的文档。如果＜iframe＞中显示的文档来自不同的源，同源策略（见13.6.2节）将会阻止对该文档的访问。</p>
+
+  <p class="ziti3">readonly Window contentWindow</p>
+
+  <p class="ziti3">＜iframe＞的Window对象。（这个Window对象的frameElement又反向引用这个IFrame对象。）</p>
+
+  <p class="ziti3">string height</p>
+
+  <p class="ziti3">当前＜iframe＞的高度，单位为CSS像素。这个属性反映对应的HTML height属性。</p>
+
+  <p class="ziti3">string name</p>
+
+  <p class="ziti3">＜iframe＞的名字。这个属性反映对应的HTML name属性，它的值可用于Link或Form对象的target。</p>
+
+  <p class="ziti3">readonly DOMSettableTokenList sandbox</p>
+
+  <p class="ziti3">本属性反映HTML5 sandbox属性，允许将它作为一个字符串或者一组独立标记来查询及设置。</p>
+
+  <p class="ziti3">sandbox属性指明浏览器应该对＜iframe＞中的不可信的内容实施额外的安全限制。如果指定了sandbox但值为空，＜iframe＞的内容将当做来自不同的源进行处理，将不允许运行脚本，不允许显示表单，也不允许改变它包含的窗口的地址。sandbox属性也可以设置为一个由空格分隔的标记列表，其中每一项都指定一个额外的安全限制。可用的标记有"allow-same-origin"、"allow-scripts"、"allow-forms"以及"allow-top-navigation"。</p>
+
+  <p class="ziti3">写作本书的时候，sandbox属性还没有广泛实现。更多细节请参考HTML文档。</p>
+
+  <p class="ziti3">boolean seamless</p>
+
+  <p class="ziti3">这个属性反映HTML的seamless属性。如果它的值为true，浏览器将渲染对应＜iframe＞的内容，让它看起来像是包含的文档的一部分。这意味着，某种程度上，浏览器必须将包含的文档的CSS样式应用到＜iframe＞的内容上。</p>
+
+  <p class="ziti3">seamless属性作为HTML5的一部分引入，在写作本书的时候还没有广泛实现。</p>
+
+  <p class="ziti3">string src</p>
+
+  <p class="ziti3">这个属性反映＜iframe＞的src属性：它指定该框架内容的URL。</p>
+
+  <p class="ziti3">string srcdoc</p>
+
+  <p class="ziti3">这个属性反映对应的srcdoc HTML属性，它以一个字符串的形式指定＜iframe＞的内容。srcdoc属性最近才作为HTML5的一部分引入，在写作本书的时候还没有广泛实现。</p>
+
+  <p class="ziti3">string width</p>
+
+  <p class="ziti3">当前＜iframe＞的宽度，单位为CSS像素。这个属性反映对应的HTML width属性。</p>
+
+  <h3 class="p1" id="heading_id_61">Image</h3>
+
+  <p class="ziti3">HTML文档中的＜img＞</p>
+
+  <p class="ziti3">节点、元素</p>
+
+  <p class="ziti3">Image对象以＜img＞标签的形式，代表嵌入HTML文档中的一幅图片。出现在文档中的图片都被收集在document.images[]数组中。</p>
+
+  <p class="ziti3">Image对象的src属性是最有趣的一个。如果设置了这个属性，浏览器将加载并显示新的值指定的图片。可以利用这个特性实现一些可视化效果，比如图片翻转以及动画。示例请参见21.1节。</p>
+
+  <p class="ziti3">可以通过简单地使用document.createElement()或Image()构造函数创建一个新的＜img＞元素来创建一个屏幕外Image对象。注意，这个构造函数没有用于指明要加载的图片的参数：要加载图片，只须简单地设置对应的Image对象的src属性。要实际显示这张图片，只须将该Image对象插入到文档中。</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">new Image([unsigned long width,unsigned long height])</p>
+
+  <p class="ziti3">可以通过document.createElement()方法，像创建其他HTML元素一样创建一个新的Image元素。不过，由于历史原因，客户端JavaScript也定义了Image()构造函数用于完成同样的任务。如果指定了width或height参数，它们将为对应＜img＞标签的width和height属性。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除了这儿列出的属性，Image元素也有下面的HTML属性，可作为JavaScript属性访问：</p>
+
+  <p class="ziti3">alt、usemap、ismap.</p>
+
+  <p class="ziti3">readonly boolean complete</p>
+
+  <p class="ziti3">如果没有指定图片的src，或者图片已经完全下载完成，则此属性为true；否则为false。</p>
+
+  <p class="ziti3">unsigned long height</p>
+
+  <p class="ziti3">图片在屏幕上显示的高度，单位为CSS像素。设置这个值将改变图片的高度。</p>
+
+  <p class="ziti3">readonly unsigned long naturalHeight</p>
+
+  <p class="ziti3">图片的固有高度。</p>
+
+  <p class="ziti3">readonly unsigned long naturalWidth</p>
+
+  <p class="ziti3">图片的固有宽度。</p>
+
+  <p class="ziti3">string src</p>
+
+  <p class="ziti3">图片的URL。设置这个属性将会下载指定的图片。如果Image对象已插入到文档中了，则新的图片将会显示。</p>
+
+  <p class="ziti3">unsigned long width</p>
+
+  <p class="ziti3">图片在屏幕上显示的实际宽度，单位为CSS像素。设置这个值将改变图片在屏幕上的宽度。</p>
+
+  <h3 class="p1" id="heading_id_62">ImageData</h3>
+
+  <p class="ziti3">＜canvas＞的像素数据数组</p>
+
+  <p class="ziti3">ImageData对象保存一块矩形区域的像素的红、绿、蓝以及alpha（透明度）分量。可通过＜canvas＞标签的CanvasRenderingContext2D对象的createImageData()或者getImageData()方法来得到一个ImageData对象。</p>
+
+  <p class="ziti3">width和height属性指定像素矩形区域的尺寸。data属性是一个包含对应像素数据的数组。data[]数组中的像素以从左到右、从上到下的顺序出现。每一个像素由4个字节值组成，分别表示R、G、B及A分量。也就是说，在一个ImageData对象中，位于(x,y)处的像素的颜色组成可以以类似这样的方式访问：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var offset=(x+y*image.width)*4;</p>
+
+  <p class="ziti5">var red=image.data[offset];</p>
+
+  <p class="ziti5">var green=image.data[offset+1];</p>
+
+  <p class="ziti5">var blue=image.data[offset+2];</p>
+
+  <p class="ziti5">var alpha=image.data[offset+3];</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">data[]数组不是一个真正的JavaScript数组，它是一个优化过的类数组对象，其元素的值为0～255之间的整数。元素是可读写的，但数组的长度是固定的。对任意一个ImageData对象i来说，i.data.length总是等于i.width*i.height*4。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly byte[]data</p>
+
+  <p class="ziti3">一个只读的引用，指代一个元素为字节的可读写的类数组对象。</p>
+
+  <p class="ziti3">readonly unsigned long height</p>
+
+  <p class="ziti3">Image data的行数。</p>
+
+  <p class="ziti3">readonly unsigned long width</p>
+
+  <p class="ziti3">data每行的像素数。</p>
+
+  <h3 class="p1" id="heading_id_63">Input</h3>
+
+  <p class="ziti3">HTML＜input＞元素</p>
+
+  <p class="ziti3">Node、Element、FormControl</p>
+
+  <p class="ziti3">Input对象表示HTML表单中的＜input＞元素。它的外观和行为取决于它的type属性：比如，一个Input元素可能表示一个简单的文本输入框、一个复选框、一个单选框、一个按钮、一个文件选择元素。由于＜input＞元素可以表示如此多种表单控件，因此Input元素是最复杂的元素之一。关于HTML表单及表单元素的概览可参见15.9节。注意Input元素的一些重要属性（比如type、value、name以及form）的文档在FormControl参考页中。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除了这儿列出的属性，Input元素也实现了Element和FormControl定义的所有属性。这个列表中标有星号的属性是HTML5新定义的，在写作本书的时候还没有广泛实现。</p>
+
+  <p class="ziti3">string accept</p>
+
+  <p class="ziti3">当type属性为"file"时，这个属性是一个以逗号分隔的列表，包含可选择的文件的MIME类型。字符串"audio/*"、"video/*"以及"image/*"也是合法的值。这个属性是accept属性的一个映射。</p>
+
+  <p class="ziti3">string autocomplete</p>
+
+  <p class="ziti3">如果浏览器可以根据之前访问会话的值预填这个Input元素则此属性为true。映射autocomplete属性。也可参见Form的autocomplete属性。</p>
+
+  <p class="ziti3">boolean checked</p>
+
+  <p class="ziti3">适用于可选中的input元素，这个属性指定当前元素是否“选中”。设置这个属性的值将改变对应input元素的可视外观。</p>
+
+  <p class="ziti3">boolean defaultChecked</p>
+
+  <p class="ziti3">适用于可选中的input元素，这个属性指定元素初始状态时的选中情况。当表单被重置后，该元素的checked属性将被重置为这个属性的值。它是checked属性的映射。</p>
+
+  <p class="ziti3">string defaultValue</p>
+
+  <p class="ziti3">适用于具有文本值的元素，这个属性保存元素显示的初始值。当表单被重置时，元素将被重置为这个值。它是value属性的映射。</p>
+
+  <p class="ziti3">readonly File[]fles</p>
+
+  <p class="ziti3">适用于type为"file"的元素，这个属性为一个类数组对象，由用户选中的File对象或其他对象组成。</p>
+
+  <p class="ziti3">string formAction*</p>
+
+  <p class="ziti3">适用于提交按钮元素，这个属性定义的值将覆盖包含的表单的action属性。它是formaction属性的映射。</p>
+
+  <p class="ziti3">string formEnctype*</p>
+
+  <p class="ziti3">适用于提交按钮元素，这个属性定义的值将覆盖包含的表单的enctype属性。它是formenctype属性的映射。</p>
+
+  <p class="ziti3">string formMethod*</p>
+
+  <p class="ziti3">适用于提交按钮元素，这个属性定义的值将覆盖包含的表单的method属性。它是formethod属性的映射。</p>
+
+  <p class="ziti3">boolean formNoValidate*</p>
+
+  <p class="ziti3">适用于提交按钮元素，这个属性定义的值将覆盖包含的表单的noValidate属性。它是formnovalidate属性的映射。</p>
+
+  <p class="ziti3">string formTarget*</p>
+
+  <p class="ziti3">适用于提交按钮元素，这个属性定义的值将覆盖包含的表单的target属性。它是formtarget属性的映射。</p>
+
+  <p class="ziti3">boolean indeterminate</p>
+
+  <p class="ziti3">适用于复选框，这个属性指定该元素是否处于不确定状态（即不是选中也不是未选中）。这个属性不是某个HTML属性的映射，只能通过JavaScript进行设置。</p>
+
+  <p class="ziti3">readonly Element list*</p>
+
+  <p class="ziti3">一个＜datalist＞元素，其包含的＜option＞元素可被浏览器用做提示或自动完成值。</p>
+
+  <p class="ziti3">string max*</p>
+
+  <p class="ziti3">当前Input元素允许的最大有效值。</p>
+
+  <p class="ziti3">long maxLength</p>
+
+  <p class="ziti3">如果type为"text"或"password"，这个属性将指定允许用户输入的最大字符数。注意它与size属性不一样。它是maxlength属性的映射。</p>
+
+  <p class="ziti3">string min*</p>
+
+  <p class="ziti3">当前Input元素允许的最小有效值。</p>
+
+  <p class="ziti3">boolean multiple*</p>
+
+  <p class="ziti3">如果对应input元素可能接受指定type的多个值则本属性为true。它是multiple属性的映射。</p>
+
+  <p class="ziti3">string pattern*</p>
+
+  <p class="ziti3">一个正则表达式文本，输入的内容必须与它匹配，否则将被视为无效。这个属性使用JavaScript正则表达式语法（但没有开头和结尾的斜杠），不过要注意这个属性是一个字符串，而不是一个RegExp对象。也要注意，为了有效起见，整个输入字符串都必须与正则表达式匹配，而不只是一个子串。（就像正则表达式以^开头并以$结尾一样。）这个属性是pattern属性的映射。</p>
+
+  <p class="ziti3">string placeholder</p>
+
+  <p class="ziti3">作为对用户的提示出现在Input元素中的一小段文本字符串。当焦点处于该元素上时，占位文本将消失，同时输入光标将出现。这个属性是placeholder属性的映射。</p>
+
+  <p class="ziti3">boolean readOnly</p>
+
+  <p class="ziti3">如果为true，当前Input元素将不可编辑。它是readonly属性的映射。</p>
+
+  <p class="ziti3">boolean required*</p>
+
+  <p class="ziti3">如果为true，如果用户没有在该Input元素中输入内容，则容器表单将被视为无效。它是required属性的映射。</p>
+
+  <p class="ziti3">readonly Option selectedOption*</p>
+
+  <p class="ziti3">如果指定了list属性，并且multiple为false，这个属性将返回列表中选中的Option元素子节点，如果存在这样的子节点的话。</p>
+
+  <p class="ziti3">unsigned long selectionEnd</p>
+
+  <p class="ziti3">返回或设置选中文本之后的第一个输入字符的索引。也可参见setSelectionRange()。</p>
+
+  <p class="ziti3">unsigned long selectionStart</p>
+
+  <p class="ziti3">返回或设置＜textarea＞中第一个选中字符的索引。也可参见setSelectionRange()。</p>
+
+  <p class="ziti3">unsigned long size</p>
+
+  <p class="ziti3">适用于允许文本输入的Input元素，本属性指定了元素的宽度占多少字符。它是size属性的映射。注意与maxLength的不同。</p>
+
+  <p class="ziti3">string step*</p>
+
+  <p class="ziti3">适用于数字输入类型（包括日期及时间输入），这个属性指定了允许输入的值的粒度或步长大小。这个属性可以是字符串"any"或者一个浮点数。它是step属性的映射。</p>
+
+  <p class="ziti3">Date valueAsDate*</p>
+
+  <p class="ziti3">将对应元素的value（参见FormControl）作为一个Date对象返回。</p>
+
+  <p class="ziti3">double valueAsNumber*</p>
+
+  <p class="ziti3">将对应元素的value（参见FormControl）作为一个数字返回。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">除了这儿列出的方法，Input元素也实现了Element和FormControl所定义的所有方法。本列表中带有星号标记的方法是在HTML5新定义的，在写作本书的时候，还没有广泛实现。</p>
+
+  <p class="ziti3">void select()</p>
+
+  <p class="ziti3">这个方法选中当前Input元素中显示的所有文本。在大多数浏览器中，这意味着对应文本将高亮显示，同时用户新输入的文本将替换这段高亮显示的文本，而不是在它后面追加。</p>
+
+  <p class="ziti3">void setSelectionRange(unsigned long start,unsigned long end)</p>
+
+  <p class="ziti3">这个方法选中当前Input元素中显示的文本，从位于start处的字符开始，直到（但不包含）位于end处的字符。</p>
+
+  <p class="ziti3">void stepDown([long n])*</p>
+
+  <p class="ziti3">适用于支持step属性的元素，将当前值减少n个步长（step）。</p>
+
+  <p class="ziti3">void stepUp([long n])*</p>
+
+  <p class="ziti3">适用于支持step属性的元素，将当前值增加n个步长。</p>
+
+  <h3 class="p1" id="heading_id_64">jQuery</h3>
+
+  <p class="ziti3">jQuery 1.4</p>
+
+  <p class="ziti3">jQuery库</p>
+
+  <p class="ziti3">描述</p>
+
+  <p class="ziti3">这是jQuery库的一个快速参考。关于这个库的完整细节以及用例见第19章。本段参考的组织与格式与该部分的其余参考页有些不同。在方法签名中它使用了下面的转换。参数sel是jQuery选择器。参数idx是整数索引。参数elt或elts是文档元素或由文档元素组成的类数组对象。参数f是回调函数，嵌套的圆括号用于声明jQuery将传入提供的函数的参数。方括号声明可选参数。如果一个可选参数后面紧跟着一个等号和一个值，那个值将在参数省略时作为默认值。右圆括号和冒号之后是函数或方法的返回值。没有指定返回值的方法将返回调用它们的jQuery对象。</p>
+
+  <p class="ziti3">jQuery工厂函数</p>
+
+  <p class="ziti3">jQuery函数是若干应用函数的一个命名空间，同时它也是创建一个jQuery对象的工厂方法。jQuery()可以以下面展示的各种方式调用，它总是返回一个表示一个文档集合（或者文档对象本身）的jQuery对象。符号$是jQuery的别名，在下面的各种方法中都可以使用$()来代替jQuery()：</p>
+
+  <p class="ziti3">jQuery(sel[,context=document])</p>
+
+  <p class="ziti3">返回一个新的jQuery对象，该对象表示的文档元素为context的子孙节点，并且匹配选择字符串sel。</p>
+
+  <p class="ziti3">jQuery(elts)</p>
+
+  <p class="ziti3">返回一个表示指定元素的新的jQuery对象。elts可以是单个文档元素，也可以是一个由文档元素组成的数组或类数组对象（比如一个NodeList或其他jQuery对象）。</p>
+
+  <p class="ziti3">jQuery(html,[props])</p>
+
+  <p class="ziti3">将html作为一个HTML格式的字符串进行解析并返回一个新的jQuery对象，这个对象包含html字符串中定义的一个或多个顶级元素。如果html描述了一个单独的HTML标签，则参数props可以为一个对象，其中可定义这个新建元素的HTML属性或事件处理程序。</p>
+
+  <p class="ziti3">jQuery(f)</p>
+
+  <p class="ziti3">注册函数f，当document加载完成并且就绪时调用。如果document已经就绪，f将作为document对象的一个方法立即调用。返回一个只包含document对象的jQuery对象。</p>
+
+  <p class="ziti3">jQuery选择器语法</p>
+
+  <p class="ziti3">jQuery选择器语法与CSS3选择语法非常类似，19.8.1节有详细介绍。下面是摘要：</p>
+
+  <p class="ziti3">简单的标签、类以及ID选择器</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00110.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">组合选择器</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00111.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">属性过滤器</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00112.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">元素类型过滤器</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00113.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">元素状态过滤器</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00114.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">选择位置过滤器</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00115.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">文档位置过滤器</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00116.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">其他过滤器</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00117.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="pic">
+    <img alt="" src="../images/00118.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">基本jQuery方法及属性</p>
+
+  <p class="ziti3">这些是jQuery对象的基本方法和属性。它们不会改变选项或选中的元素，只是允许查询或迭代这个选中元素的集合。细节请参见19.1.2节。</p>
+
+  <p class="ziti3">context</p>
+
+  <p class="ziti3">进行选择的上下文本或根节点。它是$()的第二个参数，若不指定则是Document对象。</p>
+
+  <p class="ziti3">each(f(idx,elt))</p>
+
+  <p class="ziti3">将f作为每一个选中元素的方法并调用一次。如果该函数返回false则停止迭代。返回调用它的jQuery对象。</p>
+
+  <p class="ziti3">get(idx):elt</p>
+
+  <p class="ziti3">get():array</p>
+
+  <p class="ziti3">返回jQuery对象中指定索引的选中元素。也可以使用常规的方括号数组索引。如果没有参数，则get()和toArray()功能一样。</p>
+
+  <p class="ziti3">index():int</p>
+
+  <p class="ziti3">index(sel):int</p>
+
+  <p class="ziti3">index(elt):int</p>
+
+  <p class="ziti3">如果不带参数，则返回第一个选中的元素在它的兄弟节点中的索引。如果带一个选择器参数，返回匹配选择器sel的元素集合中第一个选中元素的索引，如果没有找到对应元素则返回-1。如果带一个元素参数，则返回elt在选中元素中的索引，如果没有找到对应元素则返回-1。</p>
+
+  <p class="ziti3">is(sel):boolean</p>
+
+  <p class="ziti3">如果至少有一个选中元素也匹配sel则返回true。</p>
+
+  <p class="ziti3">length</p>
+
+  <p class="ziti3">选中元素的数目。</p>
+
+  <p class="ziti3">map(f(idx,elt)):jQuery</p>
+
+  <p class="ziti3">将f作为每一个选中元素的方法并调用一次，返回一个保存返回值的新jQuery对象，其中值为null或undefined的将省略，并且数组值是平整的。</p>
+
+  <p class="ziti3">selector</p>
+
+  <p class="ziti3">最初传给$()的选择字符串。</p>
+
+  <p class="ziti3">size():int</p>
+
+  <p class="ziti3">返回length属性的值。</p>
+
+  <p class="ziti3">toArray():array</p>
+
+  <p class="ziti3">将选中元素作为一个真实的数组返回。</p>
+
+  <p class="ziti3">jQuery选择方法</p>
+
+  <p class="ziti3">这儿描述的方法将改变选中元素的集合，通过对它们的过滤，可能会添加新的元素，或者将选中元素作为一个新的选择的起点。在jQuery 1.4及之后的版本中，jQuery选择结果总是按文档中的顺序排序并且不包含重复元素。参见19.8.2节。</p>
+
+  <p class="ziti3">add(sel,[context])</p>
+
+  <p class="ziti3">add(elts)</p>
+
+  <p class="ziti3">add(html)</p>
+
+  <p class="ziti3">add()的参数将传入$()，返回的选择结果将与当前选择结果合并。</p>
+
+  <p class="ziti3">andSelf()</p>
+
+  <p class="ziti3">将前一个选中的元素集合（从栈中）添加到当前选择结果中。</p>
+
+  <p class="ziti3">children([sel])</p>
+
+  <p class="ziti3">选择选中元素的子节点。如果不指明参数则选中所有子节点。如果指明一个选择器，则只选择匹配的子节点。</p>
+
+  <p class="ziti3">closest(sel,[context])</p>
+
+  <p class="ziti3">选择离每一个已选择元素最近的祖先元素，这些元素匹配sel并且是context的子孙元素。如果省略context，将会使用对应的jQuery对象的context属性。</p>
+
+  <p class="ziti3">contents()</p>
+
+  <p class="ziti3">选择每一个选中元素的全部子节点，包括文本节点及注释。</p>
+
+  <p class="ziti3">end()</p>
+
+  <p class="ziti3">弹出内部栈，并将选择结果重置为最后一次产生改变的选择方法之前的状态。</p>
+
+  <p class="ziti3">eq(idx)</p>
+
+  <p class="ziti3">只选择已选中元素中指定index的元素。在jQuery 1.4中，负数索引将从尾部开始计数。</p>
+
+  <p class="ziti3">filter(sel)</p>
+
+  <p class="ziti3">filter(elts)</p>
+
+  <p class="ziti3">filter(f(idx):boolean)</p>
+
+  <p class="ziti3">过滤选择结果，让它只包含也匹配选择器sel的元素，或者只包含在类数组对象elts中的元素，或者只包含将断言函数f作为元素的方法调用时返回true的元素。</p>
+
+  <p class="ziti3">find(sel)</p>
+
+  <p class="ziti3">选择某个选中元素的所有匹配sel的子孙元素。</p>
+
+  <p class="ziti3">first()</p>
+
+  <p class="ziti3">只选择第一个已选中的元素。</p>
+
+  <p class="ziti3">has(sel)</p>
+
+  <p class="ziti3">has(elt)</p>
+
+  <p class="ziti3">过滤选择结果，让它们只包含这些选中元素：它们要么有一个匹配sel的子孙元素，要么是elt的祖先元素。</p>
+
+  <p class="ziti3">last()</p>
+
+  <p class="ziti3">只选择最后一个选中的元素。</p>
+
+  <p class="ziti3">next([sel])</p>
+
+  <p class="ziti3">选择每个已选中元素的下一个兄弟节点。如果指定了sel，将排除那些不匹配的元素。</p>
+
+  <p class="ziti3">nextAll([sel])</p>
+
+  <p class="ziti3">选择每个已选中元素后面的所有兄弟节点。如果指定了sel，将排除那些不匹配的元素。</p>
+
+  <p class="ziti3">nextUntil(sel)</p>
+
+  <p class="ziti3">选择每个已选中元素后面的所有兄弟节点，直到（但不包含）第一个匹配sel的兄弟节点。</p>
+
+  <p class="ziti3">not(sel)</p>
+
+  <p class="ziti3">not(elts)</p>
+
+  <p class="ziti3">not(f(idx):boolean)</p>
+
+  <p class="ziti3">这是filter()的反方法。它过滤选择结果，并排除匹配sel的元素，或者包含在elts中的元素，或者使f返回true的元素。elts可以是一个单独的元素，或者是一个由元素组成的类数组对象。f将作为每一个选中元素的方法调用。</p>
+
+  <p class="ziti3">offsetParent()</p>
+
+  <p class="ziti3">选择距离每个选中元素位置最近的祖先元素。</p>
+
+  <p class="ziti3">parent([sel])</p>
+
+  <p class="ziti3">选择每个选中元素的父元素。如果指定了sel，将排除那些不匹配的元素。</p>
+
+  <p class="ziti3">parents([sel])</p>
+
+  <p class="ziti3">选择每个选中元素的祖先元素。如果指定了sel，将排除那些不匹配的元素。</p>
+
+  <p class="ziti3">parentsUntil(sel)</p>
+
+  <p class="ziti3">选择每个选中元素的祖先元素，直到（但不包含）第一个匹配sel的元素。</p>
+
+  <p class="ziti3">prev([sel])</p>
+
+  <p class="ziti3">选择每个选中元素的前一个兄弟元素。如果指定了sel，将排除那些不匹配的元素。</p>
+
+  <p class="ziti3">prevAll([sel])</p>
+
+  <p class="ziti3">选择每个选中元素之前的所有兄弟元素。如果指定了sel，将排除那些不匹配的元素。</p>
+
+  <p class="ziti3">prevUntil(sel)</p>
+
+  <p class="ziti3">选择每个选中元素之前的兄弟元素，直到（但不包含）第一个匹配sel的元素。</p>
+
+  <p class="ziti3">pushStack(elts)</p>
+
+  <p class="ziti3">将当前选择结果压入栈中，以便之后可以使用end()方法还原它，然后选择elts数组（或类数组对象）中的元素。</p>
+
+  <p class="ziti3">siblings([sel])</p>
+
+  <p class="ziti3">选择每个选中元素的兄弟节点，不包含该元素自己。如果指定了sel，将排除所有不匹配的兄弟节点。</p>
+
+  <p class="ziti3">slice(startidx,[endidx])</p>
+
+  <p class="ziti3">过滤选择结果，使它只包含索引大于等于startidx并小于（但不等于）endidx的元素。负索引将从选择结果的尾部开始计数。如果省略endidx，将使用length属性。</p>
+
+  <p class="ziti3">jQuery元素方法</p>
+
+  <p class="ziti3">这儿描述的方法用于查询及设置元素的HTML属性和CSS样式属性。带有名为current的参数的setter回调函数将被传入它正在计算新值的任何对象的当前值。参见19.2节。</p>
+
+  <p class="ziti3">addClass(names)</p>
+
+  <p class="ziti3">addClass(f(idx,current):names)</p>
+
+  <p class="ziti3">添加指定的一个或多个CSS类名到每一个选中元素的class属性中。或者将f作为每个元素的方法调用并计算出要添加的类名。</p>
+
+  <p class="ziti3">attr(name):value</p>
+
+  <p class="ziti3">attr(name,value)</p>
+
+  <p class="ziti3">attr(name,f(idx,current):value)</p>
+
+  <p class="ziti3">attr(obj)</p>
+
+  <p class="ziti3">如果只传入一个字符串参数，则返回第一个选中元素的指定名字的属性值。如果传入两个参数，则将所有选中元素的指定名字的属性设置为指定的value，或者将f作为每个元素的方法调用以计算出新的值。如果只传入一个对象参数，则将这个对象的属性名作为元素的属性名，同时对象的属性值为作元素的属性值或属性计算函数。</p>
+
+  <p class="ziti3">css(name):value</p>
+
+  <p class="ziti3">css(name,value)</p>
+
+  <p class="ziti3">css(name,f(idx,current):value)</p>
+
+  <p class="ziti3">css(obj)</p>
+
+  <p class="ziti3">类似于attr()，但它查询或设置CSS格式属性，而不是HTML属性。</p>
+
+  <p class="ziti3">data():obj</p>
+
+  <p class="ziti3">data(key):value</p>
+
+  <p class="ziti3">data(key,value)</p>
+
+  <p class="ziti3">data(obj)</p>
+
+  <p class="ziti3">如果不带参数，则返回第一个选中元素的data对象。如果传入一个字符串参数，则返回对应data对象的指定名字的属性的值。如果传入两个参数，则将所有选中元素的对应data对象指定名字的属性设置为指定value。如果传入一个对象参数，则用它替换所有选中元素的data对象。</p>
+
+  <p class="ziti3">hasClass(name):boolean</p>
+
+  <p class="ziti3">如果任意一个选中元素的class属性中包含name则返回true。</p>
+
+  <p class="ziti3">height():int</p>
+
+  <p class="ziti3">height(h)</p>
+
+  <p class="ziti3">height(f(idx,current):int)</p>
+
+  <p class="ziti3">返回第一个选中元素的高度（不包含内边距、边框和外边距），或者将所有选中元素的高度设为h，或者将f作为每个元素的方法调用后计算出的值。</p>
+
+  <p class="ziti3">innerHeight():int</p>
+
+  <p class="ziti3">返回第一个选中元素的高度加上内边距。</p>
+
+  <p class="ziti3">innerWidth():int</p>
+
+  <p class="ziti3">返回第一个选中元素的宽度加上内边距。</p>
+
+  <p class="ziti3">offset():coords</p>
+
+  <p class="ziti3">offset(coords)</p>
+
+  <p class="ziti3">offset(f(idx,current):coords)</p>
+
+  <p class="ziti3">返回第一个选中元素（在）的X及Y位置，或者将所有选中元素的位置设为coords或将f作为每个元素的方法调用计算出来的值。坐标是一个对象，具有top和left属性。</p>
+
+  <p class="ziti3">offsetParent():jQuery</p>
+
+  <p class="ziti3">选择距离每个选中元素位置最近的祖先元素，并在一个新的jQuery对象中返回它们。</p>
+
+  <p class="ziti3">outerHeight([margins=false]):int</p>
+
+  <p class="ziti3">返回第一个选中元素的高度加内边距和边框的值，如果margins为true，则再加上外边距。</p>
+
+  <p class="ziti3">outerWidth([margins=false]):int</p>
+
+  <p class="ziti3">返回第一个选中元素的宽度加内边距和边框的值，如果margins为true，则再加上外边距。</p>
+
+  <p class="ziti3">position():coords</p>
+
+  <p class="ziti3">返回第一个选中元素相对于它位置最近的祖先的位置。返回值是一个带top和left属性的对象。</p>
+
+  <p class="ziti3">removeAttr(name)</p>
+
+  <p class="ziti3">从所有选中元素中移除指定名字的属性。</p>
+
+  <p class="ziti3">removeClass(names)</p>
+
+  <p class="ziti3">removeClass(f(idx,current):names)</p>
+
+  <p class="ziti3">从所有选中元素的class属性中移除一个或多个指定的类名。如果传入的不是字符串而是函数，则将它作为每个元素的方法调用并生成要删除的一个或多个类名。</p>
+
+  <p class="ziti3">removeData([key])</p>
+
+  <p class="ziti3">从每个选中元素的data对象中删除指定名字的属性。如果没有指定属性名，则删除整个data对象。</p>
+
+  <p class="ziti3">scrollLeft():int</p>
+
+  <p class="ziti3">scrollLeft(int)</p>
+
+  <p class="ziti3">返回第一个选中元素的水平滚动条的位置，或者设置所有选中元素的水平滚动条的位置。</p>
+
+  <p class="ziti3">scrollTop():int</p>
+
+  <p class="ziti3">scrollTop(int)</p>
+
+  <p class="ziti3">返回第一个选中元素的垂直滚动条的位置，或者设置所有选中元素的垂直滚动条的位置。</p>
+
+  <p class="ziti3">toggleClass(names,[add])</p>
+
+  <p class="ziti3">toggleClass(f(idx,current):names,[add])</p>
+
+  <p class="ziti3">切换每个选中元素的一个或多个指定类名。如果指定f，则将它作为每个选中元素的方法调用以便计算出要切换的一个或多个类名。如果add为true或false，则添加或删除对应的类名，而不是切换它们。</p>
+
+  <p class="ziti3">val():value</p>
+
+  <p class="ziti3">val(value)</p>
+
+  <p class="ziti3">val(f(idx,current)):value</p>
+
+  <p class="ziti3">返回第一个选中元素的表单值或选中状态，或将所有选中元素的值或选中状态设置为value或者将f作为每个元素的方法调用计算出的值。</p>
+
+  <p class="ziti3">width():int</p>
+
+  <p class="ziti3">width(w)</p>
+
+  <p class="ziti3">width(f(idx,current):int)</p>
+
+  <p class="ziti3">返回第一个选中元素的宽度（不包括内边距、边框和外边距），或将所有选中元素的宽度设置为w，或将f作为每个元素的方法调用计算出的值。</p>
+
+  <p class="ziti3">jQuery插入及删除方法</p>
+
+  <p class="ziti3">这儿描述的方法将插入、删除或替换文档内容。在下面的方法声明中，参数content可能是一个jQuery对象、一个HTML字符串或者一个独立的文档元素，参数target可能是一个jQuery对象、一个独立的文档元素或者一个选择器字符串。更多细节请参见19.2.5节或19.3节。</p>
+
+  <p class="ziti3">after(content)</p>
+
+  <p class="ziti3">after(f(idx):content)</p>
+
+  <p class="ziti3">在每个选中元素后面插入content，或者将f作为每个选中元素的方法调用，并将它的返回值插入到每个对应选中元素后面。</p>
+
+  <p class="ziti3">append(content)</p>
+
+  <p class="ziti3">append(f(idx,html):content)</p>
+
+  <p class="ziti3">把content追加到每个选中的元素后面，或将f作为每个选中元素的方法调用，将将它的返回值追加到每个选中元素后面。</p>
+
+  <p class="ziti3">appendTo(target):jQuery</p>
+
+  <p class="ziti3">将选中元素追加到每个指定target元素的尾部，如果有多个目标，必要时复制选中元素。</p>
+
+  <p class="ziti3">before(content)</p>
+
+  <p class="ziti3">before(f(idx):content)</p>
+
+  <p class="ziti3">类似于after()，但在选中元素之前而不是之后插入。</p>
+
+  <p class="ziti3">clone([data=false]):jQuery</p>
+
+  <p class="ziti3">对每个选中元素进行尝试复制，返回一个表示这些复制对象的新jQuery对象。如果data为true，则也会复制选中元素对应的data（包含事件处理程序）。</p>
+
+  <p class="ziti3">detach([sel])</p>
+
+  <p class="ziti3">类似于remove()，但不删除分离元素对应的data。</p>
+
+  <p class="ziti3">empty()</p>
+
+  <p class="ziti3">删除所有选中元素的内容。</p>
+
+  <p class="ziti3">html():string</p>
+
+  <p class="ziti3">html(htmlText)</p>
+
+  <p class="ziti3">html(f(idx,current):htmlText)</p>
+
+  <p class="ziti3">如果不带参数，则将第一个选中元素以HTML格式化的字符串返回。如果传入一个参数，则将所有选中元素的内容设置为指定的htmlText，或者设置为将f作为这些元素的方法调用时的返回值。</p>
+
+  <p class="ziti3">insertAfter(target):jQuery</p>
+
+  <p class="ziti3">在每个target元素之后插入选中的元素，如果有多个目标，必要时复制选中元素。</p>
+
+  <p class="ziti3">insertBefore(target):jQuery</p>
+
+  <p class="ziti3">在每个target元素之前插入选中的元素，如果有多个目标，必要时复制选中元素。</p>
+
+  <p class="ziti3">prepend(content)</p>
+
+  <p class="ziti3">prepend(f(idx,html):content)</p>
+
+  <p class="ziti3">类似append()，但它在每个选中元素的开头部分插入content，而不是在结尾部分。</p>
+
+  <p class="ziti3">prependTo(target):jQuery</p>
+
+  <p class="ziti3">类似appendTo()，除了选中元素是插入到目标元素的开头部分而不是结尾部分。</p>
+
+  <p class="ziti3">remove([sel])</p>
+
+  <p class="ziti3">从文档中移除所有选中元素或所有匹配sel的选中元素，同时移除所有与它们相关的数据（包括事件处理程序）。注意，移除的元素将不再是文档的一部分，但还是返回的jQuery对象的成员。</p>
+
+  <p class="ziti3">replaceAll(target)</p>
+
+  <p class="ziti3">将选中元素插入到文档中并替换每一个target元素，如果有多个目标，必要时将复制选中元素。</p>
+
+  <p class="ziti3">replaceWith(content)</p>
+
+  <p class="ziti3">replaceWith(f(idx,html):content)</p>
+
+  <p class="ziti3">使用content替换每个选中元素，或将f作为每个选中元素的方法调用，传入元素的索引及当前HTML内容，然后用返回值替换对应元素。</p>
+
+  <p class="ziti3">text():string</p>
+
+  <p class="ziti3">text(plainText)</p>
+
+  <p class="ziti3">text(f(idx,current):plainText)</p>
+
+  <p class="ziti3">如果不带参数，则以纯文本字符串的形式返回第一个选中元素的内容。如果传入一个参数，则将所有选中元素的内容设置为指定的plainText或将f作为这些元素的方法调用时的返回值。</p>
+
+  <p class="ziti3">unwrap()</p>
+
+  <p class="ziti3">移除每个选中元素的父节点，将它们替换为选中元素及其兄弟元素。</p>
+
+  <p class="ziti3">wrap(wrapper)</p>
+
+  <p class="ziti3">wrap(f(idx):wrapper)</p>
+
+  <p class="ziti3">使用wrapper将每一个选中元素包裹起来，如果有多个选中元素，必要时会复制这个包装元素。如果传入的是一个函数，则将它作为每个选中元素的方法调用以计算出wrapper。wrapper可以是一个元素、一个jQuery对象、一个选择器或者一段HTML字符串，但它必须只有一个最内层元素。</p>
+
+  <p class="ziti3">wrapAll(wrapper)</p>
+
+  <p class="ziti3">使用wrapper将所有选中元素作为一组包裹起来，方式为将wrapper插入到第一个选中元素的位置，然后把所有选中元素复制到wrapper的最内层元素中。</p>
+
+  <p class="ziti3">wrapInner(wrapper)</p>
+
+  <p class="ziti3">wrapInner(f(idx):wrapper)</p>
+
+  <p class="ziti3">类似wrap()，但它使用wrapper（或f的返回值）将每一个选中元素的内容包裹起来，而不是把元素自身包裹起来。</p>
+
+  <p class="ziti3">jQuery事件方法</p>
+
+  <p class="ziti3">本节的方法用于注册事件处理程序以及触发事件。参见19.4节。</p>
+
+  <p class="ziti3">event-type()</p>
+
+  <p class="ziti3">event-type(f(event))</p>
+
+  <p class="ziti3">将f注册为event-type的处理程序，或触发一个event-type类型的事件。jQuery定义了下面这些使用这个模式的便捷方法：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00119.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">bind(type,[data],f(event))</p>
+
+  <p class="ziti3">bind(events)</p>
+
+  <p class="ziti3">在每个选中元素上将f注册为指定type的事件的处理程序。如果指定了data，则在调用f之前先将它添加到事件对象上。type可能定义了多种事件类型，也可能包含命名空间。</p>
+
+  <p class="ziti3">如果传入了一个单独的对象，则将它视为一个事件类型到处理程序函数的映射，并在每个选中元素上为所有指定的事件注册处理程序。</p>
+
+  <p class="ziti3">delegate(sel,type,[data],f(event))</p>
+
+  <p class="ziti3">将f注册为一个实时事件处理程序。当类型为type的事件在匹配sel的某个元素上发生并冒泡到任意一个选中元素上时触发f。如果指定了data，将在调用f之前把它添加到事件对象中。</p>
+
+  <p class="ziti3">die(type,[f(event)])</p>
+
+  <p class="ziti3">注销由live()在当前选中元素中匹配选择器字符串的元素上注册的类型为type的事件的实时事件处理程序。如果指定了特定的事件处理程序函数f，则只注销这一个。</p>
+
+  <p class="ziti3">hover(f(event))</p>
+
+  <p class="ziti3">hover(enter(event),leave(event))</p>
+
+  <p class="ziti3">在所有选中元素上为"mouseenter"和"mouseleave"事件注册处理程序。如果只指定了一个方法，则将它同时用做两个事件的处理程序。</p>
+
+  <p class="ziti3">live(type,[data],f(event))</p>
+
+  <p class="ziti3">将f注册为类型为type的事件的实时事件处理程序。如果指定了data，则在调用f之前将它添加到事件对象中。这个方法不使用选中元素的集合，但它的确要用到选择器字符串以及当前jQuery对象的context对象。当类型为type的事件冒泡到context对象（通常为document）并且事件的目标元素匹配选择器时，将触发f。参见delegate()。</p>
+
+  <p class="ziti3">one(type,[data],f(event))</p>
+
+  <p class="ziti3">one(events)</p>
+
+  <p class="ziti3">类似bind()，不同之处是注册的事件处理程序将在执行一次之后自动注销。</p>
+
+  <p class="ziti3">ready(f())</p>
+
+  <p class="ziti3">注册f为当文档就绪时调用，或者如果文档已经就绪则立刻调用它。这个方法用不到选中的元素，它和$(f)同义。</p>
+
+  <p class="ziti3">toggle(f1(event),f2(event),...)</p>
+
+  <p class="ziti3">在所有选中元素上注册一个"click"事件处理程序，这个处理程序会在指定的处理程序函数中改变（或切换）。</p>
+
+  <p class="ziti3">trigger(type,[params])</p>
+
+  <p class="ziti3">trigger(event)</p>
+
+  <p class="ziti3">在所有选中元素上触发一个类型为type的事件，并将params作为一个额外的参数传给事件处理程序。params可以省略，可以是一个单独的值，也可以是一个值数组。如果传入一个event对象，则它的type属性将指定事件的类型，其余属性将复制到将传入处理程序的事件对象中。</p>
+
+  <p class="ziti3">triggerHandler(type,[params])</p>
+
+  <p class="ziti3">类似trigger()，但不允许触发的事件冒泡或触发浏览器的默认行为。</p>
+
+  <p class="ziti3">unbind([type],[f(event)])</p>
+
+  <p class="ziti3">如果不带参数，则在所有选中元素上注销全部jQuery事件处理程序。如果传入一个参数，则在所有选中元素上注销类型为type的事件的事件处理程序。如果传入两个参数，则在所有选中元素上类型作为type事件的处理程序注销f。type可以指定多个事件类型，也可以包含命名空间。</p>
+
+  <p class="ziti3">undelegate()</p>
+
+  <p class="ziti3">undelegate(sel,type,[f(event)])</p>
+
+  <p class="ziti3">如果不带参数，则注销选中元素委派的所有实时事件处理程序。如果传入两个参数，则注销所有选中元素中匹配sel的元素委派的类型为type的实时事件处理程序。如果传入三个参数，则只注销处理程序f。</p>
+
+  <p class="ziti3">jQuery特效及动画方法</p>
+
+  <p class="ziti3">这儿描述的方法提供了视觉特效和自定义动画。它们大多数都返回调用自己的jQuery对象。参见19.5节。</p>
+
+  <p class="ziti3">动画选项</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00120.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">jQuery.fx.off</p>
+
+  <p class="ziti3">将这个属性设置为true会禁用所有特效及动画。</p>
+
+  <p class="ziti3">animate(props,opts)</p>
+
+  <p class="ziti3">使用由opts定义的选项，在每个选中元素上以动画方式改变由props对象指定的CSS属性。这两个对象的细节请参见19.5.2节。</p>
+
+  <p class="ziti3">animate(props,[duration],[easing],[f()])</p>
+
+  <p class="ziti3">使用指定的duration和easing函数，在每个选中元素上以动画方式改变由props对象指定的CSS属性。动画完成时将f作为每个选中元素的方法调用。</p>
+
+  <p class="ziti3">clearQueue([qname="fx"])</p>
+
+  <p class="ziti3">为每个选中元素清除特效队列或指定名字的队列。</p>
+
+  <p class="ziti3">delay(duration,[qname="fx"])</p>
+
+  <p class="ziti3">添加指定duration的延时到特效队列或指定名字的队列中。</p>
+
+  <p class="ziti3">dequeue([qname="fx"])</p>
+
+  <p class="ziti3">移除并调用特效队列或指定名字队列中的下一个函数。一般不需要执行这个操作。</p>
+
+  <p class="ziti3">fadeIn([duration=400],[f()])</p>
+
+  <p class="ziti3">fadeOut([duration=400],[f()])</p>
+
+  <p class="ziti3">以动画的方式，在指定的duration毫秒内改变选中元素的透明度，以便使它淡入或淡出。完成时，如果调用f，则将它作为每个选中元素的方法调用。</p>
+
+  <p class="ziti3">fadeTo(duration,opacity,[f()])</p>
+
+  <p class="ziti3">以动画的方式，在指定的duration毫秒内将选中元素的透明度改变为opacity。完成时，如果调用f，则将它作为每个选中元素的方法调用。</p>
+
+  <p class="ziti3">hide()</p>
+
+  <p class="ziti3">hide(duration,[f()])</p>
+
+  <p class="ziti3">如果没有指定参数，则立刻隐藏每个选中元素。否则，以动画的方式改变每个选中元素的尺寸及透明度，让它们在duration毫秒之后隐藏。完成时，如果调用f，则将它作为每个选中元素的方法调用。</p>
+
+  <p class="ziti3">slideDown([duration=400],[f()])</p>
+
+  <p class="ziti3">slideUp([duration=400],[f()])</p>
+
+  <p class="ziti3">slideToggle([duration=400],[f()])</p>
+
+  <p class="ziti3">以动画的方式，在指定的duration时间内改变每个选中元素的高度，以便显示、隐藏或者切换元素的可见性。完成时，如果调用f，则将它作为每个选中元素的方法调用。</p>
+
+  <p class="ziti3">show()</p>
+
+  <p class="ziti3">show(duration,[f()])</p>
+
+  <p class="ziti3">如果不带参数，则立刻显示每个选中元素。否则，以动画的方式改变每个选中元素的尺寸及透明度，让它们在duration毫秒之后完全可见。完成时，如果调用f，则将它作为每个选中元素的方法调用。</p>
+
+  <p class="ziti3">stop([clear=false],[jump=false])</p>
+
+  <p class="ziti3">在所有选中元素上停止当前动画（如果有正在运行中）。如果clear为true，则同时也清除每个元素的特效队列。如果jump为true，则在停止之前跳到动画的最终效果。</p>
+
+  <p class="ziti3">toggle([show])</p>
+
+  <p class="ziti3">toggle(duration,[f()])</p>
+
+  <p class="ziti3">如果show为ture，则调用show()立刻显示选中元素。如果show为false，则调用hide()立刻隐藏选中元素。如果show省略，则切换元素的可见性。</p>
+
+  <p class="ziti3">如果指定duration，则在指定时间内，通过以动画改变选中元素的尺寸和透明度的方式，切换元素的可见性。完成时，如果调用f，则将它作为每个选中元素的方法调用。</p>
+
+  <p class="ziti3">queue([qname="fx"]):array</p>
+
+  <p class="ziti3">queue([qname="fx"],f(next))</p>
+
+  <p class="ziti3">queue([qname="fx"],newq)</p>
+
+  <p class="ziti3">如果不带参数或只有一个队列名，则返回第一个选中元素的指定名字的队列。如果传入一个函数参数，则将f添加到所有选中元素的指定名字的队列中。如果传入一个数组参数，则将所有选中元素的指定名字的队列替换为由函数组成的新数组newq。</p>
+
+  <p class="ziti3">jQuery Ajax函数</p>
+
+  <p class="ziti3">jQuery Ajax大多数相关的功能采用了工具函数的形式，而不是方法。下面是部分jQuery库中最复杂的函数。完整细节请参见19.6节。</p>
+
+  <p class="ziti3">Ajax状态码</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00121.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">Ajax数据类型</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00122.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">Ajax事件</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00123.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">Ajax选项</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00124.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">jQuery.ajax(options):XMLHttpRequest</p>
+
+  <p class="ziti3">这是一个复杂但完全通用的Ajax函数，是jQuery的所有Ajax工具的基础。它只需要一个对象作为参数，该对象的属性指定了对应的Ajax请求的所有细节以及处理服务器的响应的处理程序。最常用选项的描述在19.6.3节，回调选项的描述也在19.6.3节。</p>
+
+  <p class="ziti3">jQuery.ajaxSetup(options)</p>
+
+  <p class="ziti3">这个函数设置jQuery的Ajax选项的默认值。传入的选项对象的类型与传入jQuery.ajax()的一样。如果后续的Ajax请求没有指定自己的值，则会使用这儿指定的值。这个函数没有返回值。</p>
+
+  <p class="ziti3">jQuery.getJSON(url,[data],[f(object,status)]):XMLHttpRequest</p>
+
+  <p class="ziti3">异步请求指定的url，同时添加任意指定的data。接收到响应时，将它解析为JSON，然后将响应文本传入到回调函数f中。如果存在用于请求的XMLHttpRequest对象，则返回这个对象。</p>
+
+  <p class="ziti3">jQuery.getScript(url,[f(text,status)]):XMLHttpRequest</p>
+
+  <p class="ziti3">异步请求指定的url。响应到达时，将它作为一个脚本执行，然后将响应文本传入f。如果存在用于请求的XMLHttpRequest对象，则返回这个对象。允许跨域，但跨域时不会传入脚本文本给f，也不会返回XMLHttpRequest对象。</p>
+
+  <p class="ziti3">jQuery.get(url,[data],[f(data,status,xhr)],[type]):XMLHttpRequest</p>
+
+  <p class="ziti3">生成一个到url的异步HTTP GET请求，如果指明了data，则将它作为查询参数部分添加到URL中。收到响应时，将它解释为指定type，或者根据响应的Content-Type头指定的类型，必要时还会执行或解析它。最后，将（可能解析过的）响应数据连同jQuery状态码、对应的用于请求的XMLHttpRequest对象传入到回调函数f中。该XMLHttpRequest对象（如果存在的话）也是jQuery.get()的返回值。</p>
+
+  <p class="ziti3">jQuery.post(url,[data],[f(data,status,xhr)],[type]):XMLHttpRequest</p>
+
+  <p class="ziti3">类似jQuery.get()，但生成一个HTTP POST请求，而不是一个GET请求。</p>
+
+  <p class="ziti3">jQuery.param(o,[old=false]):string</p>
+
+  <p class="ziti3">以www-form-urlencoded格式序列化o的属性名和属性值，以便将它添加到一个URL中或作为一个HTTP POST请求的正文。如果作为data参数传入一个对象，大多数jQuery Ajax函数会自动完成这个转换。如果你想要jQuery 1.3风格的浅序列化，请把true作为第二个参数传入。</p>
+
+  <p class="ziti3">jQuery.parseJSON(text):object</p>
+
+  <p class="ziti3">解析JSON格式的文本并返回生成的对象。当请求JSON编码的数据时，jQuery的Ajax函数会隐式调用这个方法。</p>
+
+  <p class="ziti3">load(url,[data],[f(text,status,xhr)])</p>
+
+  <p class="ziti3">异步请求url，同时添加指定的data。收到响应时，将它解释为一个HTML字符串，并将它插入到每个选中元素的位置，替换现存的内容。最后，将f作为每个选中元素的方法调用，参数为响应文本、jQuery状态码以及当前请求的XMLHttpRequest对象。</p>
+
+  <p class="ziti3">如果url包含一个空格，则该空格之后的文本将用做选择器，响应文档中只有匹配选择器的部分才会插入到选中元素中。</p>
+
+  <p class="ziti3">不同于大多数jQuery Ajax工具，load()是一个方法，不是一个函数。类似于大多数jQuery方法，它返回调用它的jQuery对象。</p>
+
+  <p class="ziti3">serialize():string</p>
+
+  <p class="ziti3">序列化选中表单及表单元素的名字与值，返回一个www-form-urlencoded格式的字符串。</p>
+
+  <p class="ziti3">jQuery工具函数</p>
+
+  <p class="ziti3">这些是杂项jQuery函数和属性（不是方法）。更多细节请参见19.7节。</p>
+
+  <p class="ziti3">jQuery.boxModel</p>
+
+  <p class="ziti3">jQuery.support.boxModel的一个弃用的同义词。</p>
+
+  <p class="ziti3">jQuery.browser</p>
+
+  <p class="ziti3">这个属性指代一个标识浏览器厂商和版本的对象。在这个对象中，Internet Explorer具有属性msie，Firefox具有属性mozilla，Safari和Chrome具有属性webkit，Opera具有属性opera。它的version属性就是浏览器的版本号。</p>
+
+  <p class="ziti3">jQuery.contains(a,b):boolean</p>
+
+  <p class="ziti3">如果文档元素a包含元素b则返回true。</p>
+
+  <p class="ziti3">jQuery.data(elt):data</p>
+
+  <p class="ziti3">jQuery.data(elt,key):value</p>
+
+  <p class="ziti3">jQuery.data(elt,data)</p>
+
+  <p class="ziti3">jQuery.data(elt,key,value)</p>
+
+  <p class="ziti3">data()方法的一个低级版本。如果传入一个元素参数，则返回该元素的data对象。如果传入一个元素以及一个字符串，则从该元素的data对象中返回指定名字的值。如果传入一个元素以及一个对象，则设置该元素的data对象。如果传入一个元素、一个字符串以及一个值，则设置该元素的data对象中指定名字的值为传入的值。</p>
+
+  <p class="ziti3">jQuery.dequeue(elt,[qname="fx"])</p>
+
+  <p class="ziti3">移除并调用指定元素指定名字的队列中的第一个函数。与$(elt).dequeue(qnqme)相同。</p>
+
+  <p class="ziti3">jQuery.each(o,f(name,value)):o</p>
+
+  <p class="ziti3">jQuery.each(a,f(index,value)):a</p>
+
+  <p class="ziti3">为o的每个属性调用一次f，传入对应的属性名和属性值，并将f作为属性值的方法调用。如果第一个参数是一个数组，或一个类数组元素，则将f作为数组中每个元素的方法调用，将数组的索引和元素值作为参数传入。如果f返回false则迭代将停止。这个函数返回它的第一个参数。</p>
+
+  <p class="ziti3">jQuery.error(msg)</p>
+
+  <p class="ziti3">抛出一个包含msg的异常。可以在插件中调用这个函数，也可以在调试时重写（例如jQuery.error=alert）它。</p>
+
+  <p class="ziti3">jQuery.extend(obj):object</p>
+
+  <p class="ziti3">jQuery.extend([deep=false],target,obj...):object</p>
+
+  <p class="ziti3">如果传入一个参数，将obj的属性复制到全局的jQuery命名空间中。如果传入两个或更多参数，则按顺序复制第二个及之后的对象的属性到target对象中。如果可选参数deep为true，则将执行深拷贝，属性将会递归复制。返回值为扩展的对象。</p>
+
+  <p class="ziti3">jQuery.globalEval(code):void</p>
+
+  <p class="ziti3">执行指定JavaScript code，就像它们是顶级＜script＞一样。没有返回值。</p>
+
+  <p class="ziti3">jQuery.grep(a,f(elt,idx):boolean,[invert=false]):array</p>
+
+  <p class="ziti3">返回一个新数组，其中只包含a中令f返回true的元素。或者，如果invert为true的话，则只返回令f返回false的元素。</p>
+
+  <p class="ziti3">jQuery.inArray(v,a):integer</p>
+
+  <p class="ziti3">在数组或类数组对象a中寻找元素v，如果找到则返回元素的索引，否则返回-1。</p>
+
+  <p class="ziti3">jQuery.isArray(x):boolean</p>
+
+  <p class="ziti3">仅当x是一个真正的JavaScript数组时返回true。</p>
+
+  <p class="ziti3">jQuery.isEmptyObject(x):boolean</p>
+
+  <p class="ziti3">仅当x不包含可枚举属性时返回true。</p>
+
+  <p class="ziti3">jQuery.isFunction(x):boolean</p>
+
+  <p class="ziti3">仅当x是一个JavaScript函数时返回true。</p>
+
+  <p class="ziti3">jQuery.isPlainObject(x):boolean</p>
+
+  <p class="ziti3">仅当x是一个普通JavaScript对象时返回true，比如一个由对象直接量（object literal）创建的对象。</p>
+
+  <p class="ziti3">jQuery.isXMLDoc(x):true</p>
+
+  <p class="ziti3">仅当x是一个XML文档或一个XML文档的元素时返回true。</p>
+
+  <p class="ziti3">jQuery.makeArray(a):array</p>
+
+  <p class="ziti3">返回一个新的JavaScript数组，其中包含和类数组对象a相同的元素。</p>
+
+  <p class="ziti3">jQuery.map(a,f(elt,idx)):array</p>
+
+  <p class="ziti3">返回一个新的数组，值为对于数组（或类数组对象）a的每一个元素依次调用f的返回值。值为null的返回值将忽略，返回的数组是平整的。</p>
+
+  <p class="ziti3">jQuery.merge(a,b):array</p>
+
+  <p class="ziti3">将数组b中的元素追加到a中，并返回a。参数可以是类数组对象或真正的数组。</p>
+
+  <p class="ziti3">jQuery.noConflict([radical=false])</p>
+
+  <p class="ziti3">将符号$重置为jQuery库加载前的值并返回jQuery。如果radical为true，则也还原符号jQuery的值。</p>
+
+  <p class="ziti3">jQuery.proxy(f,o):function</p>
+
+  <p class="ziti3">jQuery.proxy(o,name):function</p>
+
+  <p class="ziti3">返回一个函数，该函数将f作为o的一个方法调用，或者将o[name]作为o的一个方法调用。</p>
+
+  <p class="ziti3">jQuery.queue(elt,[qname="fx"],[f])</p>
+
+  <p class="ziti3">查询或设置elt的指定名字的队列，或添加一个新的函数f到这个队列中。和$(elt).queue(qname,f)等同。</p>
+
+  <p class="ziti3">jQuery.removeData(elt,[name]):void</p>
+
+  <p class="ziti3">从elt的data对象中移除指定名字的属性，或移除对应的data对象本身。</p>
+
+  <p class="ziti3">jQuery.support</p>
+
+  <p class="ziti3">一个对象，包含若干描述当前浏览器的特性与bug的属性。大多属性只有插件开发者感兴趣。在怪异模式（quirks mode）的IE浏览器下jQuery.support.boxModel为false。</p>
+
+  <p class="ziti3">jQuery.trim(s):string</p>
+
+  <p class="ziti3">返回字符串s的一个副本，其中去掉了头部和尾部的空白字符。</p>
+
+  <h3 class="p1" id="heading_id_65">KeyEvent</h3>
+
+  <p class="ziti3">参见Event</p>
+
+  <h3 class="p1" id="heading_id_66">Label</h3>
+
+  <p class="ziti3">适用于表单控件的＜label＞</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">Label对象表示HTML表单中的＜label＞元素。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly Element control</p>
+
+  <p class="ziti3">当前标签关联的FormControl。如果指定htmlFor，这个属性为该属性指定的控件。否则，这个属性为该＜label＞的第一个FormControl子元素。</p>
+
+  <p class="ziti3">readonly Form form</p>
+
+  <p class="ziti3">这个属性指代包含当前标签的Form元素。或者，如果设置HTML form属性，则指代那个ID标识的Form元素。</p>
+
+  <p class="ziti3">string htmlFor</p>
+
+  <p class="ziti3">这个属性是HTML for属性的映射。由于for是JavaScript中的保留词，因此为了创建一个合法的标识符，这个属性名以"html"为前缀。如果设置这个值，这个属性应该指定与本标签关联的FormControl的ID。（不过，通常有更简单的方法，只需要简单地将该FormControl作为本Label的一个子孙元素即可。）</p>
+
+  <h3 class="p1" id="heading_id_67">Link</h3>
+
+  <p class="ziti3">HTML超链接</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">HTML链接由＜a＞、＜area＞以及＜link＞元素创建。＜a＞标签用于在文档正文中创建超链接。＜area＞标签是一个较少用到的特性，用于创建“图片热区”。＜link＞标签用于在文档的＜head＞中引用外部资源，如样式表、图标等。＜a＞和＜area＞元素在JavaScript中的表示方式相同。＜link＞元素在JavaScript中的表示方式有些不同，为了方便，这两类链接的文档在这儿编写在了一起。</p>
+
+  <p class="ziti3">当一个代表＜a＞元素的Link对象用做字符串时，它将返回它的href属性的值。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除了这儿列出的属性，链接对象也有反映基本的HTML特性的属性：hreflang、media、ping、rel、sizes、target以及type。注意，返回链接的href的URL分解（decomposition）属性（如host和pathname）只适用于＜a＞以及＜area＞元素，不适用于＜link＞元素，同时，sheet、disabled以及relList元素只适用于引用样式表的＜link＞元素。</p>
+
+  <p class="ziti3">boolean disabled</p>
+
+  <p class="ziti3">适用于指代样式表的＜link＞元素，这个属性控制该样式表是否应用到当前文档中。</p>
+
+  <p class="ziti3">string hash</p>
+
+  <p class="ziti3">href的片断标识符，包含开头的哈希（#）标记，例如"#results"。</p>
+
+  <p class="ziti3">string host</p>
+
+  <p class="ziti3">href的主机名和端口部分，例如"http://ww.oreilly.com:1234"。</p>
+
+  <p class="ziti3">string hostname</p>
+
+  <p class="ziti3">href的主机名部分，例如"http://www.oreilly.com"。</p>
+
+  <p class="ziti3">string href</p>
+
+  <p class="ziti3">链接的href属性。当一个＜a＞或＜area＞元素用做字符串时，它将是这个属性返回的值。</p>
+
+  <p class="ziti3">string pathname</p>
+
+  <p class="ziti3">href的path部分，例如"/catalog/search.html"。</p>
+
+  <p class="ziti3">string port</p>
+
+  <p class="ziti3">href的端口部分，例如“1234”。</p>
+
+  <p class="ziti3">string protocol</p>
+
+  <p class="ziti3">href的协议部分，包括尾部的冒号，例如"http:"。</p>
+
+  <p class="ziti3">readonly DOMTokenList relList</p>
+
+  <p class="ziti3">类似Element的classList属性，这个属性让从＜link＞元素的HTML rel属性中查询、设置以及删除操作更容易。</p>
+
+  <p class="ziti3">string search</p>
+
+  <p class="ziti3">href的查询部分，包括开头的问号，例如"?q=JavaScript＆m=10"。</p>
+
+  <p class="ziti3">readonly CSSStyleSheet sheet</p>
+
+  <p class="ziti3">适用于引用样式表的＜link＞元素，这个属性表示已连接的样式表。</p>
+
+  <p class="ziti3">string text</p>
+
+  <p class="ziti3">＜a＞或＜area＞元素的纯文本内容。等同于Node.textContent。</p>
+
+  <p class="ziti3">string title</p>
+
+  <p class="ziti3">所有HTML元素都支持title属性，一般它用于指定该元素的工具提示信息文本。如果在rel设置为"alternate stylesheet"的＜link＞元素上设置这个属性，将为它提供一个名字，用户将可以通过这个名字启用或禁用该样式表，如果浏览器支持替换样式表的话，指定的title还可能以某种形式出现在浏览器的用户界面上。</p>
+
+  <h3 class="p1" id="heading_id_68">Location</h3>
+
+  <p class="ziti3">代表并控制浏览器的地址</p>
+
+  <p class="ziti3">Window或Document对象的location属性指代一个Location对象，这个对象代表当前文档的页面地址（即"location"）。href属性包含该文档的完整URL，Location对象的其他属性各自描述了这个URL的一部分。这些属性很像Link对象的URL属性。当Location对象用做字符串时，将返回href属性的值。这意味着可以在使用location.href表达式的地方使用location。</p>
+
+  <p class="ziti3">除了代表当前浏览器地址，Location对象也控制这个地址。如果把一个包含URL的字符串赋值给Location对象或它的href属性，Web浏览器将加载并显示这个URL。也可以通过设置其他Location属性改变当前URL的一部分的方式，让浏览器加载一个新的文档。例如，如果设置search属性，浏览器将以一个追加的新查询字符串重新加载当前URL。如果设置hash属性，浏览器不会加载新的文档，但它会创建一个新的历史记录。并且，如果该hash属性标识文档中的一个元素，则浏览器将滚动文档，以便让该元素可见。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">Location对象的属性指代当前文档的URL的多个部分。在下面描述的属性中，给出的例子都是这个（虚构的）URL的一部分：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">http://www.oreilly.com:1234/catalog/search.html?q=JavaScript＆m=10#results</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">string hash</p>
+
+  <p class="ziti3">URL的锚部分，包括开头的哈希（#）符号，例如"#results"。文档URL的这个部分指定文档中某个锚的名字。</p>
+
+  <p class="ziti3">string host</p>
+
+  <p class="ziti3">URL的主机名和端口部分，例如"http://www.oreilly.com:1234"。</p>
+
+  <p class="ziti3">string hostname</p>
+
+  <p class="ziti3">URL的主机名部分，例如"http://www.oreilly.com"。</p>
+
+  <p class="ziti3">string href</p>
+
+  <p class="ziti3">文档的URL的完整文本，不同于其他只指定URL的一部分的Location属性。将这个属性设置为一个新的URL将导致浏览器读取并显示新URL的内容。把一个值直接赋值给Location对象将设置这个属性，把一个Location对象用做一个字符串将使用这个属性的值。</p>
+
+  <p class="ziti3">string pathname</p>
+
+  <p class="ziti3">URL的路径名部分，例如"/catalog/search.html"。</p>
+
+  <p class="ziti3">string port</p>
+
+  <p class="ziti3">URL的端口部分，例如“1234”。注意这个属性是一个字符串，而不是一个数字。</p>
+
+  <p class="ziti3">string protocol</p>
+
+  <p class="ziti3">URL的协议部分，包括尾部的冒号，例如"http:"。</p>
+
+  <p class="ziti3">string search</p>
+
+  <p class="ziti3">URL的查询部分，包括开头的问号，例如"?q=JavaScript＆m=10"。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void assign(string url)</p>
+
+  <p class="ziti3">加载并显示指定url的内容，等同于href属性设置为url。</p>
+
+  <p class="ziti3">void reload()</p>
+
+  <p class="ziti3">重新加载当前显示的文档。</p>
+
+  <p class="ziti3">void replace(string url)</p>
+
+  <p class="ziti3">加载并显示指定url的内容，在浏览器的历史记录中替换掉当前文档，这样浏览器的“后退”按钮将把浏览器带到前一个显示的文档。</p>
+
+  <h3 class="p1" id="heading_id_69">MediaElement</h3>
+
+  <p class="ziti3">媒体播放元素</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">MediaElement是＜audio＞和＜video＞元素共同的超类。这两个元素定义的API几乎一模一样，这些相同的API在这儿有描述，不过，音频和视频相关的细节请参见Audio及Video。关于这些媒体元素的介绍请参见21.2节。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">NETWORK常量是networkState可能的值，HAVE常量是readyState属性可能的值。</p>
+
+  <p class="ziti3">unsigned short NETWORK_EMPTY=0</p>
+
+  <p class="ziti3">当前元素还没有开始使用网络。在src属性设置之前可能处于这个状态。</p>
+
+  <p class="ziti3">unsigned short NETWORK_IDLE=1</p>
+
+  <p class="ziti3">当前元素现在不在从网络加载数据。它可能已经加载完全部资源了，或者它可能已经缓存了它现在需要的数据，也或者可能是它的preload设置为"none"，并且还没有要求加载或播放媒体。</p>
+
+  <p class="ziti3">unsigned short NETWORK_LOADING=2</p>
+
+  <p class="ziti3">当前元素当前正在使用网络加载媒体数据。</p>
+
+  <p class="ziti3">unsigned short NETWORK_NO_SOURCE=3</p>
+
+  <p class="ziti3">当前元素没有使用网络，因为它找不到可以播放的媒体资源。</p>
+
+  <p class="ziti3">unsigned short HAVE_NOTHING=0</p>
+
+  <p class="ziti3">没有媒体数据或无数据已加载。</p>
+
+  <p class="ziti3">unsigned short HAVE_METADATA=1</p>
+
+  <p class="ziti3">媒体元数据已加载，但当前播放位置的数据还没有加载。这意味着可以查询该媒体的时长或视频的大小，并且可以通过设置currentTime来搜索媒体，但浏览器现在不能播放currentTime位置的媒体。</p>
+
+  <p class="ziti3">unsigned short HAVE_CURRENT_DATA=2</p>
+
+  <p class="ziti3">currentTime的媒体已加载，但还没有加载足够的数据以允许媒体开始播放。对视频来说，通常这意味着当前帧已加载，但下一帧还没有。在音频或视频的结尾也会发生这个状态。</p>
+
+  <p class="ziti3">unsigned short HAVE_FUTURE_DATA=3</p>
+
+  <p class="ziti3">已下载了足以开始播放的媒体数据，但如果不暂停以便加载更多数据的话，数据可能将不足以持续播放到媒体结束。</p>
+
+  <p class="ziti3">unsigned short HAVE_ENOUGH_DATA=4</p>
+
+  <p class="ziti3">已加载了足够的数据，浏览器有可能可以在不暂停的情况下一直播放到媒体结束。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">boolean autoplay</p>
+
+  <p class="ziti3">如果为true，对应媒体元素将在下载了足够数据时自动开始播放。本属性为对应的HTML autoplay属性的映射。</p>
+
+  <p class="ziti3">readonly TimeRanges buffered</p>
+
+  <p class="ziti3">当前缓存的媒体数据的时间范围。</p>
+
+  <p class="ziti3">boolean controls</p>
+
+  <p class="ziti3">如果为true，则对应媒体元素应该显示一系列的播放控件。本属性为对应的HTML controls属性的映射。</p>
+
+  <p class="ziti3">readonly string currentSrc</p>
+
+  <p class="ziti3">媒体数据的URL，来自src属性，或者当前元素的一个＜source＞子节点，如果没有指定媒体数据，则为空字符串。</p>
+
+  <p class="ziti3">double currentTime</p>
+
+  <p class="ziti3">当前播放时间，单位为秒。设置这个属性将使媒体元素跳到一个新的播放位置。</p>
+
+  <p class="ziti3">double defaultPlaybackRate</p>
+
+  <p class="ziti3">正常播放的播放速度。默认值为1.0。</p>
+
+  <p class="ziti3">readonly double duration</p>
+
+  <p class="ziti3">当前媒体的时长，单位为秒。如果长度未知（比如元数据还没有加载），这个属性将为NaN。如果媒体为一个不确定长度的流，则这个属性将为Infinity。</p>
+
+  <p class="ziti3">readonly boolean ended</p>
+
+  <p class="ziti3">如果已到达媒体的结尾则本属性为true。</p>
+
+  <p class="ziti3">readonly MediaError error</p>
+
+  <p class="ziti3">发生错误时会设置这个属性，其他情况下它为null。它指代一个对象，该对象的code属性描述错误的种类。</p>
+
+  <p class="ziti3">readonly double initialTime</p>
+
+  <p class="ziti3">初始播放位置，单位为秒。这个属性通常为0，但有些媒体（比如流媒体）可能有不同的起点。</p>
+
+  <p class="ziti3">boolean loop</p>
+
+  <p class="ziti3">如果为true，则当前媒体元素将在每次到达结尾时自动重新开始。本属性是HTML loop属性的映射。</p>
+
+  <p class="ziti3">boolean muted</p>
+
+  <p class="ziti3">指定当前音频是否静音。可以通过设置这个属性来让一段音频静音或取消静音。对＜video＞元素而言，可以用一个audio="muted"属性来让媒体默认静音。</p>
+
+  <p class="ziti3">readonly unsigned short networkState</p>
+
+  <p class="ziti3">当前是否正在加载媒体数据。合法的值在上面常量部分列出了。</p>
+
+  <p class="ziti3">readonly boolean paused</p>
+
+  <p class="ziti3">如果当前播放暂停了则此属性为true。</p>
+
+  <p class="ziti3">double playbackRate</p>
+
+  <p class="ziti3">当前播放速度。1.0是正常播放。如果值大于1.0表示快进。值在0～1.0之间表示慢放。如果值小于0，则媒体将回放。（回放时，媒体总是处于静音状态，同时，如果播放速度特别快或特别慢也将静音。）</p>
+
+  <p class="ziti3">readonly TimeRanges played</p>
+
+  <p class="ziti3">已经播放的时间范围。</p>
+
+  <p class="ziti3">string preload</p>
+
+  <p class="ziti3">这个属性是同名的HTML属性的映射，可以通过它设置在用户请求媒体播放之前，浏览器应该获取多少媒体数据。值"none"表示不需要预加载数据。值"metadata"表示浏览器应该取得媒体的元数据（例如时间长度），但不用获取实际的数据本身。值"auto"（或者空字符串，如果设置preload属性但是没有指定值）表示一旦用户决定播放该媒体，浏览器可以加载整个媒体资源。</p>
+
+  <p class="ziti3">readonly unsigned short readyState</p>
+
+  <p class="ziti3">媒体播放的准备状态，基于已缓存的数据的数量。合法的值为上面定义的以HAVE_开头的常量。</p>
+
+  <p class="ziti3">readonly TimeRanges seekable</p>
+
+  <p class="ziti3">可设置currentTime的时间范围。播放简单媒体文件时，这个值一般为0～duration之间的一个时间。但对流媒体而言，过去的时间可能不再在缓存中，将来的时间可能还不可用。</p>
+
+  <p class="ziti3">readonly boolean seeking</p>
+
+  <p class="ziti3">当媒体元素正在切换到一个新的currentTime播放位置时，本属性为true。如果新的播放位置已经在缓存中，这个属性将只有很短的一段时间为tr ue。但如果媒体元素必须加载新的媒体数据的话，seeking将保持true状态一段较长的时间。</p>
+
+  <p class="ziti3">string src</p>
+
+  <p class="ziti3">这个属性是媒体元素的HTML src属性的映射。通过设置这个属性，可让媒体元素加载新的媒体数据。注意这个属性和currentSrc不一样。</p>
+
+  <p class="ziti3">readonly Date startOffsetTime</p>
+
+  <p class="ziti3">播放时间为0的位置对应的真实时间的日期及时间，如果媒体的元数据包含这个信息的话。（比如，视频文件可能包含录制它的时间。）</p>
+
+  <p class="ziti3">double volume</p>
+
+  <p class="ziti3">这个属性查询或设置音频播放的音量。它的值应该在0～1之间。也可参见muted属性。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">＜audio＞和＜video＞标签定义了下面这些事件处理程序，它们都可以作为HTML属性或JavaScript属性使用。在写作本书时，有一些浏览器还不支持这些属性，需要使用addEventListener()（参见EventTarget）来注册事件处理程序。媒体事件不会冒泡，也没有可取消的默认行为。相关的事件对象是一个常规的Event对象。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00125.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="pic">
+    <img alt="" src="../images/00126.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">string canPlayType(string type)</p>
+
+  <p class="ziti3">这个访问询问媒体元素它是否能播放指定MIME type的媒体。如果播放器确定不能播放这个类型，它将返回空字符串。如果它认为自己可以（但不确定）播放这个类型，它将返回字符串"probably"。媒体元素通常不会返回"probably"，除非type包含一个列出指定媒体编码的codecs=参数。如果媒体元素不确定它是否可以播放指定type，这个方法将返回"maybe"。</p>
+
+  <p class="ziti3">void load()</p>
+
+  <p class="ziti3">这个方法重置媒体元素，让它选择一个媒体资源并开始加载数据。当媒体元素首先插入到文档中，或当设置了它的src属性时，这个动作会自动发生。但是，如果添加、移除或修改了对应媒体元素的＜source＞子孙元素，必须显式地调用load()。</p>
+
+  <p class="ziti3">void pause()</p>
+
+  <p class="ziti3">暂停媒体的播放。</p>
+
+  <p class="ziti3">void play()</p>
+
+  <p class="ziti3">开始播放媒体。</p>
+
+  <h3 class="p1" id="heading_id_70">MediaError</h3>
+
+  <p class="ziti3">＜audio＞或＜video＞错误</p>
+
+  <p class="ziti3">当＜audio＞或＜video＞标签上发生错误时，将触发一个错误事件，对应的error属性将设置为一个MediaError对象。对应的code属性将指明发生的错误的类型，下面的常量定义该属性可能的值。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">unsigned short MEDIA_ERR_ABORTED=1</p>
+
+  <p class="ziti3">用户请求浏览器停止加载媒体。</p>
+
+  <p class="ziti3">unsigned short MEDIA_ERR_NETWORK=2</p>
+
+  <p class="ziti3">媒体类型正确，但一个网络错误阻止它的加载。</p>
+
+  <p class="ziti3">unsigned short MEDIA_ERR_DECODE=3</p>
+
+  <p class="ziti3">媒体类型正确，但一个编码错误阻止它的解码及播放。</p>
+
+  <p class="ziti3">unsigned short MEDIA_ERR_SRC_NOT_SUPPORTED=4</p>
+
+  <p class="ziti3">由src属性指定的媒体不是浏览器可播放的类型。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned short code</p>
+
+  <p class="ziti3">这个属性描述发生的媒体错误的类型。它的值将是上面的常量之一。</p>
+
+  <h3 class="p1" id="heading_id_71">MessageChannel</h3>
+
+  <p class="ziti3">一对已连接的MessagePorts</p>
+
+  <p class="ziti3">MessageChannel简单来说是一对已连接的MessagePort对象。在任何一方上调用postMessage()都将在另一方上触发一个消息事件。如果想用Window或Worker线程建立一个私有的通信通道，只需要创建一个MessageChannel并将MessagePort对中的一个成员传入对应的Window或Worker（使用postMessage()的ports参数）。</p>
+
+  <p class="ziti3">MessageChannel和MessagePort类型是HTML5的高级特性，在写作本书的时候，一些浏览器支持跨域消息（见22.3节）以及worker线程（见22.4节），但还不支持MessagePort类型的私有通信通道。</p>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new MessageChannel()</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">这个不带参数的构造函数返回一个新的MessageChannel对象。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly MessagePort port1</p>
+
+  <p class="ziti3">readonly MessagePort port2</p>
+
+  <p class="ziti3">这是定义了通信通道的两个已连接的端口。两者是对称的：为代码保留某一个或另一个，将另一个传入到你想与之通信的Window或Worker。</p>
+
+  <h3 class="p1" id="heading_id_72">MessageEvent</h3>
+
+  <p class="ziti3">从另一个执行上下文来的消息</p>
+
+  <p class="ziti3">事件</p>
+
+  <p class="ziti3">有很多API都使用消息事件来在不相关的执行上下文中实现异步通信。Window、Worker、WebSocket、EventSource以及MessagePort对象都定义了用于处理消息事件的onmessage属性。与消息事件关联的消息可以是任意能像22.2节描述的“结构性复制”那样复制的JavaScript值。消息将被一个MessageEvent对象包装起来，可以通过data属性访问。各种依赖消息事件的API也在MessageEvent对象中定义一些额外的属性。消息事件不会冒泡，也没有可取消的默认行为。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly any data</p>
+
+  <p class="ziti3">这个属性保存正在发送的消息。data可以是能通过结构化复制算法（参见22.2节的“结构性复制”）的任意类型：这包括对象以及数组这样的核心JavaScript值，但不包括函数。尽管Blob和ArrayBuffer可以使用，但是Document和Element节点等客户端的值不可以使用。</p>
+
+  <p class="ziti3">readonly string lastEventId</p>
+
+  <p class="ziti3">适用于EventSource（见18.3节）上的消息事件，这个字段包含由服务器发送的lastEventId字符串，如果存在的话。</p>
+
+  <p class="ziti3">readonly string origin</p>
+
+  <p class="ziti3">适用于EventSource（见18.3节）或Window（见22.3节）上的消息事件，这个属性包含消息发送者的原始URL。</p>
+
+  <p class="ziti3">readonly MessagePort[]ports</p>
+
+  <p class="ziti3">适用于Window（见22.3节）、Worker（见22.4节）或MessagePort上的消息事件，如果在对应的postMessage()的调用中传入了MessagePort对象，这个属性将以数组的形式包含这些MessagePort对象。</p>
+
+  <p class="ziti3">readonly Window source</p>
+
+  <p class="ziti3">适用于Window（见22.3节）上的消息事件，这个属性指代消息发送自的Window。</p>
+
+  <h3 class="p1" id="heading_id_73">MessagePort</h3>
+
+  <p class="ziti3">传递异步消息</p>
+
+  <p class="ziti3">EventTarget</p>
+
+  <p class="ziti3">MessagePort用于事件驱动的异步消息传递，通常在JavaScript执行上下文之中，如window或worker线程。MessagePort必须以成对相连的形式使用：参见MessageChannel。在MessagePort上调用postMessage()将在与它连接的MessagePort上触发一个消息事件。跨域的消息API（见22.3节）以及Web Worker（见22.4节）也使用postMessage()方法和消息事件来通信。这些API实际上使用的是隐式的MessagePort对象。显式地使用MessageChannel和MessagePort将启用额外的私有通信通道，例如，允许在两个兄弟Worker线程中直接通信。</p>
+
+  <p class="ziti3">MessageChannel和MessagePort类型是HTML5的高级特性，在写作本书的时候，一些浏览器支持跨域消息（见22.3节）以及worker线程（见22.4节），但不支持MessagePort类型的私有通信通道。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void close()</p>
+
+  <p class="ziti3">这个方法将MessagePort从它已连接的端口（如果有的话）断开。之后继续调用postMessage()将没有效果，并且将不再发送消息事件。</p>
+
+  <p class="ziti3">void postMessage(any message,[MessagePort[]ports])</p>
+
+  <p class="ziti3">通过指定端口发送指定的message的一个副本，并将它以消息事件的格式发送到它已连接的端口。如果指定了ports，也将它们当做消息的一部分一起发送。message可以是适用结构性复制算法（“结构性复制”，见22.2节）的任意值。</p>
+
+  <p class="ziti3">void start()</p>
+
+  <p class="ziti3">这个方法将让MessagePort开始触发消息事件。在这个方法调用之前，任何通过端口发送的数据都处于缓存中。这样延迟消息的方式允许脚本在发送消息之前先注册好所有事件处理程序。注意，只有在使用EventTarget方法addEventListener()时才需要调用这个方法。如果只是简单地设置onmessage属性，start()将隐式地调用。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">onmessage</p>
+
+  <p class="ziti3">这个属性定义一个适用于消息事件的事件处理程序。消息事件由MessagePort对象触发，它们不会冒泡，也没有默认行为。注意，设置这个属性将调用start()方法开始消息事件的发送。</p>
+
+  <h3 class="p1" id="heading_id_74">Meter</h3>
+
+  <p class="ziti3">图形标尺或计量器</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">Meter对象表示HTML＜meter＞元素，以图形化的表示方式显示可能的值中的范围，这个范围可以标注区域为低、适合以及高。</p>
+
+  <p class="ziti3">这个对象的大部分属性简单地映射了同名的HTML属性。JavaScript属性为数字，虽然对应的HTML属性为字符串。</p>
+
+  <p class="ziti3">＜meter＞是一个HTML5元素，在写作本书的时候，还没有广泛地支持。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly Form form</p>
+
+  <p class="ziti3">当前元素的祖先Form元素，或者由HTMLform属性指定的Form元素，如果存在的话。</p>
+
+  <p class="ziti3">double high</p>
+
+  <p class="ziti3">如果指定，则表示high和max之间值的属性应该图形化地表示为"high"。</p>
+
+  <p class="ziti3">readonly NodeList labels</p>
+
+  <p class="ziti3">由与当前元素关联的Label元素组成的类数组对象。</p>
+
+  <p class="ziti3">double low</p>
+
+  <p class="ziti3">如果指定，则表示min和low之间值的属性应该图形化地表示为"low"。</p>
+
+  <p class="ziti3">double max</p>
+
+  <p class="ziti3">当前＜meter＞可显示的最大值。默认为1。</p>
+
+  <p class="ziti3">double min</p>
+
+  <p class="ziti3">当前＜meter＞可显示的最小值。默认为0。</p>
+
+  <p class="ziti3">double optimum</p>
+
+  <p class="ziti3">如果指定，这个值将被认为是最佳值。</p>
+
+  <p class="ziti3">double value</p>
+
+  <p class="ziti3">当前＜meter＞表示的值。</p>
+
+  <h3 class="p1" id="heading_id_75">MouseEvent</h3>
+
+  <p class="ziti3">参见Event</p>
+
+  <h3 class="p1" id="heading_id_76">Navigator</h3>
+
+  <p class="ziti3">关于Web浏览器的信息</p>
+
+  <p class="ziti3">Navigator对象包含一些描述正在其中运行代码的Web浏览器的属性。可以使用这些属性来实现对特定平台的定制。这个对象的名字是对Netscape Navigator浏览器的引用，但所有浏览器都支持它。Navigator对象只有一个实例，可以通过任意Window对象的navigator属性引用它。</p>
+
+  <p class="ziti3">历史上，Navigator对象曾用于“客户端嗅探”，对不同的浏览器运行不同的代码。例14-3显示了这种用途的一个简单方法，14.4节中接下来的文字描述了依赖Navigator对象的缺陷。跨浏览器兼容的更好的方法在13.4.3节有描述。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly string appName</p>
+
+  <p class="ziti3">浏览器的名字。对基于Netscape的浏览器而言，这个属性的值为"Netscape"。在IE中，这个属性的值为"Microsoft Internet Explorer"。为了兼容现有的代码，许多浏览器返回较老的或欺骗性的信息。</p>
+
+  <p class="ziti3">readonly string appVersion</p>
+
+  <p class="ziti3">浏览器版本及平台信息。为了兼容现有的代码，大多数浏览器对于这个属性返回过时的旧值。</p>
+
+  <p class="ziti3">readonly Geolocation geolocation</p>
+
+  <p class="ziti3">当前浏览器的Geolocation对象的一个引用。该对象的方法允许脚本请求用户的当前地理位置信息。</p>
+
+  <p class="ziti3">readonly boolean onLine</p>
+
+  <p class="ziti3">如果浏览器不会从网络上下载任何东西，则这个属性为false。这可能是因为浏览器确信计算机当前没有连接到网络，或者用户将浏览器设置为无网络状态。如果浏览器将尝试下载（因为计算机可能在线），这个属性将为true。当这个属性的状态改变时，浏览器将在Window对象上触发online和offline事件。</p>
+
+  <p class="ziti3">readonly string platform</p>
+
+  <p class="ziti3">运行当前浏览器的操作系统以及/或硬件平台。这个属性没有标准的值集合，不过一些典型的值是"Win32"、"MacPPC"以及"Linux i586"。</p>
+
+  <p class="ziti3">readonly string userAgent</p>
+
+  <p class="ziti3">浏览器用于HTTP请求的user-agent头信息的值。例如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">Mozilla/5.0(X11;U;Linux i686;en-US)</p>
+
+  <p class="ziti5">AppleWebKit/534.16(KHTML,like Gecko)</p>
+
+  <p class="ziti5">Chrome/10.0.648.45</p>
+
+  <p class="ziti5">Safari/534.16</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void registerContentHandler(string mimeType,string url,string title)</p>
+
+  <p class="ziti3">这个方法作为处理程序请求指定url的注册方式显示指定mimeType的内容。title是一个可供人阅读的站点标题，浏览器可能会向用户显示。url参数必须包含字符串"%s"。当这个内容处理程序用于处理指定mimeType的网页时，该网页的URL将编码并插入到url的"%s"的位置，然后浏览器将访问这个生成的URL。这是HTML5的一个新属性，可能有些浏览器还未实现。</p>
+
+  <p class="ziti3">void registerProtocolHandler(string scheme,string url,string title)</p>
+
+  <p class="ziti3">这个方法类似于registerContentHandler()，但它将一个网站注册为用做URL协议scheme的处理程序。scheme应该是一个类似"mailto"或"sms"的不带冒号的字符串。这是HTML5的一个新属性，可能有些浏览器还未实现。</p>
+
+  <p class="ziti3">void yieldForStorageUpdates()</p>
+
+  <p class="ziti3">使用Document.cookie或Window.localStorage或Window.sessionStorage（参见Storage及第20章）的脚本无法知道同时运行在其他窗口中的（同源）脚本对存储的改变。浏览器可以（虽然在写作本书时，还不是所有浏览器都可以）用类似数据库的锁机制来阻止同时更新。在支持这种机制的浏览器中，这个方法将显示地释放锁，并且可能消除其他窗口中同时运行的脚本的阻塞。调用这个方法后，检索到的存储的值可能与调用它之前的值不一样。</p>
+
+  <h3 class="p1" id="heading_id_77">Node</h3>
+
+  <p class="ziti3">文档树上的所有对象（包括Document对象本身）都实现Node接口，这些接口提供了遍历及操作这个树的基本属性和方法。parentNode属性和childNodes[]数组允许在这个文档树中上下移动。枚举给定节点的方式有两种，遍历childNodes[]的元素，或者使用firstChild和nextSibling属性（或lastChild及previousSibling属性，用于反向循环）。appendChild()、insertBefore()、removeChild()以及replaceChild()方法允许通过改变一个节点的子节点的方式修改文档树。</p>
+
+  <p class="ziti3">文档树中的每个对象都同时实现了Node接口和一个更专业化的子接口，比如Element或Text。nodeType属性指明一个节点实现的是哪种子接口。可以在使用更专业化的接口的属性和方法之前，先用这个属性测试节点的类型。例如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var n;//保存当前正在使用的节点</p>
+
+  <p class="ziti5">if(n.nodeType==1){//也可以使用常量Node.ELEMENT_NODE</p>
+
+  <p class="ziti5">var tagname=n.tagName;//如果节点是一个Element，这个值将是它的标签名</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">unsigned short ELEMENT_NODE=1</p>
+
+  <p class="ziti3">unsigned short TEXT_NODE=3</p>
+
+  <p class="ziti3">unsigned short PROCESSING_INSTRUCTION_NODE=7</p>
+
+  <p class="ziti3">unsigned short COMMENT_NODE=8</p>
+
+  <p class="ziti3">unsigned short DOCUMENT_NODE=9</p>
+
+  <p class="ziti3">unsigned short DOCUMENT_TYPE_NODE=10</p>
+
+  <p class="ziti3">unsigned short DOCUMENT_FRAGMENT_NODE=11</p>
+
+  <p class="ziti3">这些常量是nodeType属性可能的值。注意，它们是Node()构造函数的静态属性，不是个别Node对象的属性。也要注意，在IE8及更早的版本中它们没有定义。如果需要兼容，可以将这些值硬编码，或者定义自己的常量。</p>
+
+  <p class="ziti3">unsigned short DOCUMENT_POSITION_DISCONNECTED=0x01</p>
+
+  <p class="ziti3">unsigned short DOCUMENT_POSITION_PRECEDING=0x02</p>
+
+  <p class="ziti3">unsigned short DOCUMENT_POSITION_FOLLOWING=0x04</p>
+
+  <p class="ziti3">unsigned short DOCUMENT_POSITION_CONTAINS=0x08</p>
+
+  <p class="ziti3">unsigned short DOCUMENT_POSITION_CONTAINED_BY=0x10</p>
+
+  <p class="ziti3">这些常量定义compareDocumentPosition()的返回值中的位，可能为on或off。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly string baseURI</p>
+
+  <p class="ziti3">这个属性指定本Node的基准URL，相对URL将基于这个基准URL进行解析。对HTML文档中的所有节点来说，这是由文档的＜base＞元素定义的URL，或仅仅是移除了片断标识符的Document.URL。</p>
+
+  <p class="ziti3">readonly NodeList childNodes</p>
+
+  <p class="ziti3">这个属性为一个类数组对象，包含当前节点的子节点。这个属性永远不会为nul l：对没有子节点的节点而言，childNodes是一个length为0的数组。注意，NodeList对象是实时的：对本元素的子节点列表的任何改变都将立即在NodeList中可见。</p>
+
+  <p class="ziti3">readonly Node frstChild</p>
+
+  <p class="ziti3">当前节点的第一个子节点，如果当前节点没有子节点则为null。</p>
+
+  <p class="ziti3">readonly Node lastChild</p>
+
+  <p class="ziti3">当前节点的最后一个子节点，如果当前节点没有子节点则为null。</p>
+
+  <p class="ziti3">readonly Node nextSibling</p>
+
+  <p class="ziti3">parentNode的childNodes[]数组中紧跟着当前节点的兄弟节点，如果没有对应的节点则为null。</p>
+
+  <p class="ziti3">readonly string nodeName</p>
+
+  <p class="ziti3">节点的名字。对Element节点而言，值为元素的标签名，也可以通过Element接口的tagName属性得到。对大多数其他类型的节点而言，该值为一个取决于节点类型的常量字符串。</p>
+
+  <p class="ziti3">readonly unsigned short nodeType</p>
+
+  <p class="ziti3">节点的类型，即，当前节点实现了哪个子接口。合法的值为上面列出的常量。由于这些常量不被Internet Explorer支持，然而，可能得用硬编码的值来替代对应的常量。在HTML文档中，这个属性常用的值为：Element节点为1，Text节点为3，Comment节点为8，以及唯一的顶级Document节点为9。</p>
+
+  <p class="ziti3">string nodeValue</p>
+
+  <p class="ziti3">节点的值。对Text节点而言，它的值为对应的文本内容。</p>
+
+  <p class="ziti3">readonly Document ownerDocument</p>
+
+  <p class="ziti3">与当前节点关联的Document对象。对Document节点而言，这个属性为null。注意，即使一个节点还没有插入到文档中，它仍然具有owner。</p>
+
+  <p class="ziti3">readonly Node parentNode</p>
+
+  <p class="ziti3">当前节点的父节点（或容器节点），如果没有父节点则为null。注意，Document和DocumentFragment节点永远没有父节点。同样地，对于已经从文档中删除的节点，或者新创建并且还没有插入到文档树中的节点，parentNode值为null。</p>
+
+  <p class="ziti3">readonly Node previousSibling</p>
+
+  <p class="ziti3">parentNode的childNodes[]数组中在当前节点前方并与当前节点相邻的兄弟节点，如果没有对应的节点则为null。</p>
+
+  <p class="ziti3">string textContent</p>
+
+  <p class="ziti3">对Text和Comment节点而言，这个属性只是data属性的一个同义词。对Element和DocumentFragment节点而言，查询这个属性将返回所有子孙Text节点拼接的文本内容。设置Element或DocumentFragment的这个属性将替换该元素或碎片的所有子孙节点为单个内容为指定值的Text节点。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">Node appendChild(Node newChild)</p>
+
+  <p class="ziti3">这个方法将节点newChild添加到文档中，将它作为当前节点的最后一个子节点插入。如果newChild已经在文档树中，它将先从文档树中移除，再插入到新的位置。如果newChild是一个DocumentFragment（文档碎片）节点，它将不会插入它本身，而是将它的子节点按顺序追加到当前节点的childNodes[]数组后面。注意，来自（或创建于）一个文档的节点不能插入到另一个文档中。这就是说，newChild的ownerDocument属性必须与当前节点的ownerDocument属性一致。（参见Document.adoptNode()）。这个方法返回传入的Node。</p>
+
+  <p class="ziti3">Node cloneNode(boolean deep)</p>
+
+  <p class="ziti3">在节点上调用cloneNode()方法将返回这个节点的一份副本。如果传入参数true，这个节点的子孙节点也将递归地复制。否则，它只复制这个节点而忽略它的子节点。返回的节点不是文档树的一部分，它们的parentNode属性为null。当复制一个Element节点时，它的所有属性也会复制。不过要注意，注册在节点上的事件监听函数不会复制。</p>
+
+  <p class="ziti3">unsigned short compareDocumentPosition(Node other)</p>
+
+  <p class="ziti3">这个方法比较当前节点与指定的other节点在文档中的位置，并返回一个数字，这个数字的置位（set bit）情况描述了两个节点的关系。如果两个节点相同，将没有位置位，这个方法返回0。否则，返回值的一个或多个位将置位。上面列出的DOCUMENT_POSITION_常量给出了每一位的符号名，各项含义如下：</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00127.jpeg" class="calibre3"/>
+  </div>
+
+  <p class="ziti3">boolean hasChildNodes()</p>
+
+  <p class="ziti3">如果当前节点有一个或多个子节点则返回true；如果不包含节点则返回false。</p>
+
+  <p class="ziti3">Node insertBefore(Node newChild,Node refChild)</p>
+
+  <p class="ziti3">这个方法将节点newChild作为当前节点的子节点插入到文档树中，并返回这个插入的节点。新节点将添加到当前节点的childNodes[]数组中，以便它立即出现在refChild节点前面。如果refChild为null，newChild将插入到childNodes[]的结尾，和appendChild()方法一样。注意，不能通过不是当前节点的子节点的refChild调用这个方法。</p>
+
+  <p class="ziti3">如果newChild已经在文档树中了，它将先从文档树中移除，再重新插入到新的位置。如果newChild是一个DocumentFragment节点，插入的将不是这个节点本身，而是它的所有子节点将按顺序插入到指定的位置。</p>
+
+  <p class="ziti3">boolean isDefaultNamespace(string namespace)</p>
+
+  <p class="ziti3">如果指定的namespace URL和由lookupNamespaceURI(null)返回的默认命名空间URL一样，则返回true；否则返回false。</p>
+
+  <p class="ziti3">boolean isEqualNode(Node other)</p>
+
+  <p class="ziti3">如果当前节点和other节点完全相同则返回true，包括相同的类型、标签名、属性以及（递归的）子节点。如果两个节点不相同则返回false。</p>
+
+  <p class="ziti3">boolean isSameNode(Node other)</p>
+
+  <p class="ziti3">如果当前节点和other节点是同一个节点则返回true；否则返回false。也可以简单地使用“==”操作符。</p>
+
+  <p class="ziti3">string lookupNamespaceURI(string prefx)</p>
+
+  <p class="ziti3">这个方法返回与指定命名空间prefix关联的命名空间URL，如果不存在则返回null。如果prefx为null，则返回默认命名空间的URL。</p>
+
+  <p class="ziti3">string lookupPrefx(string namespace)</p>
+
+  <p class="ziti3">这个方法返回与指定namespace URL关联的命名空间前缀，如果不存在则返回null。</p>
+
+  <p class="ziti3">void normalize()</p>
+
+  <p class="ziti3">这个方法通过合并相邻节点以及移除空节点的方式，让当前节点的文本子孙节点标准化。文档一般不会有空的或相邻的文本节点，但在脚本添加或移除节点时这种情况有可能出现。</p>
+
+  <p class="ziti3">Node removeChild(Node oldChild)</p>
+
+  <p class="ziti3">这个方法从当前节点的childNodes[]数组中移除oldChild。如果在一个节点上调用这个方法，但传入的节点不是它的子节点将会出错。removeChild()在移除oldChild节点后将返回这个节点。oldChild仍然是一个有效的节点，可以在稍后重新插入到文档中。</p>
+
+  <p class="ziti3">Node replaceChild(Node newChild,Node oldChild)</p>
+
+  <p class="ziti3">这个方法使用newChild替换oldChild，并返回oldChild。oldChild必须是当前节点的一个子节点。如果newChild已经是当前文档的一部分，它将先从文档中移除，再重新插入到新的位置。如果newChild是一个DocumentFragment，插入的将不是这个节点本身，而是它的子节点将按顺序插入到原来由oldChild占据的位置。</p>
+
+  <h3 class="p1" id="heading_id_78">NodeList</h3>
+
+  <p class="ziti3">由Node组成的只读的类数组对象</p>
+
+  <p class="ziti3">NodeList是一个只读的类数组对象，其元素为Node对象（通常为Element）。它的length属性指明这个列表包含多少节点，可通过索引0～length-1来遍历这些节点。也可以传入期望的索引到item()方法来代替直接检索NodeList。NodeList的元素总是有效的Node对象，也就是说，NodeList绝对不会包含null元素。</p>
+
+  <p class="ziti3">NodeList很常用，例如，Node的childNodes属性，Document.getElementsByTagName()、Element.getElementsByTagName()以及HTMLDocument.getElementsByName()方法的返回值都是NodeList。NodeList是类数组对象，但是，我们经常非正式地将它们当做数组来引用，用到的语句类似“childNodes[]数组”。</p>
+
+  <p class="ziti3">需要注意，NodeList对象通常是实时的：它们不是静态快照，而会实时反映出文档树的改变。例如，如果有一个代表指定节点的子节点的NodeList，然后删除其中一个子节点，则该子节点也会从NodeList中移除。在遍历一个NodeList的元素时要小心：循环体中的代码可能会改变文档树（比如删除节点），这可能会影响到NodeList的内容！</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned long length</p>
+
+  <p class="ziti3">当前NodeList中的节点的数目。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">Node item(unsigned long index)</p>
+
+  <p class="ziti3">返回指定index位置的Node，如果索引超出范围则返回null。</p>
+
+  <h3 class="p1" id="heading_id_79">Option</h3>
+
+  <p class="ziti3">Select元素中的＜option＞</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">Option对象描述Select对象中显示的一个选项。这个对象的属性指明它是否默认选中，是否当前处于选中状态，它在容器Select对象的options[]数组中的位置，它显示的文本，以及如果它被选中，提交包含的表单时它传给服务器的值。</p>
+
+  <p class="ziti3">由于历史原因，Option元素定义了一个构造函数，可以用它来创建及初始化新的Option元素。（当然，也可以使用普通的Document.createElement()方法。）一旦创建新的Option对象，它就可以追加到某个Select对象的options集合中。细节可参见HTMLOptionsCollection。</p>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new Option([string text,string value,boolean defaultSelected,boolean selected])</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Option()构造函数可创建一个＜option＞元素。4个可选参数定义了元素的textContent（参见Node）、value的初始值、defaultSelected以及选中selected属性。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">boolean defaultSelected</p>
+
+  <p class="ziti3">这个属性对应HTML selected属性。它定义当前选项的初始选中状态，当表单重置时也会使用这个值。</p>
+
+  <p class="ziti3">boolean disabled</p>
+
+  <p class="ziti3">如果当前选项禁用则为true。如果Option或包含它们的＜optgroup＞有HTML disabled属性的话，它们将禁用。</p>
+
+  <p class="ziti3">readonly Form form</p>
+
+  <p class="ziti3">当前Option元素所属的＜form＞元素，如果存在的话。</p>
+
+  <p class="ziti3">readonly long index</p>
+
+  <p class="ziti3">当前Option元素在它包含的Select元素中的索引。（该属性的相关内容也可参见HTMLOptionsCollection）。</p>
+
+  <p class="ziti3">string label</p>
+
+  <p class="ziti3">如果存在对应的HTML label属性的话，返回这个属性的值；否则返回当前Option的textContent（参见Node）。</p>
+
+  <p class="ziti3">boolean selected</p>
+
+  <p class="ziti3">如果本选项当前处于选中状态则为true；否则为false。</p>
+
+  <p class="ziti3">string text</p>
+
+  <p class="ziti3">当前Option元素的textContent（参见Node），返回的值头尾的空白字符都已去掉，同时两个或多个连续的空格也会替换为一个空格。</p>
+
+  <p class="ziti3">string value</p>
+
+  <p class="ziti3">如果Option存在HTML value属性的话，返回这个属性的值；否则返回当前元素的textContent。</p>
+
+  <h3 class="p1" id="heading_id_80">Output</h3>
+
+  <p class="ziti3">HTML表单＜output＞元素</p>
+
+  <p class="ziti3">Node、Element、FormControl</p>
+
+  <p class="ziti3">Output对象表示HTML表单中的＜output＞元素。在支持它的浏览器中，Output对象实现FormControl的大多数属性。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">string defaultValue</p>
+
+  <p class="ziti3">这个属性是Output元素的textContent（参见Node）的初始值。当表单重置时，它的值将恢复为这个值。如果设置了这个属性，并且对应的Output元素当前正在显示它之前的defaultValue，则新的值将显示。否则，当前显示的值将不会改变。</p>
+
+  <p class="ziti3">readonly DOMSettableTokenList htmlFor</p>
+
+  <p class="ziti3">＜output＞元素的HTML for属性是一个空格分隔的由元素的ID组成的列表，这些元素的值都会影响这个＜output＞元素显示的计算内容。因为for是JavaScript的一个保留词，所以对应的JavaScript属性名为htmlFor。可以像一个普通字符串值一样对这个属性进行读写操作，或者使用DOMTokenList的方法来从这个列表查询并设置单个元素ID。</p>
+
+  <h3 class="p1" id="heading_id_81">PageTransitionEvent</h3>
+
+  <p class="ziti3">pageshow和pagehide事件的事件对象</p>
+
+  <p class="ziti3">Event</p>
+
+  <p class="ziti3">当一个文档首次加载时，在load事件之后，浏览器将触发一个pageshow事件，之后，每次这个页面从内存历史缓存中恢复时都会触发一个新的pageshow事件。PageTransitionEvent对象与每个pageshow事件关联，当恢复而不是加载或重新加载页面时，这个对象的persisted属性将为true。</p>
+
+  <p class="ziti3">pagehide事件也有一个关联的PageTransitionEvent对象，不过对pagehide事件而言对应的persisted属性总是为true。</p>
+
+  <p class="ziti3">pageshow和pagehide事件在Window对象上触发。它们不冒泡，也没有可取消的默认行为。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly boolean persisted</p>
+
+  <p class="ziti3">对pageshow事件来说，当从网络或硬盘缓存加载（或重新加载）页面时，这个属性为false。如果自内存缓存恢复正在显示的页面并且没有重新加载，则这个属性为true。</p>
+
+  <p class="ziti3">对pagehide事件来说，这个属性总是为true。</p>
+
+  <h3 class="p1" id="heading_id_82">PopStateEvent</h3>
+
+  <p class="ziti3">历史转换事件</p>
+
+  <p class="ziti3">Event</p>
+
+  <p class="ziti3">管理自身的历史（参见22.2节）的Web应用程序可使用History的pushState()方法来在浏览历史中创建一个新的条目，并将一个状态值或对象与之关联。当用户使用浏览器的“后退”或“前进”按钮在这些保存的状态之间导航时，浏览器将在Window对象上触发一个popstate事件，并传入关联的PopStateEvent对象中已保存的应用状态的一个副本。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly any state</p>
+
+  <p class="ziti3">这个属性保存传入到History.pushState()或History.replaceState()方法中的状态值或对象的一个副本。state可以是任意能用结构复制算法（参见“结构性复制”，22.2节）克隆的值。</p>
+
+  <h3 class="p1" id="heading_id_83">ProcessingInstruction</h3>
+
+  <p class="ziti3">XML文档中的进度指示</p>
+
+  <p class="ziti3">Node</p>
+
+  <p class="ziti3">这个不常用的接口表示XML文档中的处理指令（Processing Instruction，PI）。使用HTML文档的程序员永远不会遇到ProcessingInstruction节点。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">string data</p>
+
+  <p class="ziti3">处理指令的内容（即，目标之后的第一个非空字符，直到但不包括结尾的“?＞”）。</p>
+
+  <p class="ziti3">readonly string target</p>
+
+  <p class="ziti3">处理指令的目标。这是紧跟着开头的“＜?”的第一个标识符，它指定当前处理指令的目标“处理器”。</p>
+
+  <h3 class="p1" id="heading_id_84">Progress</h3>
+
+  <p class="ziti3">进度条</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">Progress对象表示一个HTML＜progress＞元素，以进度条的一个图形化表示方式，显示某种任务的完成度。</p>
+
+  <p class="ziti3">如果完成这项任务所需的工作的数量或时间未知，则Progress元素将处于不确定状态。在这种状态下，它只是简单地显示某种“工作”动画，表示有些事正在发生。如果任务的总数（或时间、字节）以及已完成数量都已知，则Progress元素将处于一种确定状态，可以以某种图形化的完成百分比的形式显示进度。</p>
+
+  <p class="ziti3">＜progress＞是一个HTML5元素，在写作本书的时候，还没有广泛地支持。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly Form form</p>
+
+  <p class="ziti3">当前元素对应的Form元素，如果存在的话，这个Form一般为当前元素的祖先，或者由HTML form属性标识。</p>
+
+  <p class="ziti3">readonly NodeList labels</p>
+
+  <p class="ziti3">与当前元素关联的Label元素组成的类数组对象。</p>
+
+  <p class="ziti3">double max</p>
+
+  <p class="ziti3">要完成的工作的总数。比如，在使用Progress元素来显示一个XMLHttpRequest的上传或下载进度时，可以将这个属性设置为要传输的总的字节数。这个属性是max属性的映射。默认值为1.0。</p>
+
+  <p class="ziti3">readonly double position</p>
+
+  <p class="ziti3">如果这是一个进度可确定的Progress元素，这个属性为value/max的计算结果。否则，这个属性将是-1。</p>
+
+  <p class="ziti3">double value</p>
+
+  <p class="ziti3">0～max之间的一个值，标识已经完成的进度。这个属性是value属性的映射。如果存在这个属性，表示该Progress元素的进度可确定。如果它不存在，则表示该Progress元素的进度不可确定。如果想从进度可确定模式切换为进度不可确定模式（比如由于来自MediaElement的停滞事件），可以使用Element的removeAttribute()方法。</p>
+
+  <h3 class="p1" id="heading_id_85">ProgressEvent</h3>
+
+  <p class="ziti3">下载、上传或文件读取进度</p>
+
+  <p class="ziti3">Event</p>
+
+  <p class="ziti3">ApplicationCache、FileReader以及（第2级）XMLHttpRequest对象都会触发Progress事件，通知感兴趣的程序的数据传输过程的进度（比如，网络下载或上传或文件读取）。这类事件一般称为Progress事件，但实际上只有一个这样的事件真的在名字里有"progress"。其他由FileReader和XMLHttpRequest触发的Progress事件为loadstart、load、loadend、error以及abort。XMLHttpRequest也会触发一个超时Progress事件。ApplicationCache会触发很多事件，但只有那个名为"progress"的事件是这儿描述的这类Progress事件。</p>
+
+  <p class="ziti3">Progress事件依次触发，以loadstart事件开始，并总是以loadend事件结束。loadend之前的事件可能是load、error或者abort，取决于传送数据的操作是否成功，以及如果不成功的话是如何失败的。在开始的loadstart和最后的两个事件之间，可能会有0个或多个进度事件（带有真实的事件名"progress"）触发。（ApplicationCache对象会触发一个不同的事件序列，但它作为它的缓存更新进程的一部分触发的进度事件是一个Progress事件。）</p>
+
+  <p class="ziti3">一个定义了已传送了多少字节的数据的ProgressEvent对象将传入到Progress事件的事件处理程序中。这个ProgressEvent对象与Progress中描述过的HTML＜progress＞元素没有关系，但传给XMLHttpRequest的onprogress事件处理程序（例如）的ProgressEvent对象可用来更新＜progress＞元素的状态，以便向用户显示可视化的下载完成百分比值。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly boolean lengthComputable</p>
+
+  <p class="ziti3">如果要传送的字节的总数已知则为true；否则为false。如果这个属性为true，一个ProgressEvent e的数据传送完成百分比可以像这样计算：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var percentComplete=Math.floor(100*e.loaded/e.total);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">readonly unsigned long loaded</p>
+
+  <p class="ziti3">到目前为止已传送了多少字节。</p>
+
+  <p class="ziti3">readonly unsigned long total</p>
+
+  <p class="ziti3">如果知道待传送的字节的总数，则返回为这个数字；否则返回0。例如，这个信息可能来自Blob的size属性或者Web服务器返回的Content-Length头信息。</p>
+
+  <h3 class="p1" id="heading_id_86">Screen</h3>
+
+  <p class="ziti3">关于显示屏的信息</p>
+
+  <p class="ziti3">Window的screen属性指代一个Screen对象。这个全局对象（Window）的screen属性包含在其上显示对应浏览器的计算器显示器的信息。JavaScript程序可以根据这个信息来优化它们的输出，以便适应用户的显示功能。例如，一个程序可以根据显示尺寸，选择显示大图还是小图。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned long availHeight</p>
+
+  <p class="ziti3">指明在其上显示网页浏览器的屏幕的可用高度，单位为像素。这个可用高度不包含垂直方向上显示固定的桌面功能的空间，比如在屏幕底部的工具栏或停靠栏。</p>
+
+  <p class="ziti3">readonly unsigned long availWidth</p>
+
+  <p class="ziti3">指明在其上显示网页浏览器的屏幕的可用宽度，单位为像素。这个可用宽度不包含水平方向上显示固定的桌面功能的空间。</p>
+
+  <p class="ziti3">readonly unsigned long colorDepth</p>
+
+  <p class="ziti3">readonly unsigned long pixelDepth</p>
+
+  <p class="ziti3">这两个同义属性都指定屏幕每像素的色彩深度的位。</p>
+
+  <p class="ziti3">readonly unsigned long height</p>
+
+  <p class="ziti3">指明在其上显示网页浏览器的屏幕的总高度，单位为像素。也可参见availHeight。</p>
+
+  <p class="ziti3">readonly unsigned long width</p>
+
+  <p class="ziti3">指明在其上显示网页浏览器的屏幕的总宽度，单位为像素。也可参见availWidth。</p>
+
+  <h3 class="p1" id="heading_id_87">Script</h3>
+
+  <p class="ziti3">HTML＜script＞元素</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">Script对象表示HTML＜script＞元素。它的大多数属性只是同名的HTML属性的简单映射，不过text属性和继承自Node的textContent属性的工作原理类似。</p>
+
+  <p class="ziti3">注意，一个＜script＞至多只运行一次。改变一个已存在的＜script＞元素的src或text属性不会使它运行新的脚本。不过，可以通过在新创建的＜script＞元素上设置这些属性来执行一个脚本。还需要注意，＜script＞标签只有在插入一个Document后才会运行。在src或type被设置或者当它插入到文档时执行脚本，这取决于哪个操作最后发生。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">boolean async</p>
+
+  <p class="ziti3">如果＜script＞元素有async属性则为true；否则为false。参见13.3.1节。</p>
+
+  <p class="ziti3">string charset</p>
+
+  <p class="ziti3">由src URL指定的脚本的字符编码。通常不设置这个属性，默认使用包含的文档的相同编码来解析当前脚本。</p>
+
+  <p class="ziti3">boolean defer</p>
+
+  <p class="ziti3">如果＜script＞元素有defer属性则为true；否则为false。参见13.3.1节。</p>
+
+  <p class="ziti3">string src</p>
+
+  <p class="ziti3">要加载的脚本的URL。</p>
+
+  <p class="ziti3">string text</p>
+
+  <p class="ziti3">在＜script＞标签和结束的＜/script＞标签之间的文本。</p>
+
+  <p class="ziti3">string type</p>
+
+  <p class="ziti3">当前脚本语言的MIME类型。默认为"text/javascript"，常规JavaScript脚本可以不用设置这个属性（或对应的HTML属性）。如果将这个属性设置为一个自定义的MIME类型，可在对应的＜script＞元素中嵌入其他脚本使用的任意文本数据。</p>
+
+  <h3 class="p1" id="heading_id_88">Select</h3>
+
+  <p class="ziti3">图形化的选择列表</p>
+
+  <p class="ziti3">Node、Element、FormControl</p>
+
+  <p class="ziti3">Select元素表示HTML＜select＞标签，用于向用户显示一个图形化的选择列表。如果存在对应的HTML multiple属性，则用户可以从列表中选择任意个选项。如果这个属性不存在，则用户只能选择一个选项，同时选项将有类似单选按钮的行为——选中一个选项的同时将取消之前选中的任意选项。</p>
+
+  <p class="ziti3">Select元素中的选项可以以两种不同的方式显示。如果size属性有值并且值大于1，或者指定了multiple属性，则选项将在浏览器窗口中显示为一个size行的列表框。如果size比选项的数目小，则列表框将包含一个滚动条。另一方面，如果size为1并且没有指定multiple属性，则当前选中的选项将显示在单独的一行中，其他选项的列表可通过一个下拉菜单访问。第一种显示样式将选项显示得更加清晰，但需要占用浏览器窗口中的更多空间。第二种显示样式需要的空间最少，但不会显式显示其他可选选项。当设置了multiple属性时，size默认值为4；否则size的默认值为1。</p>
+
+  <p class="ziti3">Select元素的options[]属性最值得关注。它是一个由＜option＞元素（参见Option）组成的类数组对象，这些＜option＞描述Select元素显示的选项。由于历史原因，这个类数组对象在添加及删除＜option＞元素时有一些与众不同的行为。细节可参见HTMLOptionsCollection。</p>
+
+  <p class="ziti3">对没有指定multiple属性的Select元素来说，可以通过selectedIndex属性来判断选中了哪个选项。不过，如果允许复选的话，这个属性就只能告诉你第一个选中的选项。要判断选中的选项的完整集合，必须遍历options[]数组并检查每一个Option对象的selected属性。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除了这儿列出的属性外，Select元素也定义了Element和FormControl的属性，另外还通过下面的JavaScript属性映射了对应的HTML属性：multiple、required以及size。</p>
+
+  <p class="ziti3">unsigned long length</p>
+
+  <p class="ziti3">options集合中元素的数目。Select对象本身就是一个类数组对象，对一个Select对象s以及一个数字n来说，s[n]等同于s.options[n]。</p>
+
+  <p class="ziti3">readonly HTMLOptionsCollection options</p>
+
+  <p class="ziti3">当前Select元素包含的Option元素组成的类数组对象。关于这个集合的历史原因造成的特殊行为，可参见HTMLOptionsCollection。</p>
+
+  <p class="ziti3">long selectedIndex</p>
+
+  <p class="ziti3">选中的选项在options数组中的位置。如果没有选项选中，则这个属性为-1。如果选中多个选项，这个属性返回第一个选中的选项的索引。</p>
+
+  <p class="ziti3">设置这个属性的值，将导致指定的选项选中，同时所有其他选项取消选中，即使这个Select对象指定了multiple属性。在处理列表框选项（当size＞1）时，可以通过设置selectedIndex为-1来取消选中所有选项。注意，用这种方式改变选择不会触发onchange()事件处理程序。</p>
+
+  <p class="ziti3">readonly HTMLCollection selectedOptions</p>
+
+  <p class="ziti3">由选中的Option元素组成的只读的类数组对象。这是HTML5新定义的属性，在写作本书的时候，还没有广泛支持。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">这儿列出的方法都委托给options属性的同名方法，细节可参见HTMLOptionsCollection。除了这些方法外，Select元素也实现了Element和FormControl的方法。</p>
+
+  <p class="ziti3">void add(Element element,[any before])</p>
+
+  <p class="ziti3">这个方法和options.add()一样，用于添加一个新的Option元素。</p>
+
+  <p class="ziti3">any item(unsigned long index)</p>
+
+  <p class="ziti3">这个方法和options.item()一样，返回一个Option元素。在用户直接检索Select对象时也会调用这个方法。</p>
+
+  <p class="ziti3">any namedItem(string name)</p>
+
+  <p class="ziti3">这个方法和options.namedItem()一样。参见HTMLOptionsCollection。</p>
+
+  <p class="ziti3">void remove(long index)</p>
+
+  <p class="ziti3">这个方法和options.remove()一样，用于移除一个Option元素。参见HTMLOptionsCollection。</p>
+
+  <h3 class="p1" id="heading_id_89">Storage</h3>
+
+  <p class="ziti3">客户端存储的name/value对</p>
+
+  <p class="ziti3">Window的localStorage和sessionStorage属性都是Session对象，表示持久的客户端关联数组，这些数组将字符串键与值对应。理论上，Session对象可以存储任意可用结构性复制算法（参见“结构性复制”，22.2节）复制的值。不过，在写作本书的时候，各浏览器还只支持字符串值。</p>
+
+  <p class="ziti3">Storage对象的方法允许添加新的键/值对、移除键/值对，以及查询指定的键对应的值。不过，不需要显式地调用这些方法：可以使用数组检索或delete操作符来代替，还能将localStorage和sessionStorage当做普通JavaScript对象来处理。</p>
+
+  <p class="ziti3">如果改变了某个Storage对象的内容，有权限访问同一个存储器（因为它们正在显示来自同一个源的文档）的任何其他Window都将通过一个StorageEvent事件通知这个改变。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned long length</p>
+
+  <p class="ziti3">已存储的键/值对的数目。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void clear()</p>
+
+  <p class="ziti3">移除所有已存储的健/值对。</p>
+
+  <p class="ziti3">any getItem(string key)</p>
+
+  <p class="ziti3">返回与key对应的值。（在写作本书时各大浏览器的实现中，返回值总是为一个字符串。）当为了检索名为key的属性而检索Storage对象时，会隐式调用这个方法。</p>
+
+  <p class="ziti3">string key(unsigned long n)</p>
+
+  <p class="ziti3">返回当前Stroage对象中的第n个键，如果n大于或等于length则返回null。注意，添加或移除键/值对时键的顺序可能会改变。</p>
+
+  <p class="ziti3">void removeItem(string key)</p>
+
+  <p class="ziti3">从当前Storage对象中移除键key以及它对应的值。使用delete操作删除当前Storage对象的名为key的属性时，将会隐式调用这个方法。</p>
+
+  <p class="ziti3">void setItem(string key,any value)</p>
+
+  <p class="ziti3">添加指定的key和value到当前Storage对象中，如果已经存在键key，则使用新的值替换对应的老值。如果为当前Storage对象的名为key的属性赋值value，则会隐式调用这个方法。这就是说，可以使用普通的JavaScript属性的访问及赋值语法来代替显式地调用setItem()。</p>
+
+  <h3 class="p1" id="heading_id_90">StorageEvent</h3>
+
+  <p class="ziti3">Event</p>
+
+  <p class="ziti3">Window对象的localStorage和sessionStorage属性指代代表客户端存储区的Storage对象（参见20.1节）。如果多个窗口、标签或框架页面正在显示来自同一个源的文档，则这些窗口将有权限访问同一个存储区。如果一个窗口中的脚本改变了某个存储区的内容时，在其他共享访问这个存储区的Window对象上都会触发一个存储事件。（注意，这个事件不会在造成这个改变的窗口触发。）存储事件将在Window对象上触发，且不会冒泡，也没有可供取消的默认操作。与存储事件关联的对象是一个StorageEvent对象，它的属性描述发生在存储区的改变。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly string key</p>
+
+  <p class="ziti3">这个属性为刚设置或删除的键。如果整个存储区被Storage.clear()方法清空了，则这个属性（以及newValue和oldValue）将为null。</p>
+
+  <p class="ziti3">readonly any newValue</p>
+
+  <p class="ziti3">指定key的新值。如果对应的键移除，则这个值将为null。在写作本书的时候，各浏览器的实现还只允许存储字符串值。</p>
+
+  <p class="ziti3">readonly any oldValue</p>
+
+  <p class="ziti3">刚刚改变的键的旧值，如果这个键是新添加到存储区的，则这个值为nul l。在写作本书的时候，各浏览器的实现还只允许存储字符串值。</p>
+
+  <p class="ziti3">readonly Storage storageArea</p>
+
+  <p class="ziti3">这个属性等同于接收这个事件的Window的localStorage或sessionStorage属性，指明哪个存储区发生了改变。</p>
+
+  <p class="ziti3">readonly string url</p>
+
+  <p class="ziti3">这是改变了存储区的脚本所属的文档的URL。</p>
+
+  <h3 class="p1" id="heading_id_91">Style</h3>
+
+  <p class="ziti3">HTML＜style＞元素</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">Style对象表示HTML＜style＞标签。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">boolean disabled</p>
+
+  <p class="ziti3">将这个属性设置为true将禁用与这个＜style＞元素关联的样式表，将它设置为false将重新启用它。</p>
+
+  <p class="ziti3">string media</p>
+
+  <p class="ziti3">这个属性反映了HTML media属性，指定了当前样式应用的媒体。</p>
+
+  <p class="ziti3">boolean scoped</p>
+
+  <p class="ziti3">如果HTML scoped属性出现在当前＜style＞元素上，则此属性为true；否则为false。在写作本书的时候，各浏览器还不支持这个属性。</p>
+
+  <p class="ziti3">readonly CSSStyleSheet sheet</p>
+
+  <p class="ziti3">当前＜style＞元素定义的CSSStyleSheet。</p>
+
+  <p class="ziti3">string title</p>
+
+  <p class="ziti3">所有HTML元素都支持一个title属性。在＜style＞元素上设置这个属性后，用户将可以通过标题来选择样式表（作为一个替换样式表），指定的标题可能会以某种形式显示在Web浏览器的用户界面上。</p>
+
+  <p class="ziti3">string type</p>
+
+  <p class="ziti3">反映对应的HTML type属性。默认值为"text/css"，一般不需要设置这个属性。</p>
+
+  <h3 class="p1" id="heading_id_92">Table</h3>
+
+  <p class="ziti3">HTML＜table＞</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">Table对象表示HTML＜table＞元素，它定义了若干方便的属性和方法来查询及修改表格的各个部分。这些方法及属性让表格操作更简单，不过它们的功能也可以使用核心DOM方法来复制。</p>
+
+  <p class="ziti3">HTML表格由段落（section）、行以及单元格组成。参见TableCell、TableRow以及TableSection。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除了这儿列出的属性，Table元素也有一个summary属性，对应同名的HTML属性。</p>
+
+  <p class="ziti3">Element caption</p>
+
+  <p class="ziti3">指代当前表格的＜caption＞元素，如果这个元素不存在则为null。</p>
+
+  <p class="ziti3">readonly HTMLCollection rows</p>
+
+  <p class="ziti3">由当前表格中所有行对应的TableRow对象组成的类数组对象。这包含在＜thead＞、＜tfoot＞以及＜tbody＞标签中定义的所有行。</p>
+
+  <p class="ziti3">readonly HTMLCollection tBodies</p>
+
+  <p class="ziti3">由当前表格中所有＜tbody＞段落对应的TableSection对象组成的类数组对象。</p>
+
+  <p class="ziti3">TableSection tFoot</p>
+
+  <p class="ziti3">当前表格的＜tfoot＞元素，如果不存在对应的元素则为null。</p>
+
+  <p class="ziti3">TableSection tHead</p>
+
+  <p class="ziti3">当前表格的＜thead＞元素，如果不存在对应的元素则为null。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">Element createCaption()</p>
+
+  <p class="ziti3">这个方法返回一个对应当前表格的＜caption＞的Element对象。如果当前表格已经有一个＜caption＞，这个方法将简单地返回它。如果当前表格没有＜caption＞，则这个方法先创建一个新的（空）标题，将它插入表格，然后再返回它。</p>
+
+  <p class="ziti3">TableSection createTBody()</p>
+
+  <p class="ziti3">这个方法创建一个新的＜tbody＞元素，将它插入到表格中，并返回它。新元素将插入到表格的最后一个＜tbody＞之后，或者插入到表格的结尾处。</p>
+
+  <p class="ziti3">TableSection createTFoot()</p>
+
+  <p class="ziti3">这个方法返回代表当前表格中第一个＜tfoot＞元素的TableSection。如果当前表格已经有一个页脚，这个方法将简单地返回它。如果当前表格没有＜tfoot＞，则这个方法先创建一个新的（空）＜tfoot＞，将它插入表格，然后再返回它。</p>
+
+  <p class="ziti3">TableSection createTHead()</p>
+
+  <p class="ziti3">这个方法返回代表当前表格中第一个＜thead＞元素的TableSection。如果当前表格已经有一个页眉，这个方法将简单地返回它。如果当前表格中没有＜thead＞，则这个方法先创建一个新的（空）＜thead＞元素，将它插入表格，然后再返回它。</p>
+
+  <p class="ziti3">void deleteCaption()</p>
+
+  <p class="ziti3">移除当前表格的第一个＜caption＞元素，如果存在这样的元素的话。</p>
+
+  <p class="ziti3">void deleteRow(long index)</p>
+
+  <p class="ziti3">这个方法从当前表格中删除指定位置的行。表格的各行按它们在文档源码中的出现顺序编号。＜thead＞和＜tfoot＞部分中的行与表格中其他行一起编号。</p>
+
+  <p class="ziti3">void deleteTFoot()</p>
+
+  <p class="ziti3">移除当前表格的第一个＜tfoot＞元素，如果存在这样的元素的话。</p>
+
+  <p class="ziti3">void deleteTHead()</p>
+
+  <p class="ziti3">移除当前表格的第一个＜thead＞元素，如果存在这样的元素的话。</p>
+
+  <p class="ziti3">TableRow insertRow([long index])</p>
+
+  <p class="ziti3">这个方法创建一个新的＜tr＞元素，将它插入当前表格的指定index处，并返回它。</p>
+
+  <p class="ziti3">新的行将插入到索引为index处的已有行前方相邻的位置，并与这个指定的行在同一个部分中。如果index等于当前表格的行数（或-1），则新行将追加到当前表格的最后一个部分中。如果表格初始状态为空，则这个新行将先插入到一个新的＜tbody＞段落，然后随着这个＜tbody＞一起插入到表格中。</p>
+
+  <p class="ziti3">可以使用方便的方法TableRow.insertCell()来添加内容到新创建的行中。也可参见TableSection的insertRow()方法。</p>
+
+  <h3 class="p1" id="heading_id_93">TableCell</h3>
+
+  <p class="ziti3">HTML表格中的单元格</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">TableCell对象表现为＜td＞或＜th＞元素。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly long cellIndex</p>
+
+  <p class="ziti3">当前单元格在它所属的行中的位置。</p>
+
+  <p class="ziti3">unsigned long colSpan</p>
+
+  <p class="ziti3">对应的HTML conspan属性的值，数字形式。</p>
+
+  <p class="ziti3">unsigned long rowSpan</p>
+
+  <p class="ziti3">对应的HTML rowspan属性的值，数字形式。</p>
+
+  <h3 class="p1" id="heading_id_94">TableRow</h3>
+
+  <p class="ziti3">HTML表格中的＜tr＞元素</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">TableRow对象表示HTML表格中的一行（一个＜tr＞元素），它定义了若干操作这一行包含的TableCell元素的属性及方法。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly HTMLCollection cells</p>
+
+  <p class="ziti3">由代表当前行中的＜td＞或＜th＞元素的TableCell对象组成的类数组对象。</p>
+
+  <p class="ziti3">readonly long rowIndex</p>
+
+  <p class="ziti3">当前行在表格中的索引。</p>
+
+  <p class="ziti3">readonly long sectionRowIndex</p>
+
+  <p class="ziti3">当前行在所属的部分中（例如，在包含它的＜thead＞、＜tbody＞或＜tfoot＞中）的位置。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void deleteCell(long index)</p>
+
+  <p class="ziti3">这个方法在当前行中删除指定index处的单元格。</p>
+
+  <p class="ziti3">Element insertCell([long index])</p>
+
+  <p class="ziti3">这个方法创建一个新的＜td＞元素，将它插入到当前行的指定位置，并返回这个元素。新的单元格将插入到当前位于index指定的位置的单元格的前方相邻位置。如果index省略、值为-1或等于当前行中单元格的数目，则新的单元格将追加到当前行的最后。</p>
+
+  <p class="ziti3">注意，这个方便的方法只插入＜td＞数据单元格。如果需要添加一个标题单元格到一行中，必须使用Document.createElement()方法及Node.insertBefore()或相关的方法来创建及插入＜th＞元素。</p>
+
+  <h3 class="p1" id="heading_id_95">TableSection</h3>
+
+  <p class="ziti3">表格的页眉、页脚或正文部分</p>
+
+  <p class="ziti3">Node、Element</p>
+
+  <p class="ziti3">TableSection对象表示HTML表格中的＜tbody＞、＜thead＞或＜tfoot＞元素。表格的tHead和tFoot属性是TableSection对象，tBodies属性是由TableSection对象组成的一个HTMLCollection。</p>
+
+  <p class="ziti3">TableSection包含若干TableRow对象，同时属于某个Table对象。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly HTMLCollection rows</p>
+
+  <p class="ziti3">由TableRow对象组成的类数组对象，代表当前表格中本部分的所有行。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void deleteRow(long index)</p>
+
+  <p class="ziti3">这个方法删除当前部分中指定位置的行。</p>
+
+  <p class="ziti3">TableRow insertRow([long index])</p>
+
+  <p class="ziti3">这个方法创建一个新的＜tr＞元素，将它插入到当前表格部分中的指定位置，并返回这个元素。如果index为-1或省略或者等于当前部分中的行数，则新的行将追加到当前部分的结尾。否则，新的行将插入到当前由index指定位置处的行前方相邻的位置。注意，在这个方法中，index指定的是在一个单独的表格部分中的某一行的位置，而不是在整个表格中的位置。</p>
+
+  <h3 class="p1" id="heading_id_96">Text</h3>
+
+  <p class="ziti3">文档中的一串文本</p>
+
+  <p class="ziti3">Node</p>
+
+  <p class="ziti3">Text节点表现为文档中的一串文本，通常在文档树中作为某个Element的子节点出现。Text节点的内容可通过data属性或nodeValue以及继承自Node的textContent属性访问。可使用Document.createTextNode()方法创建新的Text节点。Text节点永远不会有子节点。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">string data</p>
+
+  <p class="ziti3">当前节点包含的文本。</p>
+
+  <p class="ziti3">readonly unsigned long length</p>
+
+  <p class="ziti3">当前节点对应文本的字符长度。</p>
+
+  <p class="ziti3">readonly string wholeText</p>
+
+  <p class="ziti3">当前节点以及与它前后相邻的文本节点的文本内容。如果在父节点上调用过normalize()方法，则这个属性的值将与data的值相同。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">除非你在写一个基于Web的文本编辑器应用，不然这些方法应该不会经常用到。</p>
+
+  <p class="ziti3">void appendData(string text)</p>
+
+  <p class="ziti3">这个方法追加指定的text到当前Text节点结尾处。</p>
+
+  <p class="ziti3">void deleteData(unsigned long offset,unsigned long count)</p>
+
+  <p class="ziti3">这个方法从当前Text节点中删除从位置offset的字符开始的count个字符。如果offset加上count大于当前Text节点中的字符数目，则当前字符串中从offset开始到结尾的字符都将删除。</p>
+
+  <p class="ziti3">void insertData(unsigned long offset,string text)</p>
+
+  <p class="ziti3">这个方法将指定的text插入到Text节点的offset位置处。</p>
+
+  <p class="ziti3">void replaceData(unsigned long offset,unsigned long count,string text)</p>
+
+  <p class="ziti3">这个方法用字符串text的内容替换自offset开始的count个字符。如果offset与count的和大于Text节点的长度，则从offset开始的所有字符都将替换。</p>
+
+  <p class="ziti3">Text replaceWholeText(string text)</p>
+
+  <p class="ziti3">这个方法创建一个包含指定text的新的Text节点。然后，当前节点及所有相邻的Text节点都将被这个新节点替换，最后返回这个新的节点。参见上面的wholeText属性以及Node的normalize()方法。</p>
+
+  <p class="ziti3">Text splitText(unsigned long offset)</p>
+
+  <p class="ziti3">这个方法将Text节点在指定的offset处切分为两个。原来的Text节点会改变，它将由从开始位置到（但不包含）offset的所有文本组成。同时，将创建一个新的Text节点，包含从（并且包含）offset位置到字符串结尾的所有字符。这个新的Text节点将是这个方法的返回值。另外，如果原来的Text节点有父节点parentNode，则新节点将插入到这个父节点中，紧跟在原来的节点后面。</p>
+
+  <p class="ziti3">string substringData(unsigned long offset,unsigned long count)</p>
+
+  <p class="ziti3">这个方法从Text节点的文本中提取出一个子串，内容为自位置offset开始的count个字符。如果Text节点包含的文本非常多，用这个方法可能会比用String.substring()更有效率。</p>
+
+  <h3 class="p1" id="heading_id_97">TextArea</h3>
+
+  <p class="ziti3">多行文本输入区</p>
+
+  <p class="ziti3">Node、Element、FormControl</p>
+
+  <p class="ziti3">TextArea对象表示HTML＜textarea＞元素，通常在HTML表单中用于创建多行的文本输入区。文本输入区的的初始值在＜textarea＞和＜/textarea＞标签之间以纯文本格式指定。可以使用value属性查询或设置显示的文本。</p>
+
+  <p class="ziti3">TextArea是一个类似Input和Select的表单控件。类似这些对象，它也定义了form、name、type、value属性，以及FormControl文档中提到的其他属性及方法。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除了这儿列出的属性，TextArea元素也定义了Element和FormControl的属性，同时还使用下面的JavaScript属性映射了若干HTML属性：cols、maxLength、rows、placeholder、readOnly、required以及wrap。</p>
+
+  <p class="ziti3">string defaultValue</p>
+
+  <p class="ziti3">当前＜textarea＞元素的初始纯文本内容。当表单重置时，文本区将重置为这个值。这个属性相当于从Node继承的textContent属性。</p>
+
+  <p class="ziti3">unsigned long selectionEnd</p>
+
+  <p class="ziti3">返回或设置选中文本后面的第一个输入字符的索引。也可参见setSelectionRange()。</p>
+
+  <p class="ziti3">unsigned long selectionStart</p>
+
+  <p class="ziti3">返回或设置当前＜textarea＞中第一个选中字符的索引。也可参见setSelectionRange()。</p>
+
+  <p class="ziti3">readonly unsigned long textLength</p>
+
+  <p class="ziti3">value属性（参见FormControl）的字符数。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">除了这儿列出的方法，TextArea元素也实现了Element和FormControl的方法。</p>
+
+  <p class="ziti3">void select()</p>
+
+  <p class="ziti3">这个方法选中当前＜textarea＞元素显示的所有文本。在大多数浏览器中，这意味着这些文本将高亮显示，用户新输入的文本将替换这些高亮显示的文本而不是追加到它们后面。</p>
+
+  <p class="ziti3">void setSelectionRange(unsigned long start,unsigned long end)</p>
+
+  <p class="ziti3">选中当前＜textarea＞中显示的文本，从位置start处的字符开始，一直到（但不包括）位置end处的字符。</p>
+
+  <h3 class="p1" id="heading_id_98">TextMetrics</h3>
+
+  <p class="ziti3">字符串或文本的度量</p>
+
+  <p class="ziti3">TextMetrics对象由CanvasRenderingContext2D的measureText()方法返回。它的width属性为度量过的文本的宽度，单位为CSS像素。将来可能还会添加更多的度量。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly double width</p>
+
+  <p class="ziti3">度量过的文本的宽度，单位为CSS像素。</p>
+
+  <h3 class="p1" id="heading_id_99">TimeRanges</h3>
+
+  <p class="ziti3">媒体时间区间的集合</p>
+
+  <p class="ziti3">MediaElement的buffered、played以及seekable属性分别表示媒体时间轴的一部分缓存了数据、已经播放过了以及可以从当前位置回放。时间轴的这些部分可能包含多个互不相交的时间区间（比如，当用户跳到一个视频的中间时，对played属性来说就是这样）。一个TimeRanges对象代表0个或多个互不相交的时间区间。它的length属性指明区间的数目，start()和end()方法则返回每个区间的边界。</p>
+
+  <p class="ziti3">由MediaElement返回的TimeRanges对象总是规范化的（normalized），这就是说，它们包含的区间总是有序的、非空的，也不会相互连接或重叠。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned long length</p>
+
+  <p class="ziti3">当前TimeRanges对象代表的区间的数目。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">double end(unsigned long n)</p>
+
+  <p class="ziti3">返回时间区间n的结束时间（单位为秒），如果n小于0或大于等于length则抛出异常。</p>
+
+  <p class="ziti3">double start(unsigned long n)</p>
+
+  <p class="ziti3">返回时间区间n的开始时间（单位为秒），如果n小于0或大于等于length则抛出异常。</p>
+
+  <h3 class="p1" id="heading_id_100">TypedArray</h3>
+
+  <p class="ziti3">固定尺寸的二进制数组</p>
+
+  <p class="ziti3">ArrayBufferView</p>
+
+  <p class="ziti3">TypeArray是一个ArrayBufferView，它将一个基本的ArrayBuffer的字节转换为一个由数字组成的数组，并允许读或写这个数组的元素。这儿没有单独的名为TypedArray的文档，实际上，它包含8个不同类型的类型化数组（typed array）。这8种类型都是ArrayBufferView的子类型，它们彼此之间的不同只在于每个数组元素的字节数以及解释这些字节的方式。这8种类型是：</p>
+
+  <p class="ziti3">Int8Array</p>
+
+  <p class="ziti3">每个数组元素一个字节，解释为一个有符号整数。</p>
+
+  <p class="ziti3">Int16Array</p>
+
+  <p class="ziti3">每个数组元素两个字节，解释为一个有符号整数，使用平台字节顺序。</p>
+
+  <p class="ziti3">Int32Array</p>
+
+  <p class="ziti3">每个数组元素4个字节，解释为一个有符号整数，使用平台字节顺序。</p>
+
+  <p class="ziti3">Uint8Array</p>
+
+  <p class="ziti3">每个数组元素一个字节，解释为一个无符号整数。</p>
+
+  <p class="ziti3">Uint16Array</p>
+
+  <p class="ziti3">每个数组元素两个字节，解释为一个无符号整数，使用平台字节顺序。</p>
+
+  <p class="ziti3">Uint32Array</p>
+
+  <p class="ziti3">每个数组元素4个字节，解释为一个无符号整数，使用平台字节顺序。</p>
+
+  <p class="ziti3">Float32Array</p>
+
+  <p class="ziti3">每个数组元素4个字节，解释为一个浮点数，使用平台字节顺序。</p>
+
+  <p class="ziti3">Float64Array</p>
+
+  <p class="ziti3">每个数组元素8个字节，解释为一个浮点数，使用平台字节顺序。</p>
+
+  <p class="ziti3">就像名字所暗示的，这些都是类数组对象，可以通过普通的方括号数组记号来存取元素。不过要注意，这些类型的对象总是固定长度的。</p>
+
+  <p class="ziti3">注意上面的描述，TypedArray类型使用底层平台的默认字节顺序。关于可以显式控制字节顺序的ArrayBuffer视图请参见DataView。</p>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new TypedArray(unsigned long length)</p>
+
+  <p class="ziti5">new TypedArray(TypedArray array)</p>
+
+  <p class="ziti5">new TypedArray(type[]array)</p>
+
+  <p class="ziti5">new TypedArray(ArrayBuffer buffer,[unsigned long byteOffset],[unsigned long length])</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">8种TypedArray的构造函数都可以用上面4种方式调用。构造函数如下工作：</p>
+
+  <p class="ziti3">·如果以一个单独的数字参数调用构造函数，它将创建一个新的具有指定数目的元素的类型化数组，每个元素将初始化为0。</p>
+
+  <p class="ziti3">·如果传入一个类型化数组对象，则这个构造函数将创建一个新的类型化数组，其元素的数目与参数数组元素的数目一致，然后将参数数组的元素复制到新创建的数组中。参数数组的类型可与和创建的数组的类型不同。</p>
+
+  <p class="ziti3">·如果传入一个数组（真实的JavaScript数组），则构造函数将创建一个新的类型化数组，其元素数目与参数数组元素的数目一致，然后将参数数组的元素值复制到新数组中。</p>
+
+  <p class="ziti3">·最后，如果传入一个ArrayBuffer对象以及可选的偏移和长度参数，则构造函数将创建一个新的类型化数组，这个数组将是指定ArrayBuffer的指定区域的一个视图。新的TypedArray的长度取决于ArrayBuffer区域以及类型化数组的元素尺寸。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">long BYTES_PER_ELEMENT</p>
+
+  <p class="ziti3">当前数组的每个元素在基本的ArrayBuffer中占用的字节数。这个常量的值可能为1、2、4或8，取决于使用了哪种类型的TypedArray。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned long length</p>
+
+  <p class="ziti3">数组中元素的数目。TypedArray具有固定长度，这个属性的值永远不会改变。注意，这个属性一般来说不等于继承自ArrayBufferView的byteLength属性。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void set(TypedArray array,[unsigned long offset])</p>
+
+  <p class="ziti3">从索引offset处开始，复制array的元素到当前类型化数组中。</p>
+
+  <p class="ziti3">void set(number[]array,[unsigned long offset])</p>
+
+  <p class="ziti3">这个版本的set()和上面一个类似，不过它使用的是真实的JavaScript数组，而不是类型化数组。</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">TypedArray subarray(long start,long end)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">返回一个和当前TypedArray使用同一个基本ArrayBuffer的新TypedArray。返回的数组的第一个元素是当前数组的start位置处的元素，同时返回的数组的最后一个元素是当前数组的end-1位置处的元素。如果start或end为负数，则偏移量将从当前数组的尾部开始计算。</p>
+
+  <h3 class="p1" id="heading_id_101">URL</h3>
+
+  <p class="ziti3">Blob URL方法</p>
+
+  <p class="ziti3">Window对象的URL属性指代这个URL对象。将来这个对象可能会变成一个URL解析及操作工具类的构造函数。不过，在写作本书的时候，它还只是为下面描述的两个Blob URL方法提供一个命名空间。更多关于Blob和Blob URL的内容请参见22.6节和22.6.4节。</p>
+
+  <p class="ziti3">在写作本书的时候，URL对象还很新，它的API还没有稳定。可能需要带上厂商定义的前缀来使用它，比如webkitURL。</p>
+
+  <p class="ziti3">函数</p>
+
+  <p class="ziti3">string createObjectURL(Blob blob)</p>
+
+  <p class="ziti3">根据指定的blob返回一个Blob URL。对这个URL执行HTTP GET请求将返回对应的blob的内容。</p>
+
+  <p class="ziti3">void revokeObjectURL(string url)</p>
+
+  <p class="ziti3">撤销指定的Blob url，之后它将不再与任何Blob关联，也不可以再加载。</p>
+
+  <h3 class="p1" id="heading_id_102">Video</h3>
+
+  <p class="ziti3">HTML＜video＞元素</p>
+
+  <p class="ziti3">Node、Element、MediaElement</p>
+
+  <p class="ziti3">Video对象表示HTML＜video＞元素。＜video＞和＜audio＞元素非常类似，它们共同的属性和方法的文档位于MediaElement部分。这儿是Video对象专有的一些属性。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">DOMSettableTokenList audio</p>
+
+  <p class="ziti3">这个属性指定当前视频的音频选项。对应的选项在HTML audio属性中以空格分隔的标记列表定义，这个集合在JavaScript中映射为一个DOMSettableTokenList。不过，在写作本书的时候，HTML5标准还只定义了一个合法标记（"muted"），因此，可以将这个属性当做一个字符串处理。</p>
+
+  <p class="ziti3">unsigned long height</p>
+
+  <p class="ziti3">当前＜video＞元素在屏幕上的高度，单位为CSS像素。对应HTML height属性。</p>
+
+  <p class="ziti3">string poster</p>
+
+  <p class="ziti3">在视频开始播放之前显示为“海报帧”的图片的URL。对应HTML poster属性。</p>
+
+  <p class="ziti3">readonly unsigned long videoHeight</p>
+
+  <p class="ziti3">readonly unsigned long videoWidth</p>
+
+  <p class="ziti3">这两个属性返回当前视频的原始高度和宽度（即，它的帧的尺寸），单位为CSS像素。在＜video＞元素加载视频的元数据（metadata）之前（readyState仍旧是HAVE_NOTHING，loadedmetadata事件还没有被分发），这两个属性都为0。</p>
+
+  <p class="ziti3">unsigned long width</p>
+
+  <p class="ziti3">当前＜video＞元素在屏幕上的宽度，单位为CSS像素。对应HTML width属性。</p>
+
+  <h3 class="p1" id="heading_id_103">WebSocket</h3>
+
+  <p class="ziti3">一个双向的类套接字的网络连接</p>
+
+  <p class="ziti3">EventTarget</p>
+
+  <p class="ziti3">WebSocket表示一个支持WebSocket协议的到某个服务器的长生命周期的、双向的、类套接字的网络连接。这个网络连接模型和HTTP的请求/响应模型有着根本的不同。可以使用WebSocket()构造函数创建一个新的连接，使用send()方法发送文本消息到服务器，同时为消息事件注册处理程序以便接收来自服务器的消息。更多细节可参考22.9节。</p>
+
+  <p class="ziti3">WebSocket是新的Web API，在写作本书的时候，还没有被所有浏览器支持。</p>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new WebSocket(string url,[string[]protocols])</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">WebSocket()构造函数创建一个新的WebSocket对象，并开始（异步地）建立一个到WebSocket服务器的连接。url参数指定要连接的服务器，必须为一个使用ws://或wss://URL模式的绝对URL。protocols参数是一个由子协议名组成的数组。如果指定这个参数，则客户端将告诉服务器端可以“交谈”的通信协议或协议版本。服务器必须从中选一个并通知客户端，这一切都是连接过程的一部分。protocols也可以以一个字符串的形式而不是数组的形式定义：这种情况下，它当做一个长度为1的数组处理。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">下面的常量为readyState属性可能的值。</p>
+
+  <p class="ziti3">unsigned short CONNECTING=0</p>
+
+  <p class="ziti3">连接进程正在进行。</p>
+
+  <p class="ziti3">unsigned short OPEN=1</p>
+
+  <p class="ziti3">当前WebSocket已连接到服务器，可以发送和接收消息。</p>
+
+  <p class="ziti3">unsigned short CLOSING=2</p>
+
+  <p class="ziti3">连接正在关闭。</p>
+
+  <p class="ziti3">unsigned short CLOSED=3</p>
+
+  <p class="ziti3">连接已关闭。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned long bufferedAmount</p>
+
+  <p class="ziti3">刚刚传给s en d()方法但还没有真正发送的文本的字符数。如果要发送大量的数据，可以使用这个属性来避免传送消息的速度比它们可发送的速度快。</p>
+
+  <p class="ziti3">readonly string protocol</p>
+
+  <p class="ziti3">如果给WebSocket()构造函数传入一个子协议数组，则服务器选择的那个协议将保存在这个属性中。注意，当第一次创建WebSocket时，连接还没有建立，服务器的选择也还未知，所以这个属性开始时为一个空字符串。如果向构造函数传入若干协议，则当open事件被触发时，这个属性将改变为服务器选择的子协议。</p>
+
+  <p class="ziti3">readonly unsigned short readyState</p>
+
+  <p class="ziti3">WebSocket连接的当前状态。这个属性的值为上面列出的常量之一。</p>
+
+  <p class="ziti3">readonly string url</p>
+
+  <p class="ziti3">这个属性保存传入到WebSocket()构造函数中的URL。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void close()</p>
+
+  <p class="ziti3">如果当前连接不处在已关闭或正在关闭的状态，则这个方法将开始关闭它，并将readyState设置为CLOSING。即便在调用了close()方法之后，仍然可能继续触发消息事件，直到readyState改变为CLOSED并且触发close事件。</p>
+
+  <p class="ziti3">void send(string data)</p>
+
+  <p class="ziti3">这个方法将指定的data发送到当前WebSocket连接的另一端的服务器。如果在触发open事件之前，即readyState仍然为CONNECTING时调用这个方法将抛出一个异常。WebSocket协议支持二进制数据，但在写作本书的时候，WebSocket API还只允许发送和接收字符串。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">网络通信本来是异步的，类似于XMLHttpRequest，WebSocket API是基于事件的。WebSocket定义了4个事件处理程序注册属性，同时也实现了EventTarget，所以也可以使用EventTarget方法来注册事件处理程序。下面描述的事件都在WebSocket对象上触发，它们都不会冒泡，也都没有可以取消的默认行为。不过需要注意，它们各自有着不同的关联事件对象。</p>
+
+  <p class="ziti3">onclose</p>
+
+  <p class="ziti3">WebSocket连接关闭时将触发一个close事件（同时readyState将改变为CLOSED）。关联的事件对象为CloseEvent，指明当前连接是否干净地关闭了。</p>
+
+  <p class="ziti3">onerror</p>
+
+  <p class="ziti3">当发生网络或WebSocket协议错误时将触发一个error事件。关联的事件对象为一个简单的Event。</p>
+
+  <p class="ziti3">onmessage</p>
+
+  <p class="ziti3">当服务器通过WebSocket发送数据时，这个WebSocket将触发一个message事件，伴随着一个关联的MessageEvent对象，该对象的data属性指代接收到的消息。</p>
+
+  <p class="ziti3">onopen</p>
+
+  <p class="ziti3">在与指定url之间的连接建立起来之前，WebSocket()构造函数就返回了。当连接握手完成，WebSocket已准备好发送和接收数据时，将触发一个open事件。关联的事件对象为一个简单的Event。</p>
+
+  <h3 class="p1" id="heading_id_104">Window</h3>
+
+  <p class="ziti3">浏览器窗口、标签或框架页面</p>
+
+  <p class="ziti3">EventTarget</p>
+
+  <p class="ziti3">Window对象表示一个浏览器窗口、标签或者框架页面。它的详细文档见第14章。在客户端JavaScript中，Window是“全局对象”，所有表达式都是在当前Window对象的上下文中计算的。这就是说，引用当前window不需要特殊的语法，可以将window对象的属性像全局变量一样使用。例如，可以将window.document写成document。类似地，可以像函数一样使用当前window对象的方法，例如将window.alert()写成alert()。</p>
+
+  <p class="ziti3">这个对象的一些属性及方法的确以某种方式查询或操作浏览器窗口，而另外那些列在这儿是因为它是全局对象。除了这儿列出的属性和方法，Window对象也实现了核心JavaScript定义的所有全局属性和函数。更多细节参见本书第三部分的Global。</p>
+
+  <p class="ziti3">Web浏览器会在window上触发很多种事件。这意味着Window对象定义了相当多的事件处理程序，同时，Window对象也实现由EventTarget定义的各个方法。</p>
+
+  <p class="ziti3">Window对象的window和self属性都指代当前窗口对象本身。可以使用这两个属性来显式引用当前窗口。</p>
+
+  <p class="ziti3">一个Window可以包含别的Window对象，通常以＜iframe＞标签的形式。每个Window都是由嵌套的Window对象组成的一个类数组对象。不过，一般不采用直接检索一个Window对象的方法，而是使用它的自引用的frames属性，把这个属性当做对应的类数组对象。Window的parent和top属性则指代当前窗口的直接容器窗口以及顶层祖先窗口。</p>
+
+  <p class="ziti3">可以使用Window.open()方法来创建新的顶级浏览器窗口。调用这个方法时，可以将open()的返回值保存在一个变量里，之后可通过这个变量来引用这个新窗口。新窗口的opener属性则指回打开它的那个窗口。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除了这儿列出的属性，显示在窗口中的文档内容也会生成新的属性。如同14.7节解释过的，可以将文档中的元素的id属性值作为当前window的属性来引用这个元素（并且由于window是全局对象，因此它的属性也将是全局变量）。</p>
+
+  <p class="ziti3">readonly ApplicationCache applicationCache</p>
+
+  <p class="ziti3">指代ApplicationCache对象。已缓存的或离线的Web应用可以使用这个对象来管理它们的缓存更新。</p>
+
+  <p class="ziti3">readonly any dialogArguments</p>
+
+  <p class="ziti3">在由showModalDialog()创建的Window对象中，这个属性是传入到showModalDialog()的arguments值。在常规Window对象中不存在这个属性。更多信息可参见14.5节。</p>
+
+  <p class="ziti3">readonly Document document</p>
+
+  <p class="ziti3">描述当前窗口的内容的Document对象（细节参见Document）。</p>
+
+  <p class="ziti3">readonly Event event[IE only]</p>
+
+  <p class="ziti3">在Internet Explorer中，这个属性指向描述最近的事件的Event对象。在IE8及更早的版本中，事件对象并不总是会传入到事件处理程序中，这时只能通过这个属性来访问事件对象。更多细节可参见第17章。</p>
+
+  <p class="ziti3">readonly Element frameElement</p>
+
+  <p class="ziti3">如果当前Window位于一个＜iframe＞中，这个属性将指代这个IFrame元素。对顶级窗口来说，这个属性将为null。</p>
+
+  <p class="ziti3">readonly Window frames</p>
+
+  <p class="ziti3">这个属性类似于self和window属性，指代当前Window对象本身。每个Window对象都是由它包含的框架页面组成的类数组对象。如果要引用某个窗口w中的第一个框架页面，这个属性允许使用更清晰的写法w.frames[0]，而不是w[0]。</p>
+
+  <p class="ziti3">readonly History history</p>
+
+  <p class="ziti3">当前窗口的History对象。参见History。</p>
+
+  <p class="ziti3">readonly long innerHeight</p>
+
+  <p class="ziti3">readonly long innerWidth</p>
+
+  <p class="ziti3">当前窗口显示区域的文档的高度和宽度，单位是像素。IE8及更早的版本不支持这些属性。示例可见例15-9。</p>
+
+  <p class="ziti3">readonly unsigned long length</p>
+
+  <p class="ziti3">当前窗口包含的框架页面的数目。参见frames。</p>
+
+  <p class="ziti3">readonly Storage localStorage</p>
+
+  <p class="ziti3">这个属性指代一个提供客户端名/值对存储的Storage对象。通过localStorage存储的数据对任意同源的文档都可见并共享，并将持续存在直到被用户或其他脚本删除。也可参见sessionStorage和20.1节。</p>
+
+  <p class="ziti3">readonly Location location</p>
+
+  <p class="ziti3">当前窗口的Location对象。这个对象指明当前加载的文档的URL。将这个属性设置为一个新的URL字符串将导致浏览器加载并显示那个URL的内容。参见Location。</p>
+
+  <p class="ziti3">string name</p>
+
+  <p class="ziti3">当前窗口的名字。name属性是可选的，可以在使用open()方法创建窗口时指定或者通过＜frame＞标签的name属性指定。窗口的name可用做＜a＞或＜form＞标签的target属性的值。以这种方式使用target属性，表示超链接连接的文档或者表单提交的结果应该在指定名字的窗口或框架页面中显示。</p>
+
+  <p class="ziti3">readonly Navigator navigator</p>
+
+  <p class="ziti3">指代Navigator对象，该对象提供当前We b浏览器的版本及配置信息。参见Navigator。</p>
+
+  <p class="ziti3">readonly Window opener</p>
+
+  <p class="ziti3">一个可读写的引用，指代包含调用open()方法打开当前浏览器窗口的脚本的那个Window对象，对不是以这种方式创建的窗口来说这个属性为null。这个属性只对顶级窗口对应的Window对象有效，对框架页面无效。opener属性很有用，通过这个属性，新创建的窗口可以引用在创建它的窗口中定义的属性和函数。</p>
+
+  <p class="ziti3">readonly long outerHeight</p>
+
+  <p class="ziti3">readonly long outerWidth</p>
+
+  <p class="ziti3">这两个属性指明当前浏览器窗口的总高度和宽度，单位为像素，包括工具栏、滚动条、窗口边框等。IE8及更早的版本不支持这两个属性。</p>
+
+  <p class="ziti3">readonly long pageXOffset</p>
+
+  <p class="ziti3">readonly long pageYOffset</p>
+
+  <p class="ziti3">当前文档滚过的右边（pageXOffset）及下边（pageYOffset）的像素值。IE8及更早的版本不支持这两个值。示例及兼容IE的代码见例15-8。</p>
+
+  <p class="ziti3">readonly Window parent</p>
+
+  <p class="ziti3">包含当前窗口的Window对象。如果当前窗口是一个顶级窗口，则parent属性将指代当前窗口本身。如果当前窗口是一个框架页面，则parent属性将指向包含它的窗口或框架页面。</p>
+
+  <p class="ziti3">string returnValue</p>
+
+  <p class="ziti3">普通窗口没有这个属性，它适用于由showModalDialog()创建的Window，默认值为空字符串。一个对话框窗口关闭时（参见close()方法），这个属性的值将成为showModalDialog()的返回值。</p>
+
+  <p class="ziti3">readonly Screen screen</p>
+
+  <p class="ziti3">Screen对象指定关于当前屏幕的信息：有效的像素数和色彩数。细节可参见Screen。</p>
+
+  <p class="ziti3">readonly long screenX</p>
+
+  <p class="ziti3">readonly long screenY</p>
+
+  <p class="ziti3">当前窗口的左上角在屏幕中的坐标。</p>
+
+  <p class="ziti3">readonly Window self</p>
+
+  <p class="ziti3">对当前窗口自身的一个引用。它是window属性的一个同义词。</p>
+
+  <p class="ziti3">readonly Storage sessionStorage</p>
+
+  <p class="ziti3">这个属性指代一个提供客户端名/值对存储的Storage对象。通过sessionStorage存储的数据只对在同样的顶级窗口或标签中的同源文档可见，并只持续到当前浏览会话结束。也可参见localStorage和20.1节。</p>
+
+  <p class="ziti3">readonly Window top</p>
+
+  <p class="ziti3">包含当前窗口的顶级窗口。如果当前窗口本身已经是顶级窗口了，则这个top属性将只是简单地指代当前窗口本身。如果当前窗口是一个框架页面，则top属性将指代包含当前框架页面的顶级窗口。注意它与parent属性的不同。</p>
+
+  <p class="ziti3">readonly object URL</p>
+
+  <p class="ziti3">在写作本书的时候，这个属性还只是简单地引用一个占位对象，这个对象定义的函数的文档见URL部分。将来，这个属性可能会变成一个URL()构造函数并定义用于解析URL和它们的查询字符串的API。</p>
+
+  <p class="ziti3">readonly Window window</p>
+
+  <p class="ziti3">window属性和self属性完全一样，它包含对当前窗口的一个引用。由于Window对象是客户端JavaScript的全局对象，因此这个属性允许写window来引用这个全局对象。</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">作为客户端JavaScript的全局对象，Window对象必须定义用于客户端环境的所有全局构造函数。虽然在这儿没有列出，不过这个部分中的所有全局构造函数都是Window对象的属性。例如，客户端JavaScript定义了Image()和XMLHttpRequest()构造函数的事实表示，每一个Window对象都有名为Image和XMLHttpRequest的属性。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">Window对象定义了下面的方法，同时也继承了由核心JavaScript定义的所有全局函数（参见第三部分的Global）。</p>
+
+  <p class="ziti3">void alert(string message)</p>
+
+  <p class="ziti3">alert()方法在一个对话框中向用户显示一段指定的纯文本message。这个对话框包含一个OK按钮，用户可以单击以便关闭这个对话框。这个对话框一般是模态的（至少对当前标签而言是这样），调用alert()将阻塞后面的代码，直到当前对话框关闭。</p>
+
+  <p class="ziti3">string atob(string atob)</p>
+
+  <p class="ziti3">这个工具函数接收一个基64编码的字符串并将它解码为一个JavaScript二进制字符串，其中每个字符代表一个单独的字节。可以使用返回的字符串的charCodeAt()方法来提取字节值。也可参见btoa()。</p>
+
+  <p class="ziti3">void blur()</p>
+
+  <p class="ziti3">blur()方法将键盘焦点从当前Window对象指定的顶级浏览器窗口移除。它不会指定接下来键盘焦点会由哪个窗口获得。在某些浏览器和/或平台上，这个方法可能无效。</p>
+
+  <p class="ziti3">string btoa(string btoa)</p>
+
+  <p class="ziti3">这个工具函数接收一个JavaScript二进制字符串（其中每个字符代表一个单独的字节）作为参数，返回对应的基64编码的值。可以使用String.fromCharCode()来从一个任意的字节值序列创建一个二进制字符串。也可参见atob()。</p>
+
+  <p class="ziti3">void clearInterval(long handle)</p>
+
+  <p class="ziti3">clearInterval()停止由调用setInterval()开始的某段代码的重复执行。intervalId必须是调用setInterval()返回的值。</p>
+
+  <p class="ziti3">void clearTimeout(long handle)</p>
+
+  <p class="ziti3">clearTimeout()取消由setTimeout()方法推迟的某段代码的执行。timeoutId参数必须是调用setTimeout()的返回值，它标识要退出哪段推迟的代码。</p>
+
+  <p class="ziti3">void close()</p>
+
+  <p class="ziti3">close()方法关闭调用该方法的顶级窗口。脚本一般只允许关闭由它们自己打开的窗口。</p>
+
+  <p class="ziti3">boolean confrm(string message)</p>
+
+  <p class="ziti3">这个方法在一个模态对话框中以纯文本的形式显示指定的问题。这个对话框包含OK和Cancel按钮，用户可通过这两个按钮回答提出的问题。如果用户单击OK按钮，confirm()将返回true。如果用户单击Cancel按钮，confirm()将返回false。</p>
+
+  <p class="ziti3">void focus()</p>
+
+  <p class="ziti3">这个方法让当前浏览器窗口获得键盘焦点。在大多数平台上，当顶级窗口获得焦点时，它将显示到窗口栈的顶部，这样它就会变得可见。</p>
+
+  <p class="ziti3">CSSStyleDeclaration getComputedStyle(Element elt,[string pseudoElt])</p>
+
+  <p class="ziti3">文档中的一个元素可以从内联样式属性以及样式表“级联”中任意数量的样式表中获得样式信息。在某个元素正式显示在窗口中之前，必须先从这个级联中提取它的样式信息，同时那些以相对单位（如百分比或是"ems"）定义的样式也必须“计算”出来以便转换为像素。这些计算出的值有时也叫做“使用”的值。</p>
+
+  <p class="ziti3">这个方法返回一个只读的CSSStyleDeclaration对象，反映了显示这个元素实际使用的CSS样式值。所有的尺寸都以像素为单位。</p>
+
+  <p class="ziti3">这个方法的第二个参数通常省略或为null，不过也可以传入CSS伪元素"::before"或"::after"来决定用于CSS生成内容的样式。</p>
+
+  <p class="ziti3">比较一下HTMLElement的getComputedStyle()和style属性，后者允许访问某个元素的内联样式，使用它们定义时的单位，并且不包括任何应用到该元素的样式表样式信息。</p>
+
+  <p class="ziti3">在IE8及更早的版本中不支持这个方法，不过可以通过每个HTMLElement对象的非标准属性currentStyle来完成相似功能。</p>
+
+  <p class="ziti3">Window open([string url],[string target],[string features],[string replace])</p>
+
+  <p class="ziti3">open()方法在一个新的或现存的浏览器窗口或标签中加载并显示指定的url。url参数指定要加载的文档。如果没有指定，则将使用"about:blank"。</p>
+
+  <p class="ziti3">target参数指定用于加载指定url的窗口的名字。如果没有指定，则将使用"_blank"。如果target为"_blank"，或不存在指定名字的已有窗口，则将创建一个新窗口来显示url的内容。否则，url将在现存的指定名字的窗口中加载。</p>
+
+  <p class="ziti3">features参数用于指定窗口的位置、尺寸以及特性（比如菜单栏、工具栏等）。在支持标签的现代浏览器中，这个参数通常会忽略，所以这儿没有列出它的文档。</p>
+
+  <p class="ziti3">当使用Window.open()在一个已经存在的窗口中加载新文档时，replace参数指定新文档是否在这个窗口的浏览历史中添加一条自己的记录，或者替换当前文档的历史记录。如果replace为true，则新文档将替换掉旧文档。如果这个参数为false或未指定，则新文档将在该Window的浏览历史中有一条自己的记录。这个参数提供的功能非常类似Location.replace()方法。</p>
+
+  <p class="ziti3">void postMessage(any message,string targetOrigin,[MessagePort[]ports])</p>
+
+  <p class="ziti3">仅当当前窗口显示的文档有指定的targetOrigin时，发送指定message以及可选ports的一个副本到当前窗口中。</p>
+
+  <p class="ziti3">messa ge可以是任意能用结构性复制算法（参见22.2节的“结构性复制”）复制的对象。targetOrigin应该是一个指定期望源的模式、主机以及端口的绝对URL。如果任意源都可接受，targetOrigin也可以是“*”，或者如果想使用脚本自身的源则可以是“/”。</p>
+
+  <p class="ziti3">在一个窗口上调用这个方法将在这个窗口上触发一个消息事件。参见MessageEvent和22.3节。</p>
+
+  <p class="ziti3">void print()</p>
+
+  <p class="ziti3">调用print()方法，效果等同于用户选择浏览器的“打印”按钮或菜单项。一般来说，这会弹出一个对话框，允许用户取消或定制打印请求。</p>
+
+  <p class="ziti3">string prompt(string message,[string default])</p>
+
+  <p class="ziti3">prompt()方法在一个模态对话框中显示指定的message，同时包含一个文本输入区以及OK和Cancel按钮，它将阻塞页面，直到用户单击这两个按钮中的一个。</p>
+
+  <p class="ziti3">如果用户单击Cancel按钮，prompt()将返回null。如果用户单击OK按钮，则prompt()将返回当前在对话框中的文本输入区显示的文本。</p>
+
+  <p class="ziti3">default参数指定文本输入区的初始文本。</p>
+
+  <p class="ziti3">void scroll(long x,long y)</p>
+
+  <p class="ziti3">这个方法等同于scrollTo()。</p>
+
+  <p class="ziti3">void scrollBy(long x,long y)</p>
+
+  <p class="ziti3">scrollBy()滚动当前window中显示的文档，dx和dy指定滚动的相对量。</p>
+
+  <p class="ziti3">void scrollTo(long x,long y)</p>
+
+  <p class="ziti3">scrollTo()滚动当前window中显示的文档，如果可能的话，让文档中由坐标x和y指定的点位于显示区域的左上角。</p>
+
+  <p class="ziti3">long setInterval(function f,unsigned long interval,any args...)</p>
+
+  <p class="ziti3">setInterval()将函数f注册为interval毫秒后调用，并且接下来每隔指定的interval就重复调用一次。当前窗口将作为调用f时的this值，同时所有传入setInterval的额外参数args将传入f。</p>
+
+  <p class="ziti3">setInterval()返回一个数字，稍后可以将这个数字传入到Window.clearInterval()来取消这段代码的执行。</p>
+
+  <p class="ziti3">由于历史原因，f可能是一段字符串形式的JavaScript代码而不是一个函数。在这种情况下，这段字符串将每隔interval毫秒求值（就像它们是一个＜script＞）一次。</p>
+
+  <p class="ziti3">如果你想推迟一段代码的执行，但不希望它重复执行，可以使用setTimeout()。</p>
+
+  <p class="ziti3">long setTimeout(function f,unsigned long timeout,any args...)</p>
+
+  <p class="ziti3">setTimeout()类似于setInterval()，不同之处是它只执行指定的函数一次：它将f注册为timeout毫秒后调用，并返回一个数字，稍后可将这个数字传入clearTimeout()来取消延迟的调用。当指定的时间过去后，f将作为Window的一个方法调用，同时会传入任意指定的args。如果f是一个字符串而不是一个函数，则它将在timeout毫秒后执行，执行效果就像它是一个＜script＞一样。</p>
+
+  <p class="ziti3">any showModalDialog(string url,[any arguments])</p>
+
+  <p class="ziti3">这个方法创建一个新的Window对象，将它的dialogArguments属性设为arguments，在这个窗口中加载url，然后阻塞进程，直到这个窗口关闭。一旦关闭，它将返回这个窗口的returnValue属性。讨论及示例参见14.5节和例14-4。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">大多数发生在HTML元素上的事件会在文档树中向上冒泡，到达Document对象，然后再到达Window对象。所以，在Element上列出的所有事件处理程序属性都可以用在Window对象上。另外，还可以使用下面列出的事件处理程序属性。由于历史原因，这儿列出的每个事件处理程序属性也都可以（作为一个HTML属性或JavaScript属性）定义在＜body＞元素上。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00128.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="pic">
+    <img alt="" src="../images/00129.jpeg" class="calibre3"/>
+  </div>
+
+  <h3 class="p1" id="heading_id_105">Worker</h3>
+
+  <p class="ziti3">worker线程</p>
+
+  <p class="ziti3">EventTarget</p>
+
+  <p class="ziti3">Worker表示一个后台线程。可使用Worker()构造函数来创建一个新的Worker，传入一个JavaScript代码文件的URL让它执行。在那个文件中的JavaScript代码可以使用同步的API或者执行计算密集型任务而不会导致主UI线程冻结。Worker在一个完全隔离的执行上下文（参见WorkerGlobalScope）中执行它们的代码，与一个Worker交换数据的唯一方式是使用异步事件。可以调用postMessage()来向Worker发送数据，然后处理消息事件以接收来自这个Worker的数据。</p>
+
+  <p class="ziti3">关于Worker线程的介绍可参见22.4节。</p>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new Worker(string scriptURL)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">构造一个新的Worker对象，并让它执行scriptURL中的JavaScript代码。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void postMessage(any message,[MessagePort[]ports])</p>
+
+  <p class="ziti3">发送消息message给指定Worker，这个Worker将以发送到它的onmessage处理程序的MessageEvent对象的形式接收这条消息。message可以是一个JavaScript的原始值、对象或数组，但不能是函数。客户端类型（如ArrayBuffer、File、Blob以及ImageData）是允许的，但不允许如Document和Element等Node（细节可参见22.2节的“结构性复制”）。</p>
+
+  <p class="ziti3">可选的ports参数是一个高级特性，允许传入一个或多个直接通信通道到Worker中。例如，如果创建了两个Worker对象，可以通过为它们分别传入MessageChannel的一个终端让它们直接相互通信。</p>
+
+  <p class="ziti3">void terminate()</p>
+
+  <p class="ziti3">停止当前Worker并中止它正在执行的脚本。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">由于Worker在一个与创建它的环境完全分离的执行环境中运行代码，因此它与它的父线程通信的唯一方式就是事件。可以使用下面的属性来注册事件处理程序或者使用EventTarget方法。</p>
+
+  <p class="ziti3">onerror</p>
+
+  <p class="ziti3">当Worker正在执行的脚本中抛出异常，并且这个错误没有被WorkerGlobalScope的onerror处理程序处理时，这个错误将在当前Worker对象上触发一个error事件。与这个事件关联的事件对象是一个ErrorEvent。这个错误事件不会冒泡。如果这个Worker属于另一个Worker，取消这个错误事件将阻止它向上传播到父Worker。如果当前Worker对象已经在主线程中，取消这个事件可能会阻止它在JavaScript控制台中显示。</p>
+
+  <p class="ziti3">onmessage</p>
+
+  <p class="ziti3">当Worker正在运行的脚本调用它的全局postMessage()函数（参见WorkerGlobalScope）时，将会在这个Worker对象上触发一个消息事件。传给这个事件处理程序的对象是一个MessageEvent，它的data属性包含这个Worker脚本传给postMessage()的值的一个副本。</p>
+
+  <h3 class="p1" id="heading_id_106">WorkerGlobalScope</h3>
+
+  <p class="ziti3">EventTarget、Global</p>
+
+  <p class="ziti3">Worker线程运行在一个和生成它的父进程完全不同的执行环境里。worker的全局变量是一个WorkerGlobalScope对象，因此这个页面在一个Worker中描述了对应的执行环境。由于WorkerGlobalScope是一个全局对象，因此它继承自核心JavaScript的Global对象。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">除了这儿列出的属性，WorkerGlobalScope也定义了核心JavaScript的所有全局属性，比如Math和JSON。</p>
+
+  <p class="ziti3">readonly WorkerLocation location</p>
+
+  <p class="ziti3">这个属性类似于window.location对应的Location对象：允许一个worker检查它加载自哪个URL，同时包含一些返回这个URL的独立部分的属性。</p>
+
+  <p class="ziti3">readonly WorkerNavigator navigator</p>
+
+  <p class="ziti3">这个属性类似于window.navigator对应的Navigator对象：worker可根据它定义的属性判断当前它正在运行的浏览器以及它当前是否在线。</p>
+
+  <p class="ziti3">readonly WorkerGlobalScope self</p>
+
+  <p class="ziti3">这个自引用的属性指代当前WorkerGlobalScope全局对象本身。它类似于主线程中Window对象中的window属性。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">除了这儿列出的方法，WorkerGlobalScope也定义了核心JavaScript的所有全局函数，例如isNaN()和eval()。</p>
+
+  <p class="ziti3">void clearInterval(long handle)</p>
+
+  <p class="ziti3">这个方法和Window中同名的方法一样。</p>
+
+  <p class="ziti3">void clearTimeout(long handle)</p>
+
+  <p class="ziti3">这个方法和Window中同名的方法一样。</p>
+
+  <p class="ziti3">void close()</p>
+
+  <p class="ziti3">这个方法将当前worker置入一个特殊的“关闭”状态。一旦进入这个状态，它将不会触发任何计时器或事件。脚本将继续执行，直到它返回worker的事件循环，此时worker将停止。</p>
+
+  <p class="ziti3">void importScripts(string urls...)</p>
+
+  <p class="ziti3">对于所有指定的urls，这个方法将相对于当前worker地址解析它们，然后加载对应URL的内容，并将它们的内容当做JavaScript代码执行。注意这是一个同步方法。它按顺序加载并执行各个文件，并且在所有脚本执行完之前不会返回。（不过，如果任何脚本抛出了异常，这个异常将传播并且阻止后面的URL的加载与执行。）</p>
+
+  <p class="ziti3">void postMessage(any message,[MessagePort[]ports])</p>
+
+  <p class="ziti3">发送一条message（以及一个可选的端口号组成的数组ports）给生成当前worker的线程。调用这个方法将在父线程的Worker对象上触发一个消息事件，关联的MessageEvent对象的data属性为message的一个副本。注意，在worker中，postMessage()是一个全局函数。</p>
+
+  <p class="ziti3">long setInterval(any handler,[any timeout],any args...)</p>
+
+  <p class="ziti3">这个方法和Window中同名的方法一样。</p>
+
+  <p class="ziti3">long setTimeout(any handler,[any timeout],any args...)</p>
+
+  <p class="ziti3">这个方法和Window中同名的方法一样。</p>
+
+  <p class="ziti3">构造函数</p>
+
+  <p class="ziti3">WorkerGlobalScope包含核心JavaScript的所有构造函数，如Array()、Date()以及RegExp()。它也为诸如XMLHttpRequest、FileReaderSync甚至Worker对象本身等定义了重要的客户端构造函数。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">可通过设置这些全局事件处理程序属性来为worker注册事件处理程序，也可以使用由WorkerGlobalScope实现的EventTarget方法。</p>
+
+  <p class="ziti3">onerror</p>
+
+  <p class="ziti3">这不是一个普通的事件处理程序：相对于Worker的onerror属性，它更像Window的onerror属性。当worker中发生了一个未处理的异常时，如果定义了这个处理函数，则它将被调用并传入三个字符串参数，分别定义错误消息、脚本URL以及一个行号。如果这个函数返回false，则将认为这个错误已经处理，并且不会继续传播。否则，如果没有设置这个属性，或错误处理程序没有返回false，则错误将传播并将在父线程的Worker对象上触发一个错误事件。</p>
+
+  <p class="ziti3">onmessage</p>
+
+  <p class="ziti3">当父线程调用了代表当前worker的Worker对象的postMessage()方法时，将在当前WorkerGlobalScope上触发一个消息事件。一个MessageEvent对象将传入这个事件处理函数，这个对象的data属性将保存父线程发送的message参数的一个副本。</p>
+
+  <h3 class="p1" id="heading_id_107">WorkerLocation</h3>
+
+  <p class="ziti3">worker的主脚本的URL</p>
+
+  <p class="ziti3">WorkerGlobalScope的location属性指代的WorkerLocation对象类似Window的location属性指代的Location对象：它表示该worker的主脚本的URL，同时定义了一些代表了这个URL的各个部分的属性。</p>
+
+  <p class="ziti3">Worker和Window的不同之处是它们不能导航或重新加载，所以对应WorkerLocation对象的属性是只读的，这个对象也没有实现Location对象的各个方法。</p>
+
+  <p class="ziti3">WorkerLocation对象不像一个通常的地址对象那样会自动转化为字符串。在worker中，不能将location.href简写为location。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">这些属性和Location对象的同名属性含义相同。</p>
+
+  <p class="ziti3">readonly string hash</p>
+
+  <p class="ziti3">URL的片段标识符，包括开头的哈希标记。</p>
+
+  <p class="ziti3">readonly string host</p>
+
+  <p class="ziti3">当前URL的主机和端口部分。</p>
+
+  <p class="ziti3">readonly string hostname</p>
+
+  <p class="ziti3">当前URL的主机部分。</p>
+
+  <p class="ziti3">readonly string href</p>
+
+  <p class="ziti3">传入Worker()构造函数的完整的URL文本。这是worker直接从它的父线程中接收的唯一值：其他值都间接地通过消息事件接收。</p>
+
+  <p class="ziti3">readonly string pathname</p>
+
+  <p class="ziti3">当前URL的路径名部分。</p>
+
+  <p class="ziti3">readonly string port</p>
+
+  <p class="ziti3">当前URL的端口部分。</p>
+
+  <p class="ziti3">readonly string protocol</p>
+
+  <p class="ziti3">当前URL的协议部分。</p>
+
+  <p class="ziti3">readonly string search</p>
+
+  <p class="ziti3">当前URL的搜索或查询部分，包括开头的问号。</p>
+
+  <h3 class="p1" id="heading_id_108">WorkerNavigator</h3>
+
+  <p class="ziti3">worker的浏览器信息</p>
+
+  <p class="ziti3">WorkerGlobalScope的navigator属性指代一个WorkerNavigator对象，这个对象是Window的Navigator对象的一个简化版本。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">这些属性和Navigator对象中的同名属性含义相同。</p>
+
+  <p class="ziti3">readonly string appName</p>
+
+  <p class="ziti3">参见Navigator的appName属性。</p>
+
+  <p class="ziti3">readonly string appVersion</p>
+
+  <p class="ziti3">参见Navigator的appVersion属性。</p>
+
+  <p class="ziti3">readonly boolean onLine</p>
+
+  <p class="ziti3">如果当前浏览器在线则为true；否则为false。</p>
+
+  <p class="ziti3">readonly string platform</p>
+
+  <p class="ziti3">一个标识运行当前浏览器的操作系统以及/或硬件平台的字符串。</p>
+
+  <p class="ziti3">readonly string userAgent</p>
+
+  <p class="ziti3">浏览器用于HTTP请求的user-agent头信息的值。</p>
+
+  <h3 class="p1" id="heading_id_109">XMLHttpRequest</h3>
+
+  <p class="ziti3">HTTP请求及响应</p>
+
+  <p class="ziti3">EventTarget</p>
+
+  <p class="ziti3">XMLHttpRequest对象允许客户端JavaScript发出HTTP请求以及从Web服务器接收响应（必须是XML）。XMLHttpRequest是第18章的主题，那一章包含了许多关于它的使用的例子。</p>
+
+  <p class="ziti3">可以像这样使用XMLHttpRequest()构造函数（关于如何在IE6中创建一个XMLHttpRequest对象的信息请参见18.1的边栏）创建一个XMLHttpRequest并使用它：</p>
+
+  <p class="ziti3">1.调用open()指明URL和请求的方法（通常是"GET"或"POST"）。</p>
+
+  <p class="ziti3">2.设置onreadystatechange属性为一个函数，请求的进度会通知这个函数。</p>
+
+  <p class="ziti3">3.如果需要的话，调用setRequestHeader()来指定额外的请求参数。</p>
+
+  <p class="ziti3">4.调用send()将请求发送到Web服务器。如果这是一个POST请求，也可以传入一个请求主体（request body）到这个方法中。随着请求进行，onreadystatechage事件处理函数将被调用。当readyState为4时，表示响应完成。</p>
+
+  <p class="ziti3">5.当readyState为4时，检查状态码status，以便确保请求成功。如果成功，可使用getResponseHeader()或getResponseHeaders()来从响应头中检索值，使用responseText或responseXML属性来取得响应主体。</p>
+
+  <p class="ziti3">XMLHttpRequest定义了HTTP协议的一个相对高级的接口，关于重定向、cookie管理以及使用CORS头协商跨域连接等细节都将由它处理。</p>
+
+  <p class="ziti3">上面介绍的XMLHttpRequest特性在所有现代浏览器中都有很好的支持。在写作本书的时候，一个XMLHttpRequest Level 2标准正在开始发布，并且一些浏览器已经开始实现它。下面列出的属性、方法以及事件处理程序包含XMLHttpRequest Level 2特性，这些特性可能还没有被所有浏览器实现。这些新特性将用"XHR2"标记。</p>
+
+  <p class="ziti3">构造函数</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">new XMLHttpRequest()</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">这个无参数的构造函数返回一个XMLHttpRequest对象。</p>
+
+  <p class="ziti3">常量</p>
+
+  <p class="ziti3">这些常量定义readyState属性的值。在XHR2之前，这些常量没有广泛定义，大多数代码使用整数字面量而不是这些符号值。</p>
+
+  <p class="ziti3">unsigned short UNSENT=0</p>
+
+  <p class="ziti3">这是XMLHttpRequest对象刚创建或被abort()方法重置时readyState属性的初始值。</p>
+
+  <p class="ziti3">unsigned short OPENED=1</p>
+
+  <p class="ziti3">已经调用open()方法，但还没调用send()方法。还没有发送请求。</p>
+
+  <p class="ziti3">unsigned short HEADERS_RECEIVED=2</p>
+
+  <p class="ziti3">send()方法已调用，已经接收到响应头，但还没有接收到响应主体。</p>
+
+  <p class="ziti3">unsigned short LOADING=3</p>
+
+  <p class="ziti3">正在接收响应主体，但还没有完成。</p>
+
+  <p class="ziti3">unsigned short DONE=4</p>
+
+  <p class="ziti3">HTTP响应已全部接收，或由于错误而停止。</p>
+
+  <p class="ziti3">属性</p>
+
+  <p class="ziti3">readonly unsigned short readyState</p>
+
+  <p class="ziti3">HTTP请求的状态以及服务器的响应。当一个XMLHttpRequest首次创建时这个属性的值为0，然后逐渐递增，当整个HTTP响应已接收到时这个属性增加为4。上面列出的常量指定了可能的值。</p>
+
+  <p class="ziti3">readyState的值永远不会递减，除非在一个正在进行中的请求上调用了abort()或open()。</p>
+
+  <p class="ziti3">理论上，每当这个属性的值改变时都会分发一个readystatechange事件。但实际上，只有readyState改变为4时才保证会触发这个事件。（XHR2的进度事件提供了一种更可靠的跟踪请求处理的方法。）</p>
+
+  <p class="ziti3">readonly any response</p>
+
+  <p class="ziti3">在XHR2中，这个属性保存服务器的响应。它的类型取决于responseType属性。如果responseType为空字符串或"text"，这个属性将把响应主体当做一个字符串。如果reponseType为"document"，这个属性将把响应主体解析为一个XML或HTTP Document。如果responseType是"arraybuffer"，这个属性将是一个代表响应主体的字节的ArrayBuffer对象。如果responseType是"blob"，这个属性将是一个代表响应主体的字节的Blob对象。</p>
+
+  <p class="ziti3">readonly string responseText</p>
+
+  <p class="ziti3">如果readyState小于3，这个属性将是空字符串。当readyState为3时，这个属性将返回目前已接收到的响应部分。如果readyState为4，这个属性的值为响应的全部主体。如果当前响应的头信息指定主体的字符编码，则这个编码将被使用。否则，默认将使用Unicode UTF-8编码。</p>
+
+  <p class="ziti3">string responseType</p>
+
+  <p class="ziti3">在XHR2中，这个属性指明期望的响应类型，并判断response属性的类型。合法的值有"text"、"document"、"arraybuffer"以及"blob"。默认值为空字符串，等同于"text"。如果设置这个属性，responseText和responseXML属性将抛出异常，必须使用XHR2的response属性来获得服务器的响应。</p>
+
+  <p class="ziti3">readonly Document responseXML</p>
+
+  <p class="ziti3">请求对应的响应，已解析为一个XML或HTML Document对象，如果响应主体还没有就绪或不是一个有效的XML或HTML文档则为null。</p>
+
+  <p class="ziti3">readonly unsigned short status</p>
+
+  <p class="ziti3">服务器返回的HTTP状态码，比如200代表成功，404代表“页面未找到”错误，如果服务器还设有设置状态码则为0。</p>
+
+  <p class="ziti3">readonly string statusText</p>
+
+  <p class="ziti3">这个属性使用名字而不是数字来指定请求的HTTP状态码。就是说，当状态为200时它将是"OK"，状态是404时它将是"Not Found"。如果服务器还没有设置状态码，这个属性将为空字符串。</p>
+
+  <p class="ziti3">unsigned long timeout</p>
+
+  <p class="ziti3">这个XHR2属性指定一个超时时间，单位为毫秒。如果HTTP请求花费的时间超过这个时间，它将中止，同时触发一个超时事件。只能在调用open()之后以及调用send()之前设置这个属性。</p>
+
+  <p class="ziti3">readonly XMLHttpRequestUpload upload</p>
+
+  <p class="ziti3">这个XHR2属性指代一个XMLHttpRequestUpload对象，该对象定义一系列用于监视HTTP请求主体上传进度的事件处理程序注册属性。</p>
+
+  <p class="ziti3">boolean withCredentials</p>
+
+  <p class="ziti3">这个XHR2属性指定授权凭证是否应该包含在CORS请求中，以及CORS响应中的cookie头信息是否应该处理。默认值为false。</p>
+
+  <p class="ziti3">方法</p>
+
+  <p class="ziti3">void abort()</p>
+
+  <p class="ziti3">这个方法将当前XMLHttpRequest对象重置为readyState为0的状态，同时取消所有推迟的网络活动。例如，如果一个请求占用太长的时间，但对应的响应已经不再需要了，就可以调用这个方法。</p>
+
+  <p class="ziti3">string getAllResponseHeaders()</p>
+
+  <p class="ziti3">这个方法返回服务器发送的HTTP响应头信息（过滤掉cookie及CORS头信息），如果头信息还没接收到则为null。所有的头信息以一个单独的字符串的形式返回，每行一个头信息。</p>
+
+  <p class="ziti3">string getResponseHeader(string header)</p>
+
+  <p class="ziti3">返回指定名字的HTTP响应header，如果该响应头还没有接收到或者在或响应中不存在指定header则为null。cookie和CORS相关的头信息已过滤，不可通过这个方法查询。如果响应包含多个这个指定名字的头，则返回的字符串将包含所有这些头的值，多个值之间使用一个逗号和一个空格连接与分隔。</p>
+
+  <p class="ziti3">void open(string method,string url,[boolean async,string user,string pass])</p>
+
+  <p class="ziti3">这个方法重置当前XMLHttpRequest对象，并保存这些参数，用于后面的send()方法。</p>
+
+  <p class="ziti3">method为用于请求的HTTP方法。已可靠实现的值包括GET、POST以及HEAD。有些浏览器可能也实现了CONNECT、DELETE、OPTIONS、PUT、TRACE以及TRACK方法。</p>
+
+  <p class="ziti3">url为正在请求的URL。相对URL将按常规方法根据包含当前脚本的文档的URL解析。同源安全策略（参见13.6.2节）要求这个URL与包含发起当前请求的脚本的文档拥有同样的主机和端口。XHR2允许向支持CORS的服务器发起跨域请求。</p>
+
+  <p class="ziti3">如果指定async参数并且值为false，则请求将为同步方式，send()方法将阻塞页面，直到响应完成。除非是在Worker中使用XMLHttpRequest，否则不推荐使用这个方法。</p>
+
+  <p class="ziti3">可选的user和pass参数指定用于HTTP请求的用户名和密码。</p>
+
+  <p class="ziti3">void overrideMimeType(string mime)</p>
+
+  <p class="ziti3">这个方法指明使用指定的mime类型（如果包含的话，还有字符集）而不是使用响应的头信息中的Content-Type来解析服务器的响应。</p>
+
+  <p class="ziti3">void send(any body)</p>
+
+  <p class="ziti3">这个方法发出一个HTTP请求。如果之前没有调用过open()，或更一般一些，如果readyState不是1，send()将抛出一个异常。否则，它将发起一个包含以下内容的HTTP请求：</p>
+
+  <p class="ziti3">·之前调用open()时设置的HTTP方法、URL以及授权凭证（如果有的话）。</p>
+
+  <p class="ziti3">·之前调用setRequestHeader()定义的请求头信息，如果有的话。</p>
+
+  <p class="ziti3">·传入到这个方法的body参数。body可以是一个指定请求主体的字符串或一个Document对象，如果请求没有主体（例如GET请求就不会有主体）也可以省略或为null。在XHR2中，主体也可以是一个ArrayBuffer、一个Blob或一个FormData对象。</p>
+
+  <p class="ziti3">如果之前调用open()时的async参数为false，则这个方法将阻塞进程，直到readyState为4并且服务器的响应已经完全接收时才会返回。否则，send()将立即返回，同时服务器的响应将通过事件处理程序提供的通知异步地处理。</p>
+
+  <p class="ziti3">void setRequestHeader(string name,string value)</p>
+
+  <p class="ziti3">setRequestHeader()指定一个HTTP请求头信息的name和value，二者将包含在之后调用send()时发起的请求中。这个方法只能在readyState为1时调用，即在调用open()之后，但在调用send()之前。</p>
+
+  <p class="ziti3">如果指定name的头信息已经定义了，则这个头信息的新值将是它之前的值加一个逗号、一个空格之后再加上在这次调用中指定的value。</p>
+
+  <p class="ziti3">如果对open()的调用指定了授权凭证，则XMLHttpRequest将自动发送一个适当的Authorization请求头信息。不过，也可以使用setRequestHeader()方法手动追加头信息。</p>
+
+  <p class="ziti3">XMLHttpRequest自动设置"Content-Length"、"Date"、"Referer"以及"User-Agent"，不允许谎报它们。还有一些其他头信息，包括与cookie相关的信息，无法使用这个方法来设置。完整列表见18.1节。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">最初的XMLHttpRequest对象只定义了一个事件处理程序属性：onreadystatechange。XHR 2用一系列更容易使用的进度事件处理程序扩展这个列表。可通过设置这些属性或使用EventTarget的方法来注册事件处理程序。XMLHttpRequest事件总是分发到XMLHttpRequest对象本身，它们不会冒泡，也没有可供取消的默认操作。readystatechange事件有一个关联的Event对象，所有其他事件类型有一个关联的ProgressEvent对象。</p>
+
+  <p class="ziti3">关于可用于监视HTTP上传进度的事件列表可参见upload属性和XMLRequestUpload。</p>
+
+  <p class="ziti3">onabort</p>
+
+  <p class="ziti3">当一个请求中止时触发。</p>
+
+  <p class="ziti3">onerror</p>
+
+  <p class="ziti3">当请求因错误失败时触发。注意，如404等HTTP状态码不会造成错误，因为响应仍然成功地完成了。不过，解析URL时发生DNS错误或一个无限循环的重定向都将引发这个事件。</p>
+
+  <p class="ziti3">onload</p>
+
+  <p class="ziti3">当请求成功完成时触发。</p>
+
+  <p class="ziti3">onloadend</p>
+
+  <p class="ziti3">在load、abort、error或timeout事件之后当前请求成功或失败时触发。</p>
+
+  <p class="ziti3">onloadstart</p>
+
+  <p class="ziti3">当请求开始时触发。</p>
+
+  <p class="ziti3">onprogress</p>
+
+  <p class="ziti3">当响应主体正在下载时重复触发（约每50ms一次）。</p>
+
+  <p class="ziti3">onreadystatechange</p>
+
+  <p class="ziti3">当readyState属性改变时触发，当响应完成时这个事件最重要。</p>
+
+  <p class="ziti3">ontimeout</p>
+
+  <p class="ziti3">当timeout属性指定的时间已经过去但响应依旧没有完成时触发。</p>
+
+  <h3 class="p1" id="heading_id_110">XMLHttpRequestUpload</h3>
+
+  <p class="ziti3">EventTarget</p>
+
+  <p class="ziti3">XMLHttpRequestUpload对象定义一系列事件处理程序注册属性，用于监视HTTP请求主体上传的进度。在实现XMLHttpRequest Level 2标准的浏览器中，每个XMLHttpRequest对象都有一个指代这类对象的upload属性。要监视请求上传的进度，只须简单地将这个属性设置为一个适当的事件处理函数或调用EventTarget方法。注意，这儿定义的上传进度事件处理程序和XMLHttpRequest自己定义的下载进度事件处理程序完全一样，除了在这个对象中没有onreadystatechage属性。</p>
+
+  <p class="ziti3">事件处理程序</p>
+
+  <p class="ziti3">onabort</p>
+
+  <p class="ziti3">当上传中止时触发。</p>
+
+  <p class="ziti3">onerror</p>
+
+  <p class="ziti3">当上传因为网络错误失败时触发。</p>
+
+  <p class="ziti3">onload</p>
+
+  <p class="ziti3">当上传成功时触发。</p>
+
+  <p class="ziti3">onloadend</p>
+
+  <p class="ziti3">当上传结束时触发，无论上传上否成功。loadend事件总是跟在一个load、abort、error或timeout事件之后。</p>
+
+  <p class="ziti3">onloadstart</p>
+
+  <p class="ziti3">当上传开始时触发。</p>
+
+  <p class="ziti3">onprogress</p>
+
+  <p class="ziti3">上传过程中重复触发（约每50ms一次）。</p>
+
+  <p class="ziti3">ontimeout</p>
+
+  <p class="ziti3">当上传因为XMLHttpRequest超时而中止时触发。</p>
+</body></html>

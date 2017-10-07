@@ -1,0 +1,1037 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>第12章　服务器端JavaScript</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="p4" id="heading_id_2">第12章　服务器端JavaScript</h2>
+
+  <p class="ziti3">前面的章节已经详细介绍了JavaScript语言核心，我们即将开始本书的第二部分，该部分会介绍JavaScript嵌入Web浏览器的原理，并涵盖庞杂的客户端JavaScript API。可以说JavaScript是基于Web的编程语言，因为绝大部分JavaScript代码是为Web浏览器而编写。但是作为一门高效和通用的语言，JavaScript理所当然能用于其他编程工作。所以在过渡到服务端JavaScript之前，我们先快速了解一下另外两种JavaScript嵌入。Rhino是基于Java的JavaScript解析器，实现了通过JavaScript程序访问整个Java API，12.1节将会介绍它。Node<sup class="calibre2"><a id="ch1" href="part0021.html#ch1-back" class="pcalibre calibre1">[1]</a></sup>是Google的V8 JavaScript解析器的一个特别版本，它在底层绑定了POSIX（Unix）API，包括文件、进程、流和套接字等，并侧重于异步I/O、网络和HTTP。12.2节将会介绍它。</p>
+
+  <p class="ziti3">本章标题表明本章是关于“服务器端”的JavaScript，Node和Rhion常用于创建脚本服务器。但“服务器”这个词也意味着“Web浏览器之外的任何事情”。Rhino程序能使用Java的Swing框架创建图形UI，而Node上运行的JavaScript程序可以像shell脚本那样去操作文件。</p>
+
+  <p class="ziti3">本章非常简短，仅准备重点介绍在Web浏览器之外使用JavaScript的一些方式；不会尝试全面介绍Rhino和Node，第三部分也不会包涵这里讨论的API；并且不会详细介绍Java平台或POSIX API，接下来关于Rhion的章节假定读者有一定的Java经验，关于Node的章节假定读者有一定的底层Unix API的经验。</p>
+
+  <h3 class="p1" id="heading_id_3">12.1　用Rhino脚本化Java</h3>
+
+  <p class="ziti3">Rhino是一种用Java编写的JavaScript解释器，其设计目标是借助于强大的Java平台API实现轻松编写JavaScript程序。Rhino能自动完成JavaScript原生类型的Java原生类型之间的相互转换，因此JavaScript脚本可以设置、查询Java属性，并调用Java方法。</p>
+
+  <p class="middle-img">获得Rhino</p>
+
+  <p class="ziti4">Rhino是Mozilla开发的免费软件，可以从http://www.mozilla.org/rhino/下载。Rhino的1.7r2版本实现了ECMAScript 3，以及在11章介绍的很多语言扩展。Rhino软件比较成熟，不会经常发布新版本。在写本章时，1.7r3的预览版已出现在源码库中，它实现了ECMAScript 5的部分内容<sup class="calibre2"><a id="ch2" href="part0021.html#ch2-back" class="pcalibre calibre1">[2]</a></sup>。Rhino打包为JAR文件发布，可以从使用下面这行命令开始探索之旅：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">java-jar rhino1_7R2/js.jar program.js</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti4">如果省略program.js，Rhino会开启一个交互的shell界面，它对尝试简单或单行的程序比较有用。</p>
+
+  <p class="ziti3">Rhino定义了少量重要的全局函数，不过它们都不是JavaScript的核心组成部分：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//特定于嵌入的全局函数：输入help()获取更多的rhino提示</p>
+
+  <p class="ziti5">print(x);//全局输出函数，将内容输出到控制台</p>
+
+  <p class="ziti5">version(170);//告诉Rhino需要使用JS 1.7的语言特性</p>
+
+  <p class="ziti5">load(filename,...);//加载并执行1个或多个JavaScript代码文件</p>
+
+  <p class="ziti5">readFile(file);//读取文本文件，并以字符串的形式返回内容</p>
+
+  <p class="ziti5">readUrl(url);//读取URL的原文内容，并以字符串的形式返回内容</p>
+
+  <p class="ziti5">spawn(f);//运行f()或者在一个新线程中加载执行文件f</p>
+
+  <p class="ziti5">runCommand(cmd,[args...]);//使用0或多个命令行参数来运行系统命令</p>
+
+  <p class="ziti5">quit()//退出Rhino</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">注意print()函数：在本节我们将用它取代console.log()。Rhino会将Java包和类表示成JavaScript对象：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//全局变量Packages是Java包层次结构的根</p>
+
+  <p class="ziti5">Packages.any.package.name//任何来自Java CLASSPATH的包</p>
+
+  <p class="ziti5">java.lang//全局变量java是Packages.java的短名</p>
+
+  <p class="ziti5">javax.swing//javax是Packages.javax的短名</p>
+
+  <p class="ziti5">//类：能像包的属性一样存取</p>
+
+  <p class="ziti5">var System=java.lang.System;</p>
+
+  <p class="ziti5">var JFrame=javax.swing.JFrame;</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">由于Rhino把包和类表示为JavaScript对象，因此可以将它们赋值给变量从而得到相应的短名。如果愿意，也可以用更正式的方式导入它们：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var ArrayList=java.util.ArrayList;//为类创建短名</p>
+
+  <p class="ziti5">importClass(java.util.HashMap);//其等同于：var HashMap=java.util.HashMap</p>
+
+  <p class="ziti5">//使用importPackage()导入包（惰性地）</p>
+
+  <p class="ziti5">//不要导入java.lang：太多的名字和JavaScript全局变量有冲突</p>
+
+  <p class="ziti5">importPackage(java.util);</p>
+
+  <p class="ziti5">importPackage(java.net);//另一技术：传入任意数量的类和包给JavaImporter()</p>
+
+  <p class="ziti5">//并在with语句中使用它返回的对象</p>
+
+  <p class="ziti5">var guipkgs=JavaImporter(java.awt,java.awt.event,Packages.javax.swing);</p>
+
+  <p class="ziti5">with(guipkgs){/*这里定义Font、ActionListener和JFrame等类*/</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Java类能使用new进行实例化，就像JavaScript类一样：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//对象:使用new实例化Java类</p>
+
+  <p class="ziti5">var f=new java.io.File("/tmp/test");//我们随后将使用这些对象</p>
+
+  <p class="ziti5">var out=new java.io.FileWriter(f);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Rhino让JavaScript的instanceof运算符能用于Java对象和类：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">f instanceof java.io.File//=＞true</p>
+
+  <p class="ziti5">out instanceof java.io.Reader//=＞false:它是Writer而非Reader</p>
+
+  <p class="ziti5">out instanceof java.io.Closeable//=＞true:Writer实现Closeable</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">如你所见，在之前的对象实例化示例中，Rhino允许把值传给Java构造函数，并将构造函数的返回值赋给JavaScript变量。（注意，在这个例子中Rhino执行了隐式类型转换：JavaScript字符串"/type/test"自动转换成Java的java.lang.String值。）Java方法更像Java构造函数，而Rhino允许JavaScript程序调用Java方法：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//静态Java方法工作类似JavaScript函数</p>
+
+  <p class="ziti5">java.lang.System.getProperty("java.version")//返回Java版本</p>
+
+  <p class="ziti5">var isDigit=java.lang.Character.isDigit;//把静态方法赋值给变量</p>
+
+  <p class="ziti5">isDigit("2")//=＞true:阿拉伯数字2</p>
+
+  <p class="ziti5">//调用Java对象f的实例方法，out已经在前面创建</p>
+
+  <p class="ziti5">out.write("Hello World\n");</p>
+
+  <p class="ziti5">out.close();</p>
+
+  <p class="ziti5">var len=f.length();</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Rhino也允许JavaScript代码查询、设置Java类的静态字段和Java对象的实例字段。Java类通常利用getter和setter方法避免定义公共字段。当getter和setter方法存在时，Rhino将其显示为JavaScript的属性：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//读取Java类的静态字段</p>
+
+  <p class="ziti5">var stdout=java.lang.System.out;//Rhino把getter和setter方法映射到单个JavaScript属性</p>
+
+  <p class="ziti5">f.name//=＞"/tmp/test":调用f.getName()</p>
+
+  <p class="ziti5">f.directory//=＞false:调用f.isDirectory()</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Java允许重载方法，它们名字相同但签名不同。一般，Rhino能根据传递的参数类型判断出所要调用方法的版本。不过偶尔也需要通过名字和签名来明确识别方法：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//假设Java对象o有一个名为f()的方法，它接受int或float参数</p>
+
+  <p class="ziti5">//在JavaScript中，必须明确指定签名</p>
+
+  <p class="ziti5">o['f(int)'](3);//调用int方法</p>
+
+  <p class="ziti5">o['f(float)'](Math.PI);//调用float方法</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">使用for/in循环能遍历Java类和对象的方法、字段和属性：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">importClass(java.lang.System);</p>
+
+  <p class="ziti5">for(var m in System)print(m);//输出java.lang.System的静态成员</p>
+
+  <p class="ziti5">for(m in f)print(m);//输出java.io.File的实例成员</p>
+
+  <p class="ziti5">//注意不能用这种方法枚举包中的类</p>
+
+  <p class="ziti5">for(c in java.lang)print(c);//无法工作</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Rhino允许JavaScript程序获取、设置Java数组的元素，就像它们是JavaScript数组那样。当然，Java数组和JavaScript数组并不完全一致：Java数组长度固定、元素类型统一，但不具备像slice()这样的JavaScript方法。由于没有现成的JavaScript语法可供Rhino扩展JavaScript程序从而创建新的Java数组，因此必须使用java.lang.reflect.Array类来实现：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//分别创建一个长度为10的字符串数组和一个长度为128字节的数组</p>
+
+  <p class="ziti5">var words=java.lang.reflect.Array.newInstance(java.lang.String,10);</p>
+
+  <p class="ziti5">var bytes=java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE,128);//一旦创建了数组，就能像JavaScript数组一样使用它们</p>
+
+  <p class="ziti5">for(var i=0;i＜bytes.length;i++)bytes[i]=i;</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Java编程经常涉及实现接口，这在GUI编程中很常见，每个事件处理程序都必须实现事件监听接口，接下来的例子将演示如何实现Java事件监听接口：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//接口：如下所示实现接口</p>
+
+  <p class="ziti5">var handler=new java.awt.event.FocusListener({</p>
+
+  <p class="ziti5">focusGained:function(e){print("got focus");},</p>
+
+  <p class="ziti5">focusLost:function(e){print("lost focus");}</p>
+
+  <p class="ziti5">});//用同样的方式扩展抽象类</p>
+
+  <p class="ziti5">var handler=new java.awt.event.WindowAdapter({</p>
+
+  <p class="ziti5">windowClosing:function(e){java.lang.System.exit(0);}</p>
+
+  <p class="ziti5">});//当接口只有一个方法，可以使用一个函数取而代之</p>
+
+  <p class="ziti5">button.addActionListener(function(e){print("button clicked");});//如果接口或抽象类的所有方法都有相同的签名</p>
+
+  <p class="ziti5">//则可以使用一个单独的函数作为接口的实现</p>
+
+  <p class="ziti5">//且Rhino将把方法名作为最后一个参数传入</p>
+
+  <p class="ziti5">frame.addWindowListener(function(e,name){</p>
+
+  <p class="ziti5">if(name==="windowClosing")java.lang.System.exit(0);</p>
+
+  <p class="ziti5">});//如果需要一个对象实现多重接口，则使用JavaAdapter</p>
+
+  <p class="ziti5">var o=new JavaAdapter(java.awt.event.ActionListener,java.lang.Runnable,{</p>
+
+  <p class="ziti5">run:function(){},//实现Runnable</p>
+
+  <p class="ziti5">actionPerformed:function(e){}//实现ActionListener</p>
+
+  <p class="ziti5">});</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">当Java方法抛出异常，Rhino将其作为JavaScript异常传递。通过JavaScript错误对象的javaException属性可以获取原始的Java java.lang.Exception对象：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">try{</p>
+
+  <p class="ziti5">java.lang.System.getProperty(null);//null不是合法的参数</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">catch(e){//e是JavaScript异常</p>
+
+  <p class="ziti5">print(e.javaException);//它包含一个java.lang.NullPointerException异常</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">最后，必须注意Rhino的类型转换。Rhino会按需要自动转换原始数字、布尔值和null。Java的char类型被当做JavaScript数字对待，因为JavaScript没有字符类型。JavaScript字符串能自动转换成Java字符串，但这可能也是个绊脚石，因为像java.lang.String对象这样的Java字符串不能转换回JavaScript字符串。注意前面出现过的这行代码：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var version=java.lang.System.getProperty("java.version");</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">调用这行代码后，变量version保存了一个java.lang.String对象。这行代码的行为看起来像JavaScript字符串，其实区别巨大。首先，Java字符串有length()方法而没有length属性。其次，对Java字符串进行typeof运算得到的结果是"object"。无法通过调用其toString()方法把Java字符串转换成JavaScript字符串，因为所有的Java对象都有自己的toString()方法，后者返回java.lang.String。为了把Java值转换成字符串，请将它传递给JavaScript的String()函数：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var version=String(java.lang.System.getProperty("java.version"));</p>
+  <hr class="calibre4"/>
+
+  <h4 class="p5" id="heading_id_4">Rhino示例</h4>
+
+  <p class="ziti3">示例12-1是一个简单的Rhino应用，它演示了前面介绍的很多特性和技术。本示例使用javax.swing GUI包、java.net网络包、java.io流的输入/输出（I/O）包和Java的多线程功能实现一个简单的下载管理器应用，它把对应URL的文件下载到本地，并在下载时显示下载进度。图12-1展示了当两个下载挂起时应用的大致样子。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00023.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="middle-img1">
+    图　12-1　使用Rhino创建的GUI
+  </div>
+
+  <p class="ziti3">示例12-1：用Rhino实现的下载管理器应用</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">/*</p>
+
+  <p class="ziti5">*使用简单的Java GUI实现下载管理器应用</p>
+
+  <p class="ziti5">*/</p>
+
+  <p class="ziti5">//导入Swing GUI组件和一些其他组件</p>
+
+  <p class="ziti5">importPackage(javax.swing);</p>
+
+  <p class="ziti5">importClass(javax.swing.border.EmptyBorder);</p>
+
+  <p class="ziti5">importClass(java.awt.event.ActionListener);</p>
+
+  <p class="ziti5">importClass(java.net.URL);</p>
+
+  <p class="ziti5">importClass(java.io.FileOutputStream);</p>
+
+  <p class="ziti5">importClass(java.lang.Thread);//创建一些GUI小部件（widget）</p>
+
+  <p class="ziti5">var frame=new JFrame("Rhino URL Fetcher");//应用窗体</p>
+
+  <p class="ziti5">var urlfield=new JTextField(30);//URL输入字段</p>
+
+  <p class="ziti5">var button=new JButton("Download");//开始下载的按钮</p>
+
+  <p class="ziti5">var filechooser=new JFileChooser();//文件选择对话框</p>
+
+  <p class="ziti5">var row=Box.createHorizontalBox();//用于放置字段和按钮的方框</p>
+
+  <p class="ziti5">var col=Box.createVerticalBox();//用于放置数据行和进度条</p>
+
+  <p class="ziti5">var padding=new EmptyBorder(3,3,3,3);//填充数据行的空白</p>
+
+  <p class="ziti5">//把它们组装一起并显示这个GUI</p>
+
+  <p class="ziti5">row.add(urlfield);//把输入字段放入行中</p>
+
+  <p class="ziti5">row.add(button);//把按钮放入行中</p>
+
+  <p class="ziti5">col.add(row);//把行放入列中</p>
+
+  <p class="ziti5">frame.add(col);//把列放入窗体中</p>
+
+  <p class="ziti5">row.setBorder(padding);//为行增加一些空白</p>
+
+  <p class="ziti5">frame.pack();//设置为最小值</p>
+
+  <p class="ziti5">frame.visible=true;//设置窗体可见</p>
+
+  <p class="ziti5">//当窗体中发生任何事件都会调用这个函数</p>
+
+  <p class="ziti5">frame.addWindowListener(function(e,name){//如果用户关闭窗体，退出这个应用</p>
+
+  <p class="ziti5">if(name==="windowClosing")//Rhino加入了name参数</p>
+
+  <p class="ziti5">java.lang.System.exit(0);</p>
+
+  <p class="ziti5">});//当用户单击按钮时，调用这个函数</p>
+
+  <p class="ziti5">button.addActionListener(function(){</p>
+
+  <p class="ziti5">try{//创建java.net.URL表示源URL</p>
+
+  <p class="ziti5">//(这会检查用户的输入是否符合语法规则)</p>
+
+  <p class="ziti5">var url=new URL(urlfield.text);//告诉用户选择保存URL内容的文件</p>
+
+  <p class="ziti5">var response=filechooser.showSaveDialog(frame);//如果单击Cancel按钮，立即退出</p>
+
+  <p class="ziti5">if(response!=JFileChooser.APPROVE_OPTION)return;//否则，获取java.io.File表示目标文件</p>
+
+  <p class="ziti5">var file=filechooser.getSelectedFile();//现在启动一个新线程下载URL</p>
+
+  <p class="ziti5">new java.lang.Thread(function(){download(url,file);}).start();</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">catch(e){//如果出现错误，显示一个对话框</p>
+
+  <p class="ziti5">JOptionPane.showMessageDialog(frame,e.message,"Exception",</p>
+
+  <p class="ziti5">JOptionPane.ERROR_MESSAGE);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">});//使用java.net.URL等下载URL的内容，使用java.io.File等把内容保存到一个文件中</p>
+
+  <p class="ziti5">//在JProgressBar组件中显示下载进度</p>
+
+  <p class="ziti5">//这将在一个新线程中调用</p>
+
+  <p class="ziti5">function download(url,file){</p>
+
+  <p class="ziti5">try{//每次下载一个URL时，我们会添加一个新的数据行到窗体中</p>
+
+  <p class="ziti5">//数据行中会显示URL、文件名和下载进度</p>
+
+  <p class="ziti5">var row=Box.createHorizontalBox();//创建数据行</p>
+
+  <p class="ziti5">row.setBorder(padding);//填充它的空白</p>
+
+  <p class="ziti5">var label=url.toString()+":";//显示URL</p>
+
+  <p class="ziti5">row.add(new JLabel(label));//在Jlabel中</p>
+
+  <p class="ziti5">var bar=new JProgressBar(0,100);//加入进度条</p>
+
+  <p class="ziti5">bar.stringPainted=true;//显示文件名</p>
+
+  <p class="ziti5">bar.string=file.toString();//在进度条中</p>
+
+  <p class="ziti5">row.add(bar);//把进度条加入新的行中</p>
+
+  <p class="ziti5">col.add(row);//把数据行加入列中</p>
+
+  <p class="ziti5">frame.pack();//调整窗体大小</p>
+
+  <p class="ziti5">//我们不知道URL的大小，所以进度条是动画</p>
+
+  <p class="ziti5">bar.indeterminate=true;//如果可能，立即连接服务器并获取URL的长度</p>
+
+  <p class="ziti5">var conn=url.openConnection();//得到java.net.URLConnection</p>
+
+  <p class="ziti5">conn.connect();//连接且等待连接头</p>
+
+  <p class="ziti5">var len=conn.contentLength;//如果能得到URL长度就设置</p>
+
+  <p class="ziti5">if(len){//如果长度已知，那么</p>
+
+  <p class="ziti5">bar.maximum=len;//设置进度条展示</p>
+
+  <p class="ziti5">bar.indeterminate=false;//下载的百分比</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//得到输入和输出流</p>
+
+  <p class="ziti5">var input=conn.inputStream;//从服务器读取字节</p>
+
+  <p class="ziti5">var output=new FileOutputStream(file);//把字节写入文件</p>
+
+  <p class="ziti5">//创建4KB的数组作为输入缓冲区</p>
+
+  <p class="ziti5">var buffer=java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE,4096);</p>
+
+  <p class="ziti5">var num;</p>
+
+  <p class="ziti5">while((num=input.read(buffer))!=-1){//读取然后循环至EOF</p>
+
+  <p class="ziti5">output.write(buffer,0,num);//把字节写入文件</p>
+
+  <p class="ziti5">bar.value+=num;//更新进度条</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">output.close();//完成后关闭流</p>
+
+  <p class="ziti5">input.close();</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">catch(e){//如果发生错误，在进度条上显示错误</p>
+
+  <p class="ziti5">if(bar){</p>
+
+  <p class="ziti5">bar.indeterminate=false;//停止动画</p>
+
+  <p class="ziti5">bar.string=e.toString();//用错误取代文件名</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_5">12.2　用Node实现异步I/O</h3>
+
+  <p class="ziti3">Node是基于C++的高速JavaScript解释器，绑定了用于进程、文件和网络套接字等底层Unix API，还绑定了HTTP客户端和服务器API。除了一些专门命名的同步方法外，Node的绑定都是异步的，且Node程序默认绝不阻塞，这意味着它们通常具备强大的可伸缩能力并能有效地处理高负荷。由于API是异步的，因此Node依赖事件处理程序，其通常使用嵌套函数和闭包来实现<sup class="calibre2"><a id="ch3" href="part0021.html#ch3-back" class="pcalibre calibre1">[3]</a></sup>。</p>
+
+  <p class="ziti3">本节重点介绍Node部分最重要的API和事件，但这些文档并不完整。请到http://nodejs.org/api/查看Node的联机文档<sup class="calibre2"><a id="ch4" href="part0021.html#ch4-back" class="pcalibre calibre1">[4]</a></sup>。</p>
+
+  <p class="middle-img">获得Node</p>
+
+  <p class="ziti4">Node是免费软件，可以从http://nodejs.org上下载。在写本章时，Node依旧处于活跃开发期，不过尚无二进制版本——你必须自己获取并编译源码。本节的例子是在Node 0.4版本下编写和测试的<sup class="calibre2"><a id="ch5" href="part0021.html#ch5-back" class="pcalibre calibre1">[5]</a></sup>。这些API尚未完全确定，但这里介绍的基本原则在未来不会有太多改变。</p>
+
+  <p class="ziti4">Node是在Google的V8 JavaScript引擎上构建而成。Node 0.4使用的是V8的3.1版本，它实现了除严格模式之外的全部ECMAScript 5。</p>
+
+  <p class="ziti4">下载、编译并安装Node后，可以使用如下命令运行Node程序：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">node program.js</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">我们之前从print()和load()函数开始介绍Rhino。Node也有类似函数，只是名字不同：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//Node定义了console.log()，可以像在浏览器中那样调试代码输出</p>
+
+  <p class="ziti5">console.log("Hello Node");//调试输出到控制台</p>
+
+  <p class="ziti5">//使用require()替代load()</p>
+
+  <p class="ziti5">//它加载并执行（只有一次）命名模块，返回包含其导出标识符（exported symbol）的对象</p>
+
+  <p class="ziti5">var fs=require("fs");//加载"fs"模块，并返回其API对象</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Node在其全局对象中实现了所有标准的ECMAScript 5构造函数、属性和函数。除此之外，它也支持客户端的计时器函数集setTimeout()、setInterval()、clearTimeout()和clearInterval()：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//1秒钟后输出"Hello World"</p>
+
+  <p class="ziti5">setTimeout(function(){console.log("Hello World");},1000);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">客户端的全局函数将在14.1节介绍。Node的实现与Web浏览器的实现兼容。</p>
+
+  <p class="ziti3">Node在process名字空间中定义了其他重要的全局属性。这里有该对象的一些属性：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">process.version//Node的版本字符串信息</p>
+
+  <p class="ziti5">process.argv//"node"命令行的数组参数，argv[0]是"node"</p>
+
+  <p class="ziti5">process.env//环境变量对象。例如:process.env.PATH</p>
+
+  <p class="ziti5">process.pid//进程id</p>
+
+  <p class="ziti5">process.getuid()//返回用户id</p>
+
+  <p class="ziti5">process.cwd()//返回当前的工作目录</p>
+
+  <p class="ziti5">process.chdir()//改变目录</p>
+
+  <p class="ziti5">process.exit()//退出（运行shutdown命令之后）</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">由于Node的函数和方法都是异步的，因此当它们等待运算完成时并不产生阻塞。非阻塞方法的返回值无法返回异步运算的结果给你。如果想获取结果，或想知道完成运算的时间，当结果准备好或完成运算（或发生错误）时，就必须提供Node能调用的一个函数。在某些情况下（如在调用前面出现的setTimeout()时），只须简单地把函数作为参数传入，Node会适时调用它。在另外一些情况下，则可以利用Node的事件机制。Node对象产生事件（称为事件触发器（event emitter））定义on()方法来注册处理程序。当传入参数时，将事件类型（一个字符串）作为第一参数，处理程序函数作为第二参数。不同的事件类型传递给处理程序函数的参数不同，你可能需要查阅API文档从而确切了解如何编写处理程序：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">emitter.on(name,f)//emitter注册f函数处理name事件</p>
+
+  <p class="ziti5">emitter.addListener(name,f)//addLinstener()和on()是同一个方法</p>
+
+  <p class="ziti5">emitter.once(name,f)//只执行一次，然后f会自动删除</p>
+
+  <p class="ziti5">emitter.listeners(name)//返回事件处理函数组成的数组</p>
+
+  <p class="ziti5">emitter.removeListener(name,f)//注销事件处理程序f</p>
+
+  <p class="ziti5">emitter.removeAllListeners(name)//移除name事件的所有处理程序</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">前面介绍的process对象是一个事件触发器，这里是其部分事件的处理程序示例：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//"exit"事件在Node退出之前发送</p>
+
+  <p class="ziti5">process.on("exit",function(){console.log("Goodbye");});//如果注册了任何事件处理程序，非捕获异常都会产生事件，</p>
+
+  <p class="ziti5">//否则，异常仅会使Node输出错误然后退出</p>
+
+  <p class="ziti5">process.on("uncaughtException",function(e){console.log(Exception,e);});//POSIX中诸如SIGINT、SIGHUP和SIGTERM等信号产生事件</p>
+
+  <p class="ziti5">process.on("SIGINT",function(){console.log("Ignored Ctrl-C");});</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Node的设计目标是高性能I/O，因此其流API常被用到。当数据准备好时，可读流会触发事件。在下面的代码中，假设s是在其他地方得到的可读流。下面我们将看到如何从文件和网络套接字中得到流对象：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//输入流s</p>
+
+  <p class="ziti5">s.on("data",f);//当数据可用时，把它作为参数传给f()</p>
+
+  <p class="ziti5">s.on("end",f);//当不再有数据达到，在文件结束（EOF）时会触发"end"事件</p>
+
+  <p class="ziti5">s.on("error",f);//如果发生错误，把异常传递给f()</p>
+
+  <p class="ziti5">s.readable//如果它是依旧打开的可读流，返回true</p>
+
+  <p class="ziti5">s.pause();//暂停"data"事件。例如，为了限制上传</p>
+
+  <p class="ziti5">s.resume();//再次恢复</p>
+
+  <p class="ziti5">//如果想把字符串传给"data"事件处理程序，请指定编码</p>
+
+  <p class="ziti5">s.setEncoding(enc);//如何对字节编码："utf8"、"ascii"或"base64"</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">可写流比可读流的核心事件少。使用write()方法发送数据，当所有数据写入完毕后使用end()方法结束流。write()方法决不会阻塞。若Node无法立即写入数据而不得不在内部缓存它，则write()方法返回false。如果你想知道Node何时刷新缓冲区并确保数据实际上已写入，那么请注册"drain"事件的处理程序：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//输出流s</p>
+
+  <p class="ziti5">s.write(buffer);//写入二进制数据</p>
+
+  <p class="ziti5">s.write(string,encoding)//写入字符串数据，默认编码是"utf-8"</p>
+
+  <p class="ziti5">s.end()//结束流</p>
+
+  <p class="ziti5">s.end(buffer);//写入最后的二进制数据块并结束</p>
+
+  <p class="ziti5">s.end(str,encoding)//写入最后的字符串并结束所有流</p>
+
+  <p class="ziti5">s.writeable;//如果流依旧打开且可写入，返回true</p>
+
+  <p class="ziti5">s.on("drain",f)//当内部缓冲区为空，调用f()</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">如之前代码所示，Node的流能处理二进制数据和文本数据。文本传输使用的是普通JavaScript字符串，字节使用Node特定的缓冲区来处理。Node的缓冲区是有固定长度的类数组对象，其元素数量必须在0～255之间。Node程序通常把缓冲区作为不透明的数据块来对待，将它们从一个流中读取然后写入另一个。但缓冲区中的字节能够像数组元素一样存取，其对应的方法有从一个缓冲区复制二进制数据到另一个、获取基础缓冲区的切片（slice）、使用指定编码把字符串写入缓冲区和把缓冲区或部分缓冲区解码回字符串：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var bytes=new Buffer(256);//创建一个256字节的新缓冲区</p>
+
+  <p class="ziti5">for(var i=0;i＜bytes.length;i++)//通过索引值进行遍历</p>
+
+  <p class="ziti5">bytes[i]=i;//设置缓冲区的每个元素</p>
+
+  <p class="ziti5">var end=bytes.slice(240,256);//为这个缓冲区创建一个新的视图</p>
+
+  <p class="ziti5">end[0]//=＞240：end[0]就是bytes[240]</p>
+
+  <p class="ziti5">end[0]=0;//修改这个切片的一个元素</p>
+
+  <p class="ziti5">bytes[240]//=＞0：原始缓冲区也修改了</p>
+
+  <p class="ziti5">var more=new Buffer(8);//创建一个新的独立缓冲区</p>
+
+  <p class="ziti5">end.copy(more,0,8,16);//把end[]的第8～15元素复制到more[]中</p>
+
+  <p class="ziti5">more[0]//=＞248</p>
+
+  <p class="ziti5">//缓冲区也可以实现二进制＜=＞文本的转换</p>
+
+  <p class="ziti5">//合法编码是"utf8"、"ascii"和"base64"，默认编码是"utf8"</p>
+
+  <p class="ziti5">var buf=new Buffer("2πr","utf8");//使用UTF-8把文本编码为字节</p>
+
+  <p class="ziti5">buf.length//=＞3个字符占4个字节</p>
+
+  <p class="ziti5">buf.toString()//=＞"2πr"：返回文本</p>
+
+  <p class="ziti5">buf=new Buffer(10);//开始一个新的固定长度的缓冲区</p>
+
+  <p class="ziti5">var len=buf.write("πr2",4);//从第4个字节开始写入文本</p>
+
+  <p class="ziti5">buf.toString("utf8",4,4+len)//=＞"πr2":解码一段字节</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">Node的文件和文件系统API位于"fs"模块中：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var fs=require("fs");//加载文件系统API</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">这个模块提供了其绝大部分方法的“同步版本”。任何名字以"Sync"结尾的方法都是一个阻塞方法，它返回一个值或抛出一个异常。不以"Sync"结尾的文件系统方法都是非阻塞的方法，它们会把结果或错误传给指定的回调函数。下面的代码展示了如何使用阻塞方法读取文本文件、如何使用非阻塞方法读取二进制文件：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//同步读取文件，通过传递编码获得文本而非字节</p>
+
+  <p class="ziti5">var text=fs.readFileSync("config.json","utf8");//异步读取二进制文件，通过传递函数获得数据</p>
+
+  <p class="ziti5">fs.readFile("image.png",function(err,buffer){</p>
+
+  <p class="ziti5">if(err)throw err;//如果出现任何错误</p>
+
+  <p class="ziti5">process(buffer);//文件内容在缓冲区中</p>
+
+  <p class="ziti5">});</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">类似地，存在用来写文件的writeFile()和writeFileSync()函数：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">fs.writeFile("config.json",JSON.stringify(userprefs));</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">前面展示的函数将文件内容看待为单个字符串或缓冲区。Node也定义了读写文件的流API，下面这个函数实现了文件复制：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//用流API复制文件</p>
+
+  <p class="ziti5">//若想知道何时完成，请传递回调函数</p>
+
+  <p class="ziti5">function fileCopy(filename1,filename2,done){</p>
+
+  <p class="ziti5">var input=fs.createReadStream(filename1);//输入流</p>
+
+  <p class="ziti5">var output=fs.createWriteStream(filename2);//输出流</p>
+
+  <p class="ziti5">input.on("data",function(d){output.write(d);});//把输入复制到输出</p>
+
+  <p class="ziti5">input.on("error",function(err){throw err;});//提示错误</p>
+
+  <p class="ziti5">input.on("end",function(){//当输入结束</p>
+
+  <p class="ziti5">output.end();//关闭输出</p>
+
+  <p class="ziti5">if(done)done();//并通知回调函数</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">"fs"模块还包括大量的方法，用于列出文件目录、查询文件属性等。下面的Node程序使用同步的方法列出一个目录的内容，并显示文件大小和修改日期：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">#!/usr/local/bin/node</p>
+
+  <p class="ziti5">var fs=require("fs"),path=require("path");//加载需要的模块</p>
+
+  <p class="ziti5">var dir=process.cwd();//当前目录</p>
+
+  <p class="ziti5">if(process.argv.length＞2)dir=process.argv[2];//或来自命令行</p>
+
+  <p class="ziti5">var files=fs.readdirSync(dir);//读取目录内容</p>
+
+  <p class="ziti5">process.stdout.write("Name\tSize\tDate\n");//输出头</p>
+
+  <p class="ziti5">files.forEach(function(filename){//获取每个文件名</p>
+
+  <p class="ziti5">var fullname=path.join(dir,filename);//拼接目录和文件名</p>
+
+  <p class="ziti5">var stats=fs.statSync(fullname);//获取文件属性</p>
+
+  <p class="ziti5">if(stats.isDirectory())filename+="/";//标记子目录</p>
+
+  <p class="ziti5">process.stdout.write(filename+"\t"+//输出文件名+</p>
+
+  <p class="ziti5">stats.size+"\t"+//文件大小+</p>
+
+  <p class="ziti5">stats.mtime+"\n");//修改时间</p>
+
+  <p class="ziti5">});</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">注意上面第一行的注释“#!”。这是Unix中的"shebang"注释，常用于使脚本文件被指定的某种语言解释器自动执行<sup class="calibre2"><a id="ch6" href="part0021.html#ch6-back" class="pcalibre calibre1">[6]</a></sup>。当像这样的代码出现在文件的第一行时，Node会忽略它们。</p>
+
+  <p class="ziti3">"net"模块是用于基于TCP网络的API。（用于基于数据包网络的模块请看"dgram"。）下面是Node中一个非常简单的TCP服务器：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//Node中简单的TCP回显服务器：它监听2000端口上的连接，</p>
+
+  <p class="ziti5">//并把客户端的数据回显给它</p>
+
+  <p class="ziti5">var net=require('net');</p>
+
+  <p class="ziti5">var server=net.createServer();</p>
+
+  <p class="ziti5">server.listen(2000,function(){console.log("Listening on port 2000");});</p>
+
+  <p class="ziti5">server.on("connection",function(stream){</p>
+
+  <p class="ziti5">console.log("Accepting connection from",stream.remoteAddress);</p>
+
+  <p class="ziti5">stream.on("data",function(data){stream.write(data);});</p>
+
+  <p class="ziti5">stream.on("end",function(data){console.log("Connection closed");});</p>
+
+  <p class="ziti5">});</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">除了基础的"net"模块，Node使用"http"模块内置支持HTTP协议。接下来的示例可以说明更多细节。</p>
+
+  <h4 class="p5" id="heading_id_6">12.2.1　Node示例：HTTP服务器</h4>
+
+  <p class="ziti3">示例12-2是一个基于Node的简单HTTP服务。它能处理当前目录的文件，并能实现两种特殊的URL。它使用了Node的"http"模块，也会使用到前面提到的文件和流API。第18章的示例18-17是一个与之类似的HTTP服务器示例。</p>
+
+  <p class="ziti3">示例12-2：基于Node的HTTP服务器</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//这是一个简单的Node HTTP服务器，能处理当前目录的文件，</p>
+
+  <p class="ziti5">//并能实现两种特殊的URL用于测试</p>
+
+  <p class="ziti5">//用http://localhost:8000或http://127.0.0.1:8000连接这个服务器</p>
+
+  <p class="ziti5">//首先，加载所有要用的模块</p>
+
+  <p class="ziti5">var http=require('http');//HTTP服务器API</p>
+
+  <p class="ziti5">var fs=require('fs');//用于处理本地文件</p>
+
+  <p class="ziti5">var server=new http.Server();//创建新的HTTP服务器</p>
+
+  <p class="ziti5">server.listen(8000);//在端口8000上运行它</p>
+
+  <p class="ziti5">//Node使用"on()"方法注册事件处理程序，</p>
+
+  <p class="ziti5">//当服务器得到新请求，则运行函数处理它</p>
+
+  <p class="ziti5">server.on("request",function(request,response){//解析请求的URL</p>
+
+  <p class="ziti5">var url=require('url').parse(request.url);//特殊URL会让服务器在发送响应前先等待</p>
+
+  <p class="ziti5">//此处用于模拟缓慢的网络连接</p>
+
+  <p class="ziti5">if(url.pathname==="/test/delay"){//使用查询字符串来获取延迟时长，或者2000毫秒</p>
+
+  <p class="ziti5">var delay=parseInt(url.query)||2000;//设置响应状态码和头</p>
+
+  <p class="ziti5">response.writeHead(200,{"Content-Type":"text/plain;charset=UTF-8"});//立即开始编写响应主体</p>
+
+  <p class="ziti5">response.write("Sleeping for"+delay+"milliseconds...");//在之后调用的另一个函数中完成响应</p>
+
+  <p class="ziti5">setTimeout(function(){</p>
+
+  <p class="ziti5">response.write("done.");</p>
+
+  <p class="ziti5">response.end();</p>
+
+  <p class="ziti5">},delay);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//若请求是"/test/mirror"，则原文返回它</p>
+
+  <p class="ziti5">//当需要看到这个请求头和主体时，会很有用</p>
+
+  <p class="ziti5">else if(url.pathname==="/test/mirror"){//响应状态和头</p>
+
+  <p class="ziti5">response.writeHead(200,{"Content-Type":"text/plain;charset=UTF-8"});//用请求的内容开始编写响应主体</p>
+
+  <p class="ziti5">response.write(request.method+""+request.url+</p>
+
+  <p class="ziti5">"HTTP/"+request.httpVersion+"\r\n");//所有的请求头</p>
+
+  <p class="ziti5">for(var h in request.headers){</p>
+
+  <p class="ziti5">response.write(h+":"+request.headers[h]+"\r\n");</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">response.write("\r\n");//使用额外的空白行来结束头</p>
+
+  <p class="ziti5">//在这些事件处理程序函数中完成响应：</p>
+
+  <p class="ziti5">//当请求主体的数据块完成时，把其写入响应中</p>
+
+  <p class="ziti5">request.on("data",function(chunk){response.write(chunk);});//当请求结束时，响应也完成</p>
+
+  <p class="ziti5">request.on("end",function(chunk){response.end();});</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//否则，处理来自本地目录的文件</p>
+
+  <p class="ziti5">else{//获取本地文件名，基于其扩展名推测内容类型</p>
+
+  <p class="ziti5">var filename=url.pathname.substring(1);//去掉前导"/"</p>
+
+  <p class="ziti5">var type;</p>
+
+  <p class="ziti5">switch(filename.substring(filename.lastIndexOf(".")+1)){//扩展名</p>
+
+  <p class="ziti5">case"html":</p>
+
+  <p class="ziti5">case"htm":type="text/html;charset=UTF-8";break;</p>
+
+  <p class="ziti5">case"js":type="application/javascript;charset=UTF-8";break;</p>
+
+  <p class="ziti5">case"css":type="text/css;charset=UTF-8";break;</p>
+
+  <p class="ziti5">case"txt":type="text/plain;charset=UTF-8";break;</p>
+
+  <p class="ziti5">case"manifest":type="text/cache-manifest;charset=UTF-8";break;</p>
+
+  <p class="ziti5">default:type="application/octet-stream";break;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//异步读取文件，并将内容作为单独的数据块传给回调函数</p>
+
+  <p class="ziti5">//对于确实很大的文件，使用流API fs.createReadStream()更好</p>
+
+  <p class="ziti5">fs.readFile(filename,function(err,content){</p>
+
+  <p class="ziti5">if(err){//如果由于某些原因无法读取该文件</p>
+
+  <p class="ziti5">response.writeHead(404,{//发送404未找到状态码</p>
+
+  <p class="ziti5">"Content-Type":"text/plain;charset=UTF-8"});</p>
+
+  <p class="ziti5">response.write(err.message);//简单的错误消息主体</p>
+
+  <p class="ziti5">response.end();//完成</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else{//否则，若读取文件成功</p>
+
+  <p class="ziti5">response.writeHead(200,//设置状态码和MIME类型</p>
+
+  <p class="ziti5">{"Content-Type":type});</p>
+
+  <p class="ziti5">response.write(content);//把文件内容作为响应主体发送</p>
+
+  <p class="ziti5">response.end();//完成</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">});</p>
+  <hr class="calibre4"/>
+
+  <h4 class="p5" id="heading_id_7">12.2.2　Node示例：HTTP客户端工具模块</h4>
+
+  <p class="ziti3">示例12-3使用"http"模块定义了用于发送HTTP GET和POST请求的工具函数。本例则是基于"httputils"模块，在代码中应该这样使用：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var httputils=require("./httputils");//注意没有".js"后缀</p>
+
+  <p class="ziti5">httputils.get(url,function(status,headers,body){console.log(body);});</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">require()函数并非用普通的eval()函数来执行模块代码。模块是在一个特殊的环境中执行，以便它们不能定义任何全局变量或更改其他全局命名空间。这个特殊的模块执行环境总是包含一个叫exports的全局对象，模块通过在这个对象中定义属性来导出它们的API<sup class="calibre2"><a id="ch7" href="part0021.html#ch7-back" class="pcalibre calibre1">[7]</a></sup>。</p>
+
+  <p class="ziti3">示例12-3：Node"httputils"模块</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//</p>
+
+  <p class="ziti5">//基于Node的"httputils"模块</p>
+
+  <p class="ziti5">//</p>
+
+  <p class="ziti5">//为指定的URL实现一个异步HTTP GET请求，</p>
+
+  <p class="ziti5">//并将HTTP状态、头和响应主体传递给指定的回调函数</p>
+
+  <p class="ziti5">//注意这里是如何通过exports对象导出这个方法的</p>
+
+  <p class="ziti5">exports.get=function(url,callback){//解析URL，获取所需的信息</p>
+
+  <p class="ziti5">url=require('url').parse(url);</p>
+
+  <p class="ziti5">var hostname=url.hostname,port=url.port||80;</p>
+
+  <p class="ziti5">var path=url.pathname,query=url.query;</p>
+
+  <p class="ziti5">if(query)path+="?"+query;//实现一个简单的GET请求</p>
+
+  <p class="ziti5">var client=require("http").createClient(port,hostname);</p>
+
+  <p class="ziti5">var request=client.request("GET",path,{</p>
+
+  <p class="ziti5">"Host":hostname//Request headers</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">request.end();//该函数用于处理到达的响应</p>
+
+  <p class="ziti5">request.on("response",function(response){//设置编码，使返回的主体成为文本而非字节</p>
+
+  <p class="ziti5">response.setEncoding("utf8");//一旦响应主体达到，保存它</p>
+
+  <p class="ziti5">var body=""</p>
+
+  <p class="ziti5">response.on("data",function(chunk){body+=chunk;});//响应完成时，调用这个函数</p>
+
+  <p class="ziti5">response.on("end",function(){</p>
+
+  <p class="ziti5">if(callback)callback(response.statusCode,response.headers,body);</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">};//以数据作为请求主体的简单HTTP POST请求</p>
+
+  <p class="ziti5">exports.post=function(url,data,callback){//解析URL，获取所需的信息</p>
+
+  <p class="ziti5">url=require('url').parse(url);</p>
+
+  <p class="ziti5">var hostname=url.hostname,port=url.port||80;</p>
+
+  <p class="ziti5">var path=url.pathname,query=url.query;</p>
+
+  <p class="ziti5">if(query)path+="?"+query;//判断将要作为请求主体发送的数据类型</p>
+
+  <p class="ziti5">var type;</p>
+
+  <p class="ziti5">if(data==null)data="";</p>
+
+  <p class="ziti5">if(data instanceof Buffer)//二进制数据</p>
+
+  <p class="ziti5">type="application/octet-stream";</p>
+
+  <p class="ziti5">else if(typeof data==="string")//字符串数据</p>
+
+  <p class="ziti5">type="text/plain;charset=UTF-8";</p>
+
+  <p class="ziti5">else if(typeof data==="object"){//名/值对</p>
+
+  <p class="ziti5">data=require("querystring").stringify(data);</p>
+
+  <p class="ziti5">type="application/x-www-form-urlencoded";</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//生成POST请求，其中包括请求主体</p>
+
+  <p class="ziti5">var client=require("http").createClient(port,hostname);</p>
+
+  <p class="ziti5">var request=client.request("POST",path,{</p>
+
+  <p class="ziti5">"Host":hostname,</p>
+
+  <p class="ziti5">"Content-Type":type</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">request.write(data);//发送请求主体</p>
+
+  <p class="ziti5">request.end();</p>
+
+  <p class="ziti5">request.on("response",function(response){//处理响应</p>
+
+  <p class="ziti5">response.setEncoding("utf8");//假设它是文本</p>
+
+  <p class="ziti5">var body=""//用于保存响应主体</p>
+
+  <p class="ziti5">response.on("data",function(chunk){body+=chunk;});</p>
+
+  <p class="ziti5">response.on("end",function(){//完成后，调用回调函数</p>
+
+  <p class="ziti5">if(callback)callback(response.statusCode,response.headers,body);</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">});</p>
+
+  <p class="ziti5">};</p>
+  <hr class="calibre4"/>
+
+  <div class="fnote">
+    <a id="ch1-back" href="part0021.html#ch1" class="pcalibre calibre1">[1]</a>Node是其官方名字，Node.js是非官方名字，用于和其他的node区分，具体内容见https://www./github.com/joyent/node/wiki/FAQ。
+  </div>
+
+  <div class="fnote">
+    <a id="ch2-back" href="part0021.html#ch2" class="pcalibre calibre1">[2]</a>1.7r3版本已经在2011.06.03正式发布，具体内容见http://www.mozilla.org/rhino/download.html。
+  </div>
+
+  <div class="fnote">
+    <a id="ch3-back" href="part0021.html#ch3" class="pcalibre calibre1">[3]</a>客户端的JavaScript也能高度地异步和基于事件，如果你读过本书第二部分，且在客户端中运行过JavaScript程序，就会很容易理解本章的例子。
+  </div>
+
+  <div class="fnote">
+    <a id="ch4-back" href="part0021.html#ch4" class="pcalibre calibre1">[4]</a>大家也可以查看CNode社区组织翻译的Node中文文档，参见http://cnodejs.org/cman/。
+  </div>
+
+  <div class="fnote">
+    <a id="ch5-back" href="part0021.html#ch5" class="pcalibre calibre1">[5]</a>在翻译本书时，Node发布了0.4.12稳定版和0.5.7不稳定版。Node的版本控制方案是偶数版本稳定，奇数版本不稳定，稳定版本只会修复bug，不会改变JavaScript API和扩展API，在稳定版本分支升级之后不需要重新生成模块。
+  </div>
+
+  <div class="fnote">
+    <a id="ch6-back" href="part0021.html#ch6" class="pcalibre calibre1">[6]</a>关于shebang的详细解释请查看http://zh.wikipedia.org/wiki/Shebang。
+  </div>
+
+  <div class="fnote">
+    <a id="ch7-back" href="part0021.html#ch7" class="pcalibre calibre1">[7]</a>Node实现了CommonJS模块约定，具体内容请参见http://www.commonjs.org/specs/modules/1.0/。
+  </div>
+</body></html>

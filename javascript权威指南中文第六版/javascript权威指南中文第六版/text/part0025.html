@@ -1,0 +1,1323 @@
+<?xml version='1.0' encoding='utf-8'?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>第16章　脚本化CSS</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>
+<link href="../page_styles.css" rel="stylesheet" type="text/css"/>
+</head>
+  <body class="calibre">
+  <h2 class="p4" id="heading_id_2">第16章　脚本化CSS</h2>
+
+  <p class="ziti3">层叠样式表（Cascading Style Sheet，CSS）是一种指定HTML文档视觉表现的标准。CSS的本意是想让视觉设计师来使用的：它允许设计师精确地指定文档元素的字体、颜色、外边距、缩进、边框，甚至是定位。不过，客户端JavaScript程序员对CSS也非常感兴趣是因为样式可以通过脚本编程。脚本化CSS启用了一系列有趣的视觉效果，例如：可以创建一个动画让文档内容从右侧“滑入”；也能创建一个轮廓伸缩的列表，在里面用户自己控制显示的信息量。首次推出类似的脚本化视觉效果是革命性的。创造这些效果的JavaScript和CSS技术以前统称为动态HTML（DHTML），而现在，这个术语已经不再流行了。</p>
+
+  <p class="ziti3">CSS是个复杂的标准，在写本书时它仍在活跃的开发中。CSS本身可以写一本书，而详细介绍它则超出了本书的范围<sup class="calibre2"><a id="ch1" href="part0025.html#ch1-back" class="pcalibre calibre1">[1]</a></sup>。但是为了理解CSS脚本化，我们必须熟悉CSS基础和最常用的样式属性。本章开头简介CSS概况，接着解释了一些关键样式，它们最合适脚本化了。此后，16.3节阐述怎样实现CSS脚本化。16.3节介绍最常用和重要的技术：利用HTML的style属性值，更改那些应用在单个文档元素中的样式。元素的style属性可以用来设置样式，但是它不适合用来查询样式。16.4节阐述如何查询元素的“计算样式”。16.5节阐述如何通过修改元素的style属性一次修改元素的多个样式。直接操作样式表也是可能的，但不太常见，16.6节介绍如何开启或关闭样式表、修改已存在样式表的规则以及添加新的样式表。</p>
+
+  <h3 class="p1" id="heading_id_3">16.1　CSS概览</h3>
+
+  <p class="ziti3">HTML文档的视觉显示包含很多变量：字体、颜色、间距等。CSS标准列举了这些变量，我们称为样式属性。CSS定义了这些属性以指定字体、颜色、外边距、边框、背景图片、文本对齐方式、元素尺寸和元素位置。为了定义HTML元素的视觉表现，规定了这些CSS属性的值。为此，紧跟着属性名是冒号和值，例如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">font-weight:bold</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">为了全面地描述一个元素的视觉表现，通常需要指定不止一个属性。当需要多个名/值对时，它们之间用分号隔开：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">margin-left:10%;/*左外边距是页面宽度的10%*/</p>
+
+  <p class="ziti5">text-indent:.5in;/*1/2英寸缩进*/</p>
+
+  <p class="ziti5">font-size:12pt;/*字体尺寸12pt*/</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">如你所见，CSS忽略了“/*”和“*/”之间的注释，但是它不支持“//”后面的注释。</p>
+
+  <p class="ziti3">有两种方式将一组定义视觉表现的CSS属性和对应的HTML元素关联在一起。第一种是通过给每个单独的HTML元素设置style属性值的方式，称为内联样式：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜p style="margin:20px;border:solid red 2px;"＞</p>
+
+  <p class="ziti5">This paragraph has increased margins and is surrounded by a rectangular red border.</p>
+
+  <p class="ziti5">＜/p＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">尽管如此，通常将单独的HTML元素与CSS样式分开并把它们定义在一个样式表（stylesheet）中会更有用。样式表通过选择器将一组样式属性和使用选择器（selector）描述的一组HTML元素关联在一起。一个选择器基于元素ID、类名或标签名或更多条件指定（或称“选择”）一个或多个文档中的元素。15.2.5节介绍了选择器，并描述了如何用querySelectorAll()来获得匹配选择器的一组元素。</p>
+
+  <p class="ziti3">CSS样式表的基本元素是样式规则，它们由选择器和包裹在一对“{}”中的CSS属性和值所组成。每个样式表可以包含任意数量的样式规则：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">p{/*选择器"p"匹配所有的＜p＞元素*/</p>
+
+  <p class="ziti5">text-indent:.5in;/*首行缩进0.5英寸*/</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">.warning{/*任何以"warning"类命名的元素*/</p>
+
+  <p class="ziti5">background-color:yellow;/*设置为黄色背景*/</p>
+
+  <p class="ziti5">border:solid black 5px;/*和黑色大边框*/</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">用＜style＞和＜/style＞标签把一个CSS样式表包起来放在＜head＞标签里，它就和HTML文档关联在一起了。类似＜script＞元素，＜style＞元素内容也不会被当成HTML来解析：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜html＞</p>
+
+  <p class="ziti5">＜head＞＜title＞Test Document＜/title＞</p>
+
+  <p class="ziti5">＜style＞</p>
+
+  <p class="ziti5">body{margin-left:30px;margin-right:15px;background-color:#ffffff}</p>
+
+  <p class="ziti5">p{font-size:24px;}</p>
+
+  <p class="ziti5">＜/style＞</p>
+
+  <p class="ziti5">＜/head＞</p>
+
+  <p class="ziti5">＜body＞＜p＞Testing,testing＜/p＞</p>
+
+  <p class="ziti5">＜/html＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">当一个样式表需要在网站的多个页面中使用时，通常将其保存在自己的文件中较好，这个文件不含任何HTML标签。它可以被引入到HTML页面中。但是，不像＜script＞元素，＜style＞元素并没有src属性。为了在页面中引入样式表，在文档的＜head＞中使用＜link＞标签：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜head＞</p>
+
+  <p class="ziti5">＜title＞Test Document＜/title＞</p>
+
+  <p class="ziti5">＜link rel="stylesheet"href="mystyles.css"type="text/css"＞</p>
+
+  <p class="ziti5">＜/head＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">简言之，这就是CSS的工作方式。关于CSS还有几个值得理解的知识点将在以下几节中逐一解释。</p>
+
+  <h4 class="p5" id="heading_id_4">16.1.1　层叠</h4>
+
+  <p class="ziti3">回想一下，在CSS里"C"代表了“层叠”。该术语指示了应用于文档中任何给定元素的样式规则是各个“来源”的“层叠”效果：</p>
+
+  <p class="ziti3">·Web浏览器的默认样式表</p>
+
+  <p class="ziti3">·文档的样式表</p>
+
+  <p class="ziti3">·每个独立的HTML元素的style属性</p>
+
+  <p class="ziti3">当然，style属性中的样式覆盖了样式表中的样式，并且文档的样式表中的样式覆盖了浏览器的默认样式。任意给定元素的视觉表现可能是来自3个来源的一个样式组合。一个元素甚至可能匹配样式表中的多个选择器，在此情况下，所有这些选择器的关联样式属性都将应用到该元素上。（如果不同的选择器为同一个样式属性定义了不同的值，那么与最具体的选择器相关联的值将覆盖与不那么具体的选择器相关联的值。不过，详细的解释超出了本书的范围。）</p>
+
+  <p class="ziti3">为显示文档元素，Web浏览器“必须”组合元素的style属性，包括来自文档样式表中所有匹配的选择器的样式值。计算的结果是一组实际用于显示元素的样式属性和值。这组值就是元素的“计算样式”（computed style）。</p>
+
+  <h4 class="p5" id="heading_id_5">16.1.2　CSS历史</h4>
+
+  <p class="ziti3">CSS是一个相对较老的标准。CSS1在1996年12月被采纳，它定义了具体的颜色、字体、外边距、边框和其他的基本样式。类似Netscape 4和Internet Explorer 4这样的老式浏览器极力支持CSS1。该标准的第二版（CSS2）在1998年5月被采纳，它定义了许多高级特性，最著名的就是支持元素的绝对定位。CSS 2.1澄清和更正了CSS 2，并且它删除了浏览器供应商从未实现的功能。现代浏览器基本上都完全支持CSS2.1，但是低于IE 8的IE还有一些遗漏问题。</p>
+
+  <p class="ziti3">在CSS的后继工作中，针对版本3，CSS规范已经分拆成各种各样的专门化模块，分别来通过标准化进程。可以在http://www.w3.org/Style/CSS/current-work中找到CSS规范和工作草案。</p>
+
+  <h4 class="p5" id="heading_id_6">16.1.3　复合属性</h4>
+
+  <p class="ziti3">某些经常在一起使用的样式属性可以组合起来使用一个特殊的复合属性。例如，f ont-family、font-size和font-weight属性可以用font的复合属性值一次性设置：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">font:bold italic 24pt helvetica;</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">同样，border、margin和padding属性就是为元素的每条边都设置边框、外边距和内边距（元素和边框之间的空间）的复合属性。例如，代替使用border属性，可以使用border-left、border-right、border-top和border-bottom属性来独立设置边框的每条边。事实上，这些属性本身也是复合属性，例如，代替指定border-top，可以分别指定border-top-color、border-top-style和border-top-width等属性。</p>
+
+  <h4 class="p5" id="heading_id_7">16.1.4　非标准属性</h4>
+
+  <p class="ziti3">当浏览器厂商实现非标准CSS属性时，它们用将属性名前加了一个厂商前缀。Firefox使用-moz-，Chrome使用-webkit-，而IE使用-ms-，它们甚至用这种方式来实现将来会标准化的属性。有个例子是border-radius属性，它用来指定元素的圆角，在Firefox 3和Safari 4实验性的实现中使用了前缀。一旦标准已经充分成熟，Firefox 4和Safari 5就移除了前缀，直接支持border-radius。（Chrome和Opera已经支持没有前缀的border-radius很长一段时间了。IE9也支持了没有前缀的border-radius，但是在IE 8中即使有前缀也没有支持。）</p>
+
+  <p class="ziti3">在不同浏览器中有不同名字的CSS属性一起工作，你可能发现为一个属性定义一个类方式比较好：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">.radius10{</p>
+
+  <p class="ziti5">border-radius:10px;/*针对现代浏览器*/</p>
+
+  <p class="ziti5">-moz-border-radius:10px;/*针对Firefox 3.x*/</p>
+
+  <p class="ziti5">-webkit-border-radius:10px;/*针对Safari 3.2和4*/</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">像这样定义一个类叫"radius10"，可以将它添加到任意需要10像素圆角的元素的类上。</p>
+
+  <h4 class="p5" id="heading_id_8">16.1.5　CSS举例</h4>
+
+  <p class="ziti3">例16-1是一个定义和使用了一个样式表的HTML文件，它说明了标签名、类和ID的选择器，并且还有一个通过style属性定义内联样式的示例。图16-1显示了它在一个浏览器中是如何渲染的。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00032.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="middle-img1">
+    图　16-1　一个应用了CSS的Web页面
+  </div>
+
+  <p class="ziti3">例16-1：定义并使用层叠样式表</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜head＞</p>
+
+  <p class="ziti5">＜style type="text/css"＞/*指定标题文本显示为蓝色、斜体*/</p>
+
+  <p class="ziti5">h1,h2{color:blue;font-style:italic}/*</p>
+
+  <p class="ziti5">*任何class="WARNING"的元素显示为大号、加黑文本，</p>
+
+  <p class="ziti5">*它有很宽的外边距、黄色背景和宽的红色边框</p>
+
+  <p class="ziti5">*/</p>
+
+  <p class="ziti5">.WARNING{</p>
+
+  <p class="ziti5">font-weight:bold;</p>
+
+  <p class="ziti5">font-size:150%;</p>
+
+  <p class="ziti5">margin:0 1in 0 1in;/*上右下左*/</p>
+
+  <p class="ziti5">background-color:yellow;</p>
+
+  <p class="ziti5">border:solid red 8px;</p>
+
+  <p class="ziti5">padding:10px;/*4条边都是10像素*/</p>
+
+  <p class="ziti5">}/*</p>
+
+  <p class="ziti5">*class="WARNING"的元素里面的h1或h2标签内的文本，除了蓝色，还应该居中显示</p>
+
+  <p class="ziti5">*/</p>
+
+  <p class="ziti5">.WARNING h1,.WARNING h2{text-align:center}/*id="special"的元素大写、居中显示*/</p>
+
+  <p class="ziti5">#special{</p>
+
+  <p class="ziti5">text-align:center;</p>
+
+  <p class="ziti5">text-transform:uppercase;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">＜/style＞</p>
+
+  <p class="ziti5">＜/head＞</p>
+
+  <p class="ziti5">＜body＞</p>
+
+  <p class="ziti5">＜h1＞Cascading Style Sheets Demo＜/h1＞</p>
+
+  <p class="ziti5">＜div class="WARNING"＞</p>
+
+  <p class="ziti5">＜h2＞Warning＜/h2＞</p>
+
+  <p class="ziti5">This is a warning!</p>
+
+  <p class="ziti5">Notice how it grabs your attention with its bold text and bright colors.</p>
+
+  <p class="ziti5">Also notice that the heading is centered and in blue italics.</p>
+
+  <p class="ziti5">＜/div＞</p>
+
+  <p class="ziti5">＜p id="special"＞</p>
+
+  <p class="ziti5">This paragraph is centered＜br＞</p>
+
+  <p class="ziti5">and appears in uppercase letters.＜br＞</p>
+
+  <p class="ziti5">＜span style="text-transform:none"＞</p>
+
+  <p class="ziti5">Here we explicitly use an inline style to override the uppercase letters.</p>
+
+  <p class="ziti5">＜/span＞</p>
+
+  <p class="ziti5">＜/p＞</p>
+  <hr class="calibre4"/>
+
+  <p class="middle-img">前沿的CSS</p>
+
+  <p class="ziti4">当我在写本章时，CSS正在进行一场变革，现代浏览器厂商正在实现一些强大的新样式属性：border-radius、text-shadow、box-shadow和column-count。还有一个革命性的CSS新特性是Web字体：利用CSS的@font-face规则可以下载并使用自定义字体。（参见http://code.google.com/webfonts：可以在Web上免费使用所选的字体，并提供了一种从Google的服务器下载的方便机制。）</p>
+
+  <p class="ziti4">CSS中另外一种革命性的发展是CSS过渡。这是一个规范草案，它能自动将脚本化的CSS样式转换成平滑的动画过渡。（当广泛地实现后，它将大大减少类似在16.3.1节展现的需要CSS的动画代码。）除了IE，CSS过渡在现代浏览器中都实现了，但它的样式属性仍然需要加厂商前缀。CSS动画的相关建议：将使用CSS过渡作为一个定义更加复杂的动画时序的起点。CSS动画当前只有在基于Webkit的浏览器上实现。过渡和动画在本章中都不会提到，但Web开发者应该引起注意。</p>
+
+  <p class="ziti4">另外一个CSS草案是CSS变换，Web开发者也应该引起注意。它允许对任何元素应用任意的2D仿射变换（用一个矩阵表示旋转、缩放、转换或任意组合）。所有的现代浏览器（包括IE 9及高版本）使用厂商前缀都支持该草案。Safari甚至支持一个允许3D变换的扩展，但是其他厂商是否追随它们的脚步还不得而知。</p>
+
+  <h3 class="p1" id="heading_id_9">16.2　重要的CSS属性</h3>
+
+  <p class="ziti3">对客户端程序员来说，最重要的CSS特性是那些指定文档中每个元素的可见性、尺寸和精确定位的属性。其他CSS属性允许指定堆叠次序、透明度、裁剪区域、外边距、内边距、边框和颜色。为了脚本化CSS，理解这些样式属性的工作原理是非常重要的。表格16-1做了总结，在本节以下内容中将做详细地阐述。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00033.jpeg" class="calibre3"/>
+  </div>
+
+  <h4 class="p5" id="heading_id_10">16.2.1　用CSS定位元素</h4>
+
+  <p class="ziti3">CSS的position属性指定了应用到元素上的定位类型，如下是4个可能出现的属性值：</p>
+
+  <p class="ziti3">static</p>
+
+  <p class="ziti3">默认属性。指定元素按照常规的文档内容流（对多数西方语言而言就是从左往右、从上到下）进行定位。静态定位的元素不能使用top、left和类似其他属性定位。欲对文档元素使用CSS定位技术，必先将其position属性设置为除此之外的其他3个属性值。</p>
+
+  <p class="ziti3">absolute</p>
+
+  <p class="ziti3">该值指定元素是相对于它包含的元素进行定位。相对于所有其他的元素，绝对定位的元素是独立定位的，它不是静态定位的元素中文档流的一部分。它的定位要么是相对于最近的定位祖先元素，要么是相对于文档本身。</p>
+
+  <p class="ziti3">fixed</p>
+
+  <p class="ziti3">该值指定元素是相对于浏览器窗口进行定位的。固定定位的元素总是显示在那里，不会随着文档其他部分而滚动。类似绝对定位的元素，固定定位的元素和所有其他元素是独立的，它不是文档流的一部分。大多数现代浏览器支持固定定位，除了IE 6。</p>
+
+  <p class="ziti3">relative</p>
+
+  <p class="ziti3">当position属性设置为relative，元素按照常规的文档流进行布局，它的定位相对于它文档流中的位置进行调整。系统保留着元素在正常文档流中的空间，不会因为要填充空间而将其各边合拢，也不会将元素从新的位置“推开”。</p>
+
+  <p class="ziti3">一旦设置了元素的position属性为除了static以外的值，就可以通过元素的left、top、right和bottom属性的一些组合指定元素的位置。最常用的定位技术是使用left和top属性指定元素的左边缘到容器（通常是文档本身）左边缘的距离，元素的上边缘到容器上边缘的距离。例如，要放置一个距离文档左、上边缘各100像素的元素，可以在style属性中指定如下CSS样式：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜div style="position:absolute;left:100px;top:100px;"＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">如果元素使用绝对定位，它的top和left属性应该解释为它是相对于其position属性设置为除static值以外的祖先元素。如果绝对定位的元素没有定位过的祖先，则它的top和left属性使用文档坐标进行度量——就是相对于文档左上角的偏移量。如果你想相对于一个属于常规文档流中的容器绝对定位一个元素，则将容器的position指定为relative，top和left指定为0px。这就让容器变成了动态定位，但它仍留在文档流中原来的位置。任何绝对定位元素的子元素都相对于容器进行定位。</p>
+
+  <p class="ziti3">虽然使用left和top指定元素的左上角位置是最常见的定位方法，但也可以使用bottom和right指定元素相对于容器的下和右边缘进行定位。例如，让一个元素的右下角就在文档的右下角进行定位（假设元素没有嵌套在其他动态元素中），使用如下样式：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">position:absolute;right:0px;bottom:0px;</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">定位一个元素让其右、上边缘相对于窗口右、上边缘各10像素，并且不随文档的滚动而滚动，可以使用如下样式：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">position:fixed;right:10px;top:10px;</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">除了定位元素以外，CSS允许指定它们的尺寸。这通常通过指定width和height样式属性的值完成。例如，以下HTML代码创建了一个绝对定位的空元素。它的width、height和background-color属性使得它看上去显示为一个蓝色的小方块：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜div style="position:absolute;top:10px;left:10px;</p>
+
+  <p class="ziti5">width:10px;height:10px;background-color:blue"＞</p>
+
+  <p class="ziti5">＜/div＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">另外一种指定元素的宽度的方法是同时指定left和right属性。同样，通过指定top和bottom属性来指定元素的高度。但是，如果同时指定left、right和width，那么width属性将覆盖right属性；如果元素的高度重复限定，height属性优先于bottom属性。</p>
+
+  <p class="ziti3">请牢记，没必要给每一个动态元素指定尺寸，某些元素（如图片）具有固有尺寸。而且，对包含文本或其他流式内容的动态元素通常指定想要的宽度就足够了，让元素内容布局来自动决定它的高度。</p>
+
+  <p class="ziti3">CSS指定位置和大小属性是有单位的。在上面的例子中，定位和尺寸属性值以"px"结尾，代表像素。也可以使用英寸（"in"）、厘米（"cm"）、点（"pt"）和字体行高（"em"，一种当前字体行高的度量）。</p>
+
+  <p class="ziti3">相对于使用上面的单位来指定绝对定位和尺寸，CSS也允许指定元素的位置和尺寸为其容器元素的百分比。例如，以下HTML代码创建了一个黑边框空元素，它的宽度和高度为其容器元素（或是浏览器窗口）的50%，居中显示：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜div style="position:absolute;left:25%;top:25%;width:50%;height:50%;</p>
+
+  <p class="ziti5">border:2px solid black"＞</p>
+
+  <p class="ziti5">＜/div＞</p>
+  <hr class="calibre4"/>
+
+  <p class="yanse">1.第三个维度：z-index</p>
+
+  <p class="ziti3">如你所见，left、top、right和bottom属性是在容器元素中的二维坐标中指定X和Y坐标。z-index属性定义了第三个维度：它允许指定元素的堆叠次序，并指示两个或多个重叠元素中的哪一个应该绘制在其他的上面。z-index默认为0，可以是正或负的整数。当两个或多个元素重叠在一起时，它们是按照从低到高的z-index顺序绘制的。如果重叠元素的z-index值一样，它们按照在文档中出现的顺序绘制，也即最后一个重叠的元素显示在最上面。</p>
+
+  <p class="ziti3">注意，z-index只对兄弟元素（例如，同一个容器的子元素）应用堆叠效果。如果两个元素不是兄弟元素之间的重叠，那么设置它们的z-index属性无法决定哪一个显示在最上面。相反，“必须”设置这两个重叠元素的兄弟容器的z-index属性来达到目的。</p>
+
+  <p class="ziti3">非定位元素（例如，默认使用position:static定位）总是以防止重叠的方式进行布局，因此z-index属性不会应用到它们上面。尽管如此，它们默认的z-index值为0，这意味着z-index为正值的定位元素显示在常规文档流的上面，而z-index为负值的定位元素显示在常规文档流的下面。</p>
+
+  <p class="yanse">2.CSS定位示例：文本阴影</p>
+
+  <p class="ziti3">CSS3规范包含一个text-shadow属性以在文本下产生阴影效果。许多现在的浏览器都支持该效果，但是可以用CSS定位属性实现类似的效果，只要重复输出这段文本并重新定义以下样式：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜!--text-shadow属性自动产生阴影效果--＞</p>
+
+  <p class="ziti5">＜span style="text-shadow:3px 3px 1px#888"＞Shadowed＜/span＞</p>
+
+  <p class="ziti5">＜!--这里我们利用定位可以产生相同的效果--＞</p>
+
+  <p class="ziti5">＜span style="position:relative;"＞</p>
+
+  <p class="ziti5">Shadowed＜!--这里是投射阴影的文本--＞</p>
+
+  <p class="ziti5">＜span style="position:absolute;top:3px;left:3px;z-index:-1;color:#888"＞</p>
+
+  <p class="ziti5">Shadowed＜!--这里是阴影--＞</p>
+
+  <p class="ziti5">＜/span＞</p>
+
+  <p class="ziti5">＜/span＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">需要投射阴影的文本包裹在相对定位的＜span＞标签中，不用设置其他定位属性，所以文本显示在其正常的位置上。阴影位于一个绝对定位的＜span＞中，它包含在上面那个相对定位的＜span＞中，这样z-index属性确保阴影在其文本的下面。</p>
+
+  <h4 class="p5" id="heading_id_11">16.2.2　边框、外边距和内边距</h4>
+
+  <p class="ziti3">CSS允许指定元素周围的边框、外边距和内边距。元素的边框是一个围绕（或部分围绕）元素绘制的矩形（或者CSS3中的圆角矩形）。属性还允许指定边框的样式、颜色和厚度：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">border:solid black 1px;/*绘制一个1像素的黑色实线边框*/</p>
+
+  <p class="ziti5">border:3px dotted red;/*绘制一个3像素的红色点线边框*/</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">可以用单独的CSS属性指定边框的宽度、样式和颜色，也可以指定元素的每条边的边框。例如，要绘制元素下面的一条线，只要简单地指定它的border-bottom属性。甚至可以为元素的单条边指定宽度、样式和颜色，如border-top-width和border-left-color属性。</p>
+
+  <p class="ziti3">在CSS3中，可以通过border-radius属性指定圆滑边框的所有角，也可以用更明确的属性名设置单独的圆角。例如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">border-top-right-radius:50px;</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">margin和padding属性都指定元素周围的空白空间。主要的区别在于，margin指定边框外面——边框和相邻元素之间的空间，而padding指定边框之内——边框和元素内容之间的空间。外边距提供了常规文档流中（可能有边框的）元素和它的“邻居”之间的视觉空间。内边距保持元素内容和它的边框在视觉上分离。如果元素内没有边框，内边距往往也是没有必要的。如果元素是动态定位的，而不是常规文档流的一部分，它的外边距就无关要旨了。</p>
+
+  <p class="ziti3">使用margin和padding属性指定元素的外边距和内边距：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">margin:5px;padding:5px;</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">也可以为元素单独的边指定外边距和内边距：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">margin-left:25px;</p>
+
+  <p class="ziti5">padding-bottom:5px;</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">或者可以用margin和padding属性直接为元素所有的4条边指定外边距和内边距。首先指定上边的值，然后按照顺时针方式设置：上、右、下和左边的值。例如，以下代码显示了给元素的4条边设置了不同的内边距值，两种方式是等价的。</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">padding:1px 2px 3px 4px;/*以上代码等价于以下4行代码*/</p>
+
+  <p class="ziti5">padding-top:1px;</p>
+
+  <p class="ziti5">padding-right:2px;</p>
+
+  <p class="ziti5">padding-bottom:3px;</p>
+
+  <p class="ziti5">padding-left:4px;</p>
+  <hr class="calibre4"/>
+
+  <h4 class="p5" id="heading_id_12">16.2.3　CSS盒模型和定位细节</h4>
+
+  <p class="ziti3">以上描述的margin、border和padding等样式属性在脚本化时很可能不经常使用。因为它们是CSS盒模型（box model）的一部分，而为了真正理解CSS定位属性，应该理解这个盒模型。</p>
+
+  <p class="ziti3">图16-2说明了CSS盒模型与有边框和内边距元素的top、left、width和height等意义的视觉解释。</p>
+
+  <p class="ziti3">图16-2显示了一个绝对定位的元素嵌套在一个定位的容器元素中。容器和包含的元素都有边框和内边距，图例说明了指定容器元素每条边的内边距和边框宽度的CSS属性。注意外边距属性并没有图示：外边距与绝对定位的元素无关。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00034.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="middle-img1">
+    图　16-2　CSS盒模型：边框、内边距和定位属性
+  </div>
+
+  <p class="ziti3">图16-2也包含了其他重要的信息。首先，width和height只指定了元素内容区域的尺寸，它不包含元素的内边距或边框（或外边距）所需的任何额外空间。为了确定有边框元素在屏幕上的全尺寸，必须把元素的宽度加上左右两边的内边距和左右两个边框宽度，把元素的高度加上上下两边的内边距和上下两个边框宽度。</p>
+
+  <p class="ziti3">其次，left和top属性指定了从容器边框内侧到定位元素边框外侧的距离。这些属性不是从容器内容区域的左上角开始度量的，而是从容器内边距的左上角开始的。同样，right和bottom属性是从容器内边距的右下角开始度量的。</p>
+
+  <p class="ziti3">有一个例子清楚地说明了这一点。假设已创建一个在内容区域四周有10像素内边距和5像素边框的动态定位的容器元素。现假设要动态定位一个容器中的子元素。如果将其left属性设置为"0px"，你会发现子元素的左边缘正好靠在容器左边框的右边，这样子元素覆盖了容器的内边距，本意是要留出空白（指定容器内边距的目的），而空白却没有了。如果想在容器内容区域的左上角定位子元素，就必须将其left和top属性指定为"10px"。</p>
+
+  <p class="yanse">边框盒模型和box-sizing属性</p>
+
+  <p class="ziti3">标准CSS盒模型规定width和height样式属性给定内容区域的尺寸，并且不包含内边距和边框。可以称此盒模型为“内容盒模型”。在老版的IE里和新版的CSS中都有一些例外，在IE 6之前和当IE 6～8在“怪异模式”下显示一个页面时（页面中缺少＜!DOCTYPE＞或有一个不够严格的doctype时），width和height属性确是包含内边距和边框宽度的。</p>
+
+  <p class="ziti3">IE的行为是一个bug，但是IE的非标准盒模型通常也很有用。认识到这一点，CSS3引进了box-sizing属性，默认值是content-box，它指定了上面描述的标准的盒模型。如果替换为box-sizing:border-box，浏览器将会为那个元素应用IE的盒模型，即width和height属性将包含边框和内边距。当想以百分比形式为元素设置总体尺寸，又想以像素单位指定边框和内边距时，边框盒模型特别有用：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜div style="box-sizing:border-box;width:50%;</p>
+
+  <p class="ziti5">padding:10px;border:solid black 2px;"＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">box-sizing属性在当今所有的浏览器中都支持，但是还没有不带前缀通用地实现。在Chrome和Safari中，使用-webkit-box-sizing。在Firefox中，使用-moz-box-sizing。在Opera和IE 8及其更高版本中，可以使用不带前缀的box-sizing。</p>
+
+  <p class="ziti3">边框盒模型在未来CSS3中的一个可选方案是使用盒子尺寸的计算值：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜div style="width:calc(50%-12px);padding:10px;border:solid black 2px;"＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">在IE 9中支持使用calc()计算CSS的值，在Firefox 4为-moz-calc()。</p>
+
+  <h4 class="p5" id="heading_id_13">16.2.4　元素显示和可见性</h4>
+
+  <p class="ziti3">两个CSS属性影响了文档元素的可见性：visibility和display。visibility属性很简单：当其值设置为hidden时，该元素不显示；当其值设置为visible时，该元素显示。display属性更加通用，它用来为接收它的容器指定元素的显示类型。它指定元素是否是块状元素、内联元素、列表项等。但是，如果display设置为none，受影响的元素将不显示，甚至根本没有布局。</p>
+
+  <p class="ziti3">visibility和display属性之间的差别可以从它们对使用静态或相当定位的元素的影响中看到。对于一个常规布局流中的元素，设置visibility属性为hidden使得元素不可见，但是在文档布局中仍保留了它的空间。类似的元素可以重复隐藏和显示而不改变文档布局。但是，如果元素的display属性设置为none，在文档布局中不再给它分配空间，它各边的元素会合拢，就当它从来不存在。例如，在创建展开和折叠轮廓的效果时display属性很有用。</p>
+
+  <p class="ziti3">visibility和display属性对绝对和固定定位的元素的影响是等价的，因为这些元素都不是文档布局的一部分。然而，在隐藏和显示定位元素时一般首选visibility属性。</p>
+
+  <p class="ziti3">注意，用visibility和display属性使得元素不可见没什么意义，除非使用JavaScript动态设置这些属性让元素在某一刻可见！将在本章后续内容中看到如何实现这种技术。</p>
+
+  <h4 class="p5" id="heading_id_14">16.2.5　颜色、透明度和半透明度</h4>
+
+  <p class="ziti3">可以通过CSS的color属性指定文档元素包含的文本的颜色，并可以用background-color属性指定任何元素的背景颜色。早些时候，我们看到可以用border-color或border复合属性指定元素边框的颜色。</p>
+
+  <p class="ziti3">针对边框的讨论包含一些例子，使用常见颜色的英文名字（如"red"和"black"）来直接指定边框的颜色。CSS支持若干英文颜色名字，但是在CSS中更一般的指定颜色的语法是使用十六进制数分别指定组成颜色的红、绿和蓝色分量，每个分量可以使用一位或两位数字。例如：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">#000000/*黑色*/</p>
+
+  <p class="ziti5">#fff/*白色*/</p>
+
+  <p class="ziti5">#f00/*亮红色*/</p>
+
+  <p class="ziti5">#404080/*黑暗不饱和蓝色*/</p>
+
+  <p class="ziti5">#ccc/*浅灰色*/</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">CSS3也为指定RGBA色彩空间（红、绿、蓝色值加上指定颜色透明度的alpha值）中的颜色定义了语法。所有现代的浏览器（除了IE）都支持RGBA，期待在IE 9中也能支持。CSS3也定义了对HSL（色相-饱和度-值）和HSLA颜色规范的支持。它们在Firefox、Safari和Chrome中都支持，除了IE。</p>
+
+  <p class="ziti3">CSS允许指定元素确切的位置、尺寸、背景颜色和边框颜色，因为能绘制矩形和（当减少高度和宽度时）水平、垂直线条它有了基本的图形能力。本书上一版本包含了一个利用CSS图形的柱状图例子，但在本书中它被＜canvas＞元素扩展的属性所替代。（参见第21章更多关于脚本化客户端图形的内容。）</p>
+
+  <p class="ziti3">除了background-color属性，也可以为元素指定背景图像。background-image属性指定使用的图像，background-attachment、background-position和background-repeat属性指定如何绘制该图像的一些高级细节。复合属性background允许一起指定这些属性值。利用这些背景图像属性可以创建有趣的视觉效果，介绍它们超出了本书的范围。</p>
+
+  <p class="ziti3">如果没有为元素指定背景颜色或图像，它的背景通常透明，理解这点非常重要。例如，如果一个＜div＞绝对定位在常规文档流中一些已存在的文本上方，默认情况下，文本将透过＜div＞元素显示出来。如果＜div＞同时包含了自己的文本，字母将重叠在一起而变得模糊不清。尽管如此，默认情况下不是所有的元素都是透明的。例如，具有透明背景的表单元素看起来不透明，并且元素（如＜button＞）有默认的背景颜色。用background-color属性可以覆盖默认颜色，如果强烈要求可以将其显式设置为"transparent"。</p>
+
+  <p class="ziti3">到目前为止所讨论的透明度其实是非此即彼的：元素的背景不是全透明就是全不透明的。指定元素（内容的前景和背景）为半透明也是可能的（示例见图16-3）。用CSS3的opacity属性来处理，该属性值是0～1之间的数字，1代表100%不透明（默认值），而0代表0%不透明（或100%透明）。opacity属性在当今所有浏览器中都支持，除了IE。IE提供类似的可选方式：IE特有的filter属性。让元素75%不透明，可以使用以下CSS样式：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">opacity:.75;/*透明度，CSS3标准属性*/</p>
+
+  <p class="ziti5">filter:alpha(opacity=75);/*IE透明度，注意没有小数点*/</p>
+  <hr class="calibre4"/>
+
+  <h4 class="p5" id="heading_id_15">16.2.6　部分可见：overflow和clip</h4>
+
+  <p class="ziti3">visibility属性可以让文档元素完全隐藏，而overflow和clip属性允许只显示元素的一部分。overflow属性指定内容超出元素的大小（例如，用width和height样式属性指定）时该如何显示。该属性允许的值和含义如下所示：</p>
+
+  <p class="ziti3">visible</p>
+
+  <p class="ziti3">默认值。如果需要，内容可以溢出并绘制在元素的边框的外面。</p>
+
+  <p class="ziti3">hidden</p>
+
+  <p class="ziti3">裁剪掉和隐藏溢出的内容，即在元素尺寸和定位属性值定义的区域外不会绘制内容。</p>
+
+  <p class="ziti3">scroll</p>
+
+  <p class="ziti3">元素一直显示水平和垂直滚动条。如果内容超出元素尺寸，允许用户通过滚动来查看额外的内容。此属性值负责文档在计算机屏幕中的显示，例如，打印纸质文档时滚动条是没有意义的。</p>
+
+  <p class="ziti3">auto</p>
+
+  <p class="ziti3">滚动条只在内容超出元素尺寸时显示，而非一直显示。</p>
+
+  <p class="ziti3">overflow属性允许指定当内容超出元素边框时该如何显示，而clip属性确切地指定了应该显示元素的哪个部分，它不管元素是否溢出。在创建元素渐进显示的脚本效果时候该属性特别有用。</p>
+
+  <p class="ziti3">clip属性的值指定了元素的裁剪区域。在CSS2中，裁剪区域是矩形的，不过clip属性的语法预留了开放的可能，该标准将来的版本将支持除了矩形以外其他形状的裁剪。clip属性的语法是：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">rect(top right bottom left)</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">相对于元素边框的左上角，top、right、bottom和left 4个值指定了裁剪矩形的边界。例如，要只显示元素的100×100像素大小部分，可以赋予该元素style属性：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">style="clip:rect(0px 100px 100px 0px);"</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">注意，圆括号中的4个值是长度，所以“必须”包含明确的单位，如p x代表像素。不允许使用百分比。可以指定负值，让裁剪区域超出为元素指定的边框尺寸。也可以为任何4个值使用auto关键字来指定裁剪区域的边缘就是元素边框的对应边缘。例如，用style属性指定只显示元素最左边的100像素：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">style="clip:rect(auto 100px auto auto);"</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">注意，值之间没有逗号，裁剪区域从上边缘开始顺时针设置。将clip设置为auto来停用裁剪功能。</p>
+
+  <h4 class="p5" id="heading_id_16">16.2.7　示例：重叠半透明窗口</h4>
+
+  <p class="ziti3">本节用一个展示很多讨论过的CSS属性的例子来结束。例16-2用CSS在浏览器窗口中创建滚动、重叠和半透明的视觉效果。视觉效果如图16-3所示。</p>
+
+  <div class="pic">
+    <img alt="" src="../images/00035.jpeg" class="calibre3"/>
+  </div>
+
+  <div class="middle-img1">
+    图　16-3　用CSS创建的窗口
+  </div>
+
+  <p class="ziti3">例子代码不包含JavaScript代码和事件处理程序，因此无法和窗口进行交互（除了可以滚动它们），但是足以证明CSS可以达到的强大效果。</p>
+
+  <p class="ziti3">例16-2：用CSS显示窗口</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜!DOCTYPE html＞</p>
+
+  <p class="ziti5">＜head＞</p>
+
+  <p class="ziti5">＜style type="text/css"＞/**</p>
+
+  <p class="ziti5">*This is a CSS stylesheet that defines three style rules that we use</p>
+
+  <p class="ziti5">*in the body of the document to create a"window"visual effect.</p>
+
+  <p class="ziti5">*The rules use positioning properties to set the overall size of the window</p>
+
+  <p class="ziti5">*and the position of its components.Changing the size of the window</p>
+
+  <p class="ziti5">*requires careful changes to positioning properties in all three rules.</p>
+
+  <p class="ziti5">**/</p>
+
+  <p class="ziti5">div.window{/*指定窗口的尺寸和边框*/</p>
+
+  <p class="ziti5">position:absolute;/*position在其他地方指定*/</p>
+
+  <p class="ziti5">width:300px;height:200px;/*窗口尺寸，不含边框*/</p>
+
+  <p class="ziti5">border:3px outset gray;/*注意3D"outset"边框效果*/</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">div.titlebar{/*指定标题栏的定位、尺寸和样式*/</p>
+
+  <p class="ziti5">position:absolute;/*它是定位元素*/</p>
+
+  <p class="ziti5">top:0px;height:18px;/*标题栏18px+内边距和边框*/</p>
+
+  <p class="ziti5">width:290px;/*290+5px左、右内边距=300*/</p>
+
+  <p class="ziti5">background-color:#aaa;/*标题栏颜色*/</p>
+
+  <p class="ziti5">border-bottom:groove gray 2px;/*标题栏只有底部边框*/</p>
+
+  <p class="ziti5">padding:3px 5px 2px 5px;/*顺时针值:top、right、bottom、left*/</p>
+
+  <p class="ziti5">font:bold 11pt sans-serif;/*标题栏字体*/</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">div.content{/*指定窗口内容的尺寸、定位和滚动*/</p>
+
+  <p class="ziti5">position:absolute;/*它是定位元素*/</p>
+
+  <p class="ziti5">top:25px;/*18px标题+2px边框+3px+2px内边距*/</p>
+
+  <p class="ziti5">height:165px;/*200px总共-25px标题栏-10px内边距*/</p>
+
+  <p class="ziti5">width:290px;/*300px宽度-10px内边距*/</p>
+
+  <p class="ziti5">padding:5px;/*4条边上都有空间*/</p>
+
+  <p class="ziti5">overflow:auto;/*如果需要显示滚动条*/</p>
+
+  <p class="ziti5">background-color:#fff;/*默认白色背景*/</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">div.translucent{/*此类让窗口部分透明*/</p>
+
+  <p class="ziti5">opacity:.75;/*透明度标准样式*/</p>
+
+  <p class="ziti5">filter:alpha(opacity=75);/*IE的透明度*/</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">＜/style＞</p>
+
+  <p class="ziti5">＜/head＞</p>
+
+  <p class="ziti5">＜body＞</p>
+
+  <p class="ziti5">＜!--定义一个窗口："window"div有一个标题栏和--＞</p>
+
+  <p class="ziti5">＜!--其内是一个内容div。注意，如何设置定位--＞</p>
+
+  <p class="ziti5">＜!--一个扩充了样式表的style属性--＞</p>
+
+  <p class="ziti5">＜div class="window"style="left:10px;top:10px;z-index:10;"＞</p>
+
+  <p class="ziti5">＜div class="titlebar"＞Test Window＜/div＞</p>
+
+  <p class="ziti5">＜div class="content"＞</p>
+
+  <p class="ziti5">1＜br＞2＜br＞3＜br＞4＜br＞5＜br＞6＜br＞7＜br＞8＜br＞9＜br＞0＜br＞＜!--若干行--＞</p>
+
+  <p class="ziti5">1＜br＞2＜br＞3＜br＞4＜br＞5＜br＞6＜br＞7＜br＞8＜br＞9＜br＞0＜br＞＜!-展示滚动--＞</p>
+
+  <p class="ziti5">＜/div＞</p>
+
+  <p class="ziti5">＜/div＞</p>
+
+  <p class="ziti5">＜!--定义另一个窗口：用不同的定位、颜色和字体重量--＞</p>
+
+  <p class="ziti5">＜div class="window"style="left:75px;top:110px;z-index:20;"＞</p>
+
+  <p class="ziti5">＜div class="titlebar"＞Another Window＜/div＞</p>
+
+  <p class="ziti5">＜div class="content translucent"</p>
+
+  <p class="ziti5">style="background-color:#ccc;font-weight:bold;"＞</p>
+
+  <p class="ziti5">This is another window.Its＜tt＞z-index＜/tt＞puts it on top of the other one.</p>
+
+  <p class="ziti5">CSS styles make its content area translucent,in browsers that support that.</p>
+
+  <p class="ziti5">＜/div＞</p>
+
+  <p class="ziti5">＜/div＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">该例子主要的不足是样式表将所有窗口的尺寸固定了。由于窗口的标题栏和内容部分“必须”在整个窗口中精确地定位，因此一个窗口尺寸的变化需要改变定义在样式表的三条规则中的各种定位属性的值。这对于一个静态HTML文档很难做到，如果使用脚本来设置所有必要属性值并不是很难。该主题将在下一节中探讨。</p>
+
+  <h3 class="p1" id="heading_id_17">16.3　脚本化内联样式</h3>
+
+  <p class="ziti3">脚本化CSS最直截了当的方法就是更改单独的文档元素的style属性。类似大多数HTML属性，style也是元素对象的属性，它可以在JavaScript中操作。但是style属性不同寻常：它的值不是字符串，而是一个CSSStyleDeclaration对象。该style对象的JavaScript属性代表了HTML代码中通过style指定的CSS属性。例如，让元素e的文本变成大号、加粗和蓝色，可以使用如下代码设置font-size、font-weight和color等样式属性对应的JavaScript属性：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">e.style.fontSize="24pt";</p>
+
+  <p class="ziti5">e.style.fontWeight="bold";</p>
+
+  <p class="ziti5">e.style.color="blue";</p>
+  <hr class="calibre4"/>
+
+  <p class="middle-img">名字约定：JavaScript中的CSS属性</p>
+
+  <p class="ziti4">很多CSS样式属性（如font-size）在名字中包含连字符。在JavaScript中，连字符是减号，所以不能书写以下表达式：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">e.style.font-size="24pt";//语法错误！</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti4">因此，CSSStyleDeclaration对象中的属性名和实际的CSS属性名有所区别。如果一个CSS属性名包含一个或多个连字符，CSSStyleDeclaration属性名的格式应该是移除连字符，将每个连字符后面紧接着的字母大写。这样，CSS属性border-left-width的值在JavaScript中通过borderLeftWidth属性进行访问，CSS属性font-family的值用如下代码访问：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">e.style.fontFamily="sans-serif";</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti4">另外，当一个CSS属性（如float属性）在JavaScript中对应的名字是保留字时，在之前加"css"前缀来创建合法的CSSStyleDeclaration名字。由此，使用CSSStyleDeclaration对象的cssFloat属性来设置或查询元素的CSS float属性。</p>
+
+  <p class="ziti3">使用CSSStyleDeclaration对象的style属性时，记住所有的值都应该是字符串。在样式表或（HTML）style属性中，可如下书写：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">position:absolute;font-family:sans-serif;background-color:#ffffff;</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">用JavaScript为元素e完成同样的事情，需将值放在引号中：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">e.style.position="absolute";</p>
+
+  <p class="ziti5">e.style.fontFamily="sans-serif";</p>
+
+  <p class="ziti5">e.style.backgroundColor="#ffffff";</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">注意，分号在字符串的外面，它们只是JavaScript中常规的分号，CSS样式表中使用分号并不是用JavaScript设置的字符串值的一部分。</p>
+
+  <p class="ziti3">而且，记住所有的定位属性都需要包含单位。因此，如下代码设置left属性是错误的：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">e.style.left=300;//错误：它是数字而不是字符串</p>
+
+  <p class="ziti5">e.style.left="300";//错误：缺少单位</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">在JavaScript中设置样式属性就像在样式表里一样，单位是必需的。设置元素e的left属性值为300像素的正确做法是：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">e.style.left="300px";</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">如果通过计算的值来设置left属性，需要保证在最后增加单位：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">e.style.left=(x0+left_margin+left_border+left_padding)+"px";</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">注意，作为加上字符串单位的副作用，计算的数值结果会转换成字符串。</p>
+
+  <p class="ziti3">回想一下，一些CSS属性（如margin）是margin-top、margin-right、margin-bottom和margin-left的复合属性。CSSStyleDeclaration对象也有与之对应的复合属性。例如，也能像这样设置margin属性：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">e.style.margin=topMargin+"px"+rightMargin+"px"+bottomMargin+"px"+leftMargin+"px";</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">独立设置4个margin属性值更加便捷：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">e.style.marginTop=topMargin+"px";</p>
+
+  <p class="ziti5">e.style.marginRight=rightMargin+"px";</p>
+
+  <p class="ziti5">e.style.marginBottom=bottomMargin+"px";</p>
+
+  <p class="ziti5">e.style.marginLeft=leftMargin+"px";</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">HTML元素的style属性是它的内联样式，它覆盖在样式表中的任何样式说明。内联样式一般在设置样式值时非常有用，就像上面的例子中所做的一样。CSSStyleDeclaration对象的属性可以理解为代表内联样式，但是它只返回有意义的值：JavaScript代码已经设置过的值或者HTML元素显式设置了想要的内联样式的值。例如，文档可能包含一个样式表以设置所有段落的左外边距为30像素，但是当在读取段落元素的marginLeft属性时，会得到一个空字符串，除非该段落有一个style属性覆盖了样式表中的设置。</p>
+
+  <p class="ziti3">读取元素的内联样式特别困难，对style属性来说须包含单位，对复合属性来说：在真正使用这些值的时候，代码不得不包含非同寻常的CSS解析能力。总之，元素的内联样式只在设置样式的时候有用，如果需要查询元素的样式，就要使用计算样式，这将在16.4节中讨论。</p>
+
+  <p class="ziti3">有时，发现作为单个字符串值来设置或查询元素的内联样式反而比作为CSSStyleDeclaration对象更加简单。为此，可以使用元素的getAttribute()和setAttribute()方法或CSSStyleDeclaration对象的cssText属性来实现：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//两者都可设置e的样式属性为字符串s</p>
+
+  <p class="ziti5">e.setAttribute("style",s);</p>
+
+  <p class="ziti5">e.style.cssText=s;//两者都可查询元素的内联样式</p>
+
+  <p class="ziti5">s=e.getAttribute("style");</p>
+
+  <p class="ziti5">s=e.style.cssText;</p>
+  <hr class="calibre4"/>
+
+  <h4 class="p5" id="heading_id_18">CSS动画</h4>
+
+  <p class="ziti3">脚本化的CSS最常见的用途之一是产生视觉动画效果。使用setTimeout()或setInterval()（见14.1节）重复调用函数来修改元素的内联样式达到目的。例16-3用两个函数shake()和fadeOut()来举例说明。shake()将元素从一边到另一边快速移动或“震动”，例如，当输入无效的数据时，它吸引用户的注意力。fadeOut()通过指定的时间（默认是500毫秒）降低元素的不透明度，使得元素淡出和消失。</p>
+
+  <p class="ziti3">例16-3：CSS动画</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//将e转化为相对定位的元素，使之左右"震动"</p>
+
+  <p class="ziti5">//第一个参数可以是元素对象或者元素的id</p>
+
+  <p class="ziti5">//如果第二个参数是函数，以e为参数，它将在动画结束时调用</p>
+
+  <p class="ziti5">//第三个参数指定e震动的距离，默认是5像素</p>
+
+  <p class="ziti5">//第四个参数指定震动多久，默认是500毫秒</p>
+
+  <p class="ziti5">function shake(e,oncomplete,distance,time){//句柄参数</p>
+
+  <p class="ziti5">if(typeof e==="string")e=document.getElementById(e);</p>
+
+  <p class="ziti5">if(!time)time=500;</p>
+
+  <p class="ziti5">if(!distance)distance=5;</p>
+
+  <p class="ziti5">var originalStyle=e.style.cssText;//保存e的原始style</p>
+
+  <p class="ziti5">e.style.position="relative";//使e相对定位</p>
+
+  <p class="ziti5">var start=(new Date()).getTime();//注意，动画的开始时间</p>
+
+  <p class="ziti5">animate();//动画开始</p>
+
+  <p class="ziti5">//函数检查消耗的时间，并更新e的位置</p>
+
+  <p class="ziti5">//如果动画完成，它将e还原为原始状态</p>
+
+  <p class="ziti5">//否则，它更新e的位置，安排它自身重新运行</p>
+
+  <p class="ziti5">function animate(){</p>
+
+  <p class="ziti5">var now=(new Date()).getTime();//得到当前时间</p>
+
+  <p class="ziti5">var elapsed=now-start;//从开始以来消耗了多长时间？</p>
+
+  <p class="ziti5">var fraction=elapsed/time;//是总时间的几分之几？</p>
+
+  <p class="ziti5">if(fraction＜1){//如果动画未完成</p>
+
+  <p class="ziti5">//作为动画完成比例的函数，计算e的x位置</p>
+
+  <p class="ziti5">//使用正弦函数将完成比例乘以4pi</p>
+
+  <p class="ziti5">//所以，它来回往复两次</p>
+
+  <p class="ziti5">var x=distance*Math.sin(fraction*4*Math.PI);</p>
+
+  <p class="ziti5">e.style.left=x+"px";//在25毫秒后或在总时间的最后尝试再次运行函数</p>
+
+  <p class="ziti5">//目的是为了产生每秒40帧的动画</p>
+
+  <p class="ziti5">setTimeout(animate,Math.min(25,time-elapsed));</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else{//否则，动画完成</p>
+
+  <p class="ziti5">e.style.cssText=originalStyle//恢复原始样式</p>
+
+  <p class="ziti5">if(oncomplete)oncomplete(e);//调用完成后的回调函数</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//以毫秒级的时间将e从完全不透明淡出到完全透明</p>
+
+  <p class="ziti5">//在调用函数时假设e是完全不透明的</p>
+
+  <p class="ziti5">//oncomplete是一个可选的函数，以e为参数，它将在动画结束时调用</p>
+
+  <p class="ziti5">//如果不指定time，默认为500毫秒</p>
+
+  <p class="ziti5">//该函数在IE中不能正常工作，但也可以修改得能工作，</p>
+
+  <p class="ziti5">//除了opacity，IE使用非标准的filter属性</p>
+
+  <p class="ziti5">function fadeOut(e,oncomplete,time){</p>
+
+  <p class="ziti5">if(typeof e==="string")e=document.getElementById(e);</p>
+
+  <p class="ziti5">if(!time)time=500;//使用Math.sqrt作为一个简单的“缓动函数”来创建动画</p>
+
+  <p class="ziti5">//精巧的非线性：一开始淡出得比较快，然后缓慢了一些</p>
+
+  <p class="ziti5">var ease=Math.sqrt;</p>
+
+  <p class="ziti5">var start=(new Date()).getTime();//注意：动画开始的时间</p>
+
+  <p class="ziti5">animate();//动画开始</p>
+
+  <p class="ziti5">function animate(){</p>
+
+  <p class="ziti5">var elapsed=(new Date()).getTime()-start;//消耗的时间</p>
+
+  <p class="ziti5">var fraction=elapsed/time;//总时间的几分之几？</p>
+
+  <p class="ziti5">if(fraction＜1){//如果动画未完成</p>
+
+  <p class="ziti5">var opacity=1-ease(fraction);//计算元素的不透明度</p>
+
+  <p class="ziti5">e.style.opacity=String(opacity);//设置在e上</p>
+
+  <p class="ziti5">setTimeout(animate,//调度下一帧</p>
+
+  <p class="ziti5">Math.min(25,time-elapsed));</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else{//否则，动画完成</p>
+
+  <p class="ziti5">e.style.opacity="0";//使e完全透明</p>
+
+  <p class="ziti5">if(oncomplete)oncomplete(e);//调用完成后的回调函数</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">shake()和fadeOut()都能接收可选的回调函数作为第二个参数，如果指定了，当动画结束时函数将被调用。该动画元素将作为回调函数的参数传递进去。下面的HTML代码创建了一个按钮，当单击时，它左右震动并淡出：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">＜button onclick="shake(this,fadeOut);"＞Shake and Fade＜/button＞</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">注意，shake()和fadeOut()示例函数之间非常类似，都能作为类似CSS属性动画的模板。客户端类库（如jQuery）通常支持预定义视觉效果。因此，除非想创建特别复杂的视觉效果，实际上不用写类似shake()的动画函数。Scriptaculous是早期一个值得注意的类库，它是为Prototype框架设计的。更多信息请访问http://script.aculo.us/和http://scripty2.com/。</p>
+
+  <p class="ziti3">为了避免使用任何脚本，CSS3的过渡模块定义了在样式表中指定动画效果的方式。例如，为了替代定义类似fadeOut()这样的函数，可以使用如下的CSS：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">.fadeable{transition:opacity.5s ease-in}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">它指定了在任何时刻"fadeable"元素的opacity属性会变化，该变化会在半秒内用非线性缓动函数的动画（当前值和新值之间）来过渡。CSS过渡还未标准化，但是已经在Safari和Chrome中用-webkit-transition属性实现了一段时间。在写书的这段时间里，Firefox 4也用-moz-transition属性支持过渡。</p>
+
+  <h3 class="p1" id="heading_id_19">16.4　查询计算出的样式</h3>
+
+  <p class="ziti3">元素的style属性代表了元素的内联样式，它覆盖所有的样式表，它是设置CSS属性值来改变元素的视觉表现最好的地方。但是，它在查询元素实际应用的样式时用处不大。为此，你想要使用计算样式。元素的计算样式是一组属性值，它由浏览器通过把内联样式结合所有链接样式表中所有可应用的样式规则后导出（或计算）得到的：它就是一组在显示元素时实际使用的属性值。类似内联样式，计算样式也是用一个CSSStyleDeclaration对象来表示的，区别是，计算样式是只读的。虽然不能设置这些样式，但为元素计算出的CSSStyleDeclaration对象确切地决定了浏览器在渲染元素时使用的样式属性值。</p>
+
+  <p class="ziti3">用浏览器窗口对象的getComputedStyle()方法来获得一个元素的计算样式。此方法的第一个参数就是要获取其计算样式的元素，第二个参数也是必需的，通常是null或空字符串，但它也可以是命名CSS伪对象的字符串，如":before"、":after"、":first-line"或":first-letter"。</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var title=document.getElementById("section1title");</p>
+
+  <p class="ziti5">var titlestyles=window.getComputedStyle(element,null);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">getComputedStyle()方法的返回值是一个CSSStyleDeclaration对象，它代表了应用在指定元素（或伪对象）上的所有样式。表示计算样式的CSSStyleDeclaration对象和表示内联样式的对象之间有一些重要的区别：</p>
+
+  <p class="ziti3">·计算样式的属性是只读的。</p>
+
+  <p class="ziti3">·计算样式的值是绝对值：类似百分比和点之类相对的单位将全部转换为绝对值。所有指定尺寸（例如外边距大小和字体大小）的属性都有一个以像素为度量单位的值。该值将是一个冠以"px"后缀的字符串，使用时仍然需要解析它，但是不用担心单位的解析或转换。其值是颜色的属性将以"rgb(#,#,#)"或"rgba(#,#,#,#)"的格式返回。</p>
+
+  <p class="ziti3">·不计算复合属性，它们只基于最基础的属性。例如，不要查询margin属性，应该使用marginLeft和marginTop等。</p>
+
+  <p class="ziti3">·计算样式的cssText属性未定义。</p>
+
+  <p class="ziti3">计算样式和内联样式可以同时使用。例16-4定义了scale()和scaleColor()函数。一个用来查询和解析指定元素的计算文本尺寸，另一个查询和解析元素的计算背景颜色。两个函数都将结果值按比例缩放并作为元素的内联样式设置缩放值。（这些函数在IE 8和更早期的版本中无法工作：下面会讨论到，这些版本的IE不支持getComputedStyle()。）</p>
+
+  <p class="ziti3">例16-4：查询计算样式与设置内联样式</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//用指定的因子缩放元素e的文本尺寸</p>
+
+  <p class="ziti5">function scale(e,factor){//用计算样式查询当前文本的尺寸</p>
+
+  <p class="ziti5">var size=parseInt(window.getComputedStyle(e,"").fontSize);//用内联样式来放大尺寸</p>
+
+  <p class="ziti5">e.style.fontSize=factor*size+"px";</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//用指定的因子修改元素e的背景颜色</p>
+
+  <p class="ziti5">//factors＞1颜色变浅，factors＜1颜色变暗</p>
+
+  <p class="ziti5">function scaleColor(e,factor){</p>
+
+  <p class="ziti5">var color=window.getComputedStyle(e,"").backgroundColor;//查询</p>
+
+  <p class="ziti5">var components=color.match(/[\d\.]+/g);//解析r、g、b和a分量</p>
+
+  <p class="ziti5">for(var i=0;i＜3;i++){//循环r、g和b</p>
+
+  <p class="ziti5">var x=Number(components[i])*factor;//缩放每个值</p>
+
+  <p class="ziti5">x=Math.round(Math.min(Math.max(x,0),255));//设置边界并取整</p>
+
+  <p class="ziti5">components[i]=String(x);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">if(components.length==3)//rgb()颜色</p>
+
+  <p class="ziti5">e.style.backgroundColor="rgb("+components.join()+")";</p>
+
+  <p class="ziti5">else//rgba()颜色</p>
+
+  <p class="ziti5">e.style.backgroundColor="rgba("+components.join()+")";</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">计算样式也具有欺骗性，查询它们得到的信息也不总是如人所愿。考虑一下font-family属性：为适应跨平台可移植性，它可以接受以逗号隔开的字体系列列表。当查询一个计算样式的fontFamily属性时，只能得到应用到该元素上具体的font-family样式的值。可能返回类似"arial,helvetica,sans-serif"的值，它无法告诉你实际使用了哪种字体。类似地，如果没有绝对定位元素，试图通过计算样式的top和left属性查询它的位置和尺寸通常会返回"auto"值。这是个完全合法的CSS值，但大概不是你想要的。</p>
+
+  <p class="ziti3">getComputedStyle()在IE 8或更早的版本中没有实现，但有望在IE 9中实现。在IE中，每个HTML元素有自己的currentStyle属性，它的值是CSSStyleDeclaration对象。IE的currentStyle组合了内联样式和样式表，但它不是真正的计算样式，因为那些相对值都没有转化成绝对值。查询IE的当前样式属性会返回带相对性单位（如“%”或"em"）的尺寸或者非精确的颜色值（如"red"）。</p>
+
+  <p class="ziti3">虽然用CSS能为文档对象指定精确的位置和尺寸，查询元素的计算样式却不是判定元素尺寸和位置的完美方法。另一个更简便的方法请参见15.8.2节。</p>
+
+  <h3 class="p1" id="heading_id_20">16.5　脚本化CSS类</h3>
+
+  <p class="ziti3">通过内联style属性脚本化CSS样式的一个可选方案是脚本化HTML的class属性值。改变元素的class就改变了应用于元素的一组样式表选择器，它能在同一时刻改变多个CSS属性。例如，假设想让用户对文档中单独的段落（或其他元素）引起注意。首先，为任意元素定义一个名为"attention"的类：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">.attention{/*吸引用户注意力的样式*/</p>
+
+  <p class="ziti5">background-color:yellow;/*黄色高亮背景*/</p>
+
+  <p class="ziti5">font-weight:bold;/*粗体*/</p>
+
+  <p class="ziti5">border:solid black 2px;/*黑框*/</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">标识符class在JavaScript中是保留字，所以HTML属性class在JavaScript代码中应该可用于使用className的JavaScript代码。如下代码设置和清除元素的className属性来为元素添加和移除"attention"类：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">function grabAttention(e){e.className="attention";}</p>
+
+  <p class="ziti5">function releaseAttention(e){e.className="";}</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">HTML元素可以有多个CSS类名，class属性保存了一个用空格隔开的类名列表。className属性是一个容易误解的名字：classNames可能更好。上面的函数假设className属性只指定零个或一个类名，如果有多个类名就无法工作了。如果元素已经有一个类了，为该元素调用grabAttention()函数将覆盖已存在的类。</p>
+
+  <p class="ziti3">HTML5解决了这个问题，为每个元素定义了classList属性。该属性值是DOMTokenList对象：一个只读的类数组对象（见7.11节），它包含元素的单独类名。但是，和数组元素相比，DOMTokenList定义的方法更加重要。add()和remove()从元素的class属性中添加和清除一个类名。toggle()表示如果不存在类名就添加一个；否则，删除它。最后，contains()方法检测class属性中是否包含一个指定的类名。</p>
+
+  <p class="ziti3">类似其他DOM集合类型，DOMTokenList对象“实时地”代表了元素类名集合，而并非是在查询classList属性时类名的一个静态快照。如果从元素的classList属性中获得了一个DOMTokenList对象，然后元素的className属性改变了，这些变化在标识列表中及时可见。同样，改变标识列表，在className属性中及时可见。</p>
+
+  <p class="ziti3">在写本书的这段时间里，不是现在所有的浏览器都支持classList属性。但是，这个重要的功能很容易近似实现，如例16-5所示。使用类似的代码，把元素的class属性当做一个类名集合，使得许多脚本化CSS工作更加简单。</p>
+
+  <p class="ziti3">例16-5：classList()：将className当做一个CSS类集合</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">/*</p>
+
+  <p class="ziti5">*如果e有classList属性则返回它。否则，返回一个为e模拟DOMTokenList API的对象</p>
+
+  <p class="ziti5">*返回的对象有contains()、add()、remove()、toggle()和toString()等方法</p>
+
+  <p class="ziti5">*来检测和修改元素e的类集合。如果classList属性是原生支持的，</p>
+
+  <p class="ziti5">*返回的类数组对象有length和数组索引属性。模拟DOMTokenList不是类数组对象，</p>
+
+  <p class="ziti5">*但是它有一个toArray()方法来返回一个含元素类名的纯数组快照</p>
+
+  <p class="ziti5">*/</p>
+
+  <p class="ziti5">function classList(e){</p>
+
+  <p class="ziti5">if(e.classList)return e.classList;//如果e.classList存在，则返回它</p>
+
+  <p class="ziti5">else return new CSSClassList(e);//否则，就伪造一个</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//CSSClassList是一个模拟DOMTokenList的JavaScript类</p>
+
+  <p class="ziti5">function CSSClassList(e){this.e=e;}//如果e.className包含类名c则返回true否则返回false</p>
+
+  <p class="ziti5">CSSClassList.prototype.contains=function(c){//检查c是否是合法的类名</p>
+
+  <p class="ziti5">if(c.length===0||c.indexOf("")!=-1)</p>
+
+  <p class="ziti5">throw new Error("Invalid class name:'"+c+"'");//首先是常规检查</p>
+
+  <p class="ziti5">var classes=this.e.className;</p>
+
+  <p class="ziti5">if(!classes)return false;//e不含类名</p>
+
+  <p class="ziti5">if(classes===c)return true;//e有一个完全匹配的类名</p>
+
+  <p class="ziti5">//否则，把c自身看做一个单词，利用正则表达式搜索c</p>
+
+  <p class="ziti5">//\b在正则表达式里代表单词的边界</p>
+
+  <p class="ziti5">return classes.search("\\b"+c+"\\b")!=-1;</p>
+
+  <p class="ziti5">};//如果c不存在，将c添加到e.className中</p>
+
+  <p class="ziti5">CSSClassList.prototype.add=function(c){</p>
+
+  <p class="ziti5">if(this.contains(c))return;//如果存在，什么都不做</p>
+
+  <p class="ziti5">var classes=this.e.className;</p>
+
+  <p class="ziti5">if(classes＆＆classes[classes.length-1]!="")</p>
+
+  <p class="ziti5">c=""+c;//如果需要加一个空格</p>
+
+  <p class="ziti5">this.e.className+=c;//将c添加到className中</p>
+
+  <p class="ziti5">};//将在e.className中出现的所有c都删除</p>
+
+  <p class="ziti5">CSSClassList.prototype.remove=function(c){//检查c是否是合法的类名</p>
+
+  <p class="ziti5">if(c.length===0||c.indexOf("")!=-1)</p>
+
+  <p class="ziti5">throw new Error("Invalid class name:'"+c+"'");//将所有作为单词的c和多余的尾随空格全部删除</p>
+
+  <p class="ziti5">var pattern=new RegExp("\\b"+c+"\\b\\s*","g");</p>
+
+  <p class="ziti5">this.e.className=this.e.className.replace(pattern,"");</p>
+
+  <p class="ziti5">};//如果c不存在，将c添加到e.className中，并返回true</p>
+
+  <p class="ziti5">//否则，将在e.className中出现的所有c都删除，并返回false</p>
+
+  <p class="ziti5">CSSClassList.prototype.toggle=function(c){</p>
+
+  <p class="ziti5">if(this.contains(c)){//如果e.className包含c</p>
+
+  <p class="ziti5">this.remove(c);//删除它</p>
+
+  <p class="ziti5">return false;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else{//否则</p>
+
+  <p class="ziti5">this.add(c);//添加它</p>
+
+  <p class="ziti5">return true;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">};//返回e.className本身</p>
+
+  <p class="ziti5">CSSClassList.prototype.toString=function(){return this.e.className;};//返回在e.className中的类名</p>
+
+  <p class="ziti5">CSSClassList.prototype.toArray=function(){</p>
+
+  <p class="ziti5">return this.e.className.match(/\b\w+\b/g)||[];</p>
+
+  <p class="ziti5">};</p>
+  <hr class="calibre4"/>
+
+  <h3 class="p1" id="heading_id_21">16.6　脚本化样式表</h3>
+
+  <p class="ziti3">到目前为止，我们已经看到如何设置和查询CSS样式和单个元素的类名。脚本化样式表当然也是可能的。虽然不经常这么做，但偶尔这却非常有用，本节将概述该技术。</p>
+
+  <p class="ziti3">在脚本化样式表时，将会碰到两类需要使用的对象。第一类是元素对象，由＜style＞和＜link＞元素表示，两种元素包含或引用样式表。这些是常规的文档元素，如果它们有id属性值，可以用document.getElementById()函数来选择它们。第二类是CSSStyleSheet对象，它表示样式表本身。document.styleSheets属性是一个只读的类数组对象，它包含CSSStyleSheet对象，表示与文档关联在一起的样式表。如果为定义或引用了样式表的＜style＞或＜link＞元素设置title属性值，该title作为对应CSSStyleSheet对象的title属性就可用。</p>
+
+  <p class="ziti3">以下几节阐述了利用这些样式、链接元素和样式表对象可以做些什么。</p>
+
+  <h4 class="p5" id="heading_id_22">16.6.1　开启和关闭样式表</h4>
+
+  <p class="ziti3">最简单的脚本化样式表的技术也是最便捷和健壮的。＜style＞、＜link＞元素和CSSStyleSheet对象都定义了一个在JavaScript中可以设置和查询的disabled属性。顾名思义，如果disabled属性为true，样式表就被浏览器关闭并忽略。</p>
+
+  <p class="ziti3">以下disableStylesheet()函数说明这一点。如果传递一个数字，函数将其当做document.styleSheets数组中的一个索引，如果传递一个字符串，函数将其当做CSS选择器并传递给document.querySelectorAll()（见15.2.5节），然后设置所有返回元素的disabled属性：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">function disableStylesheet(ss){</p>
+
+  <p class="ziti5">if(typeof ss==="number")</p>
+
+  <p class="ziti5">document.styleSheets[ss].disabled=true;</p>
+
+  <p class="ziti5">else{</p>
+
+  <p class="ziti5">var sheets=document.querySelectorAll(ss);</p>
+
+  <p class="ziti5">for(var i=0;i＜sheets.length;i++)</p>
+
+  <p class="ziti5">sheets[i].disabled=true;</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <h4 class="p5" id="heading_id_23">16.6.2　查询、插入与删除样式表规则</h4>
+
+  <p class="ziti3">除了样式表的开启和关闭以外，CSSStyleSheet对象也定义了用来查询、插入和删除样式表规则的API。IE 8及更早版本实现的API和其他浏览器实现的标准API之间有一些轻微的区别。</p>
+
+  <p class="ziti3">直接操作样式表通常没什么意义。典型地，相对编辑样式表或增加新规则而言，让样式表保持静态并对元素的className属性编程更好。另一方面，如果允许用户完全控制页面上的样式，可能就需要动态操作样式表。</p>
+
+  <p class="ziti3">document.styleSheets[]数组的元素是CSSStyleSheet对象。CSSStyleSheet对象有一个cssRules[]数组，它包含样式表的所有规则：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var firstRule=document.styleSheets[0].cssRules[0];</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">IE使用不同的属性名rules代替cssRules。</p>
+
+  <p class="ziti3">cssRules[]或rules[]数组的元素为CSSRule对象。在标准API中，CSSRule对象代表所有CSS规则，包含如@import和@page等指令。但是，在IE中，rules[]数组只包含样式表中实际存在的样式规则。</p>
+
+  <p class="ziti3">CSSRule对象有两个属性可以很便捷地使用。（在标准API中，非样式规则没有定义这些属性，当遍历样式表时希望能跳过去它。）selectText是规则的CSS选择器，它引用一个描述与选择器相关联的样式的可写CSSStyleDeclaration对象。回想一下，CSSStyleDeclaration是用来表示内联和计算样式的相同类型。可以利用它来查询规则的样式值或设置新样式。通常，当遍历样式表时，你对规则的文本比它解析后的表示形式更感兴趣。此时，使用CSSStyleDeclaration对象的cssText属性来获得规则的文本表示形式。</p>
+
+  <p class="ziti3">除了查询和修改样式表中已存在的规则以外，也能向样式表添加和从中删除规则。标准的API接口定义了insertRule()和deleteRule()方法来添加和删除规则：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">document.styleSheets[0].insertRule("H1{text-weight:bold;}",0);</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti3">IE不支持insertRule()和deleteRule()，但定义了大致等效的函数addRule()和removeRule()。（除了名字以外）仅有的不同是addRule()希望选择器文本和样式文本作为两个参数。</p>
+
+  <p class="ziti3">以下代码遍历样式表的规则，举例说明了用API对样式表进行一些可疑的修改：</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">var ss=document.styleSheets[0];//得到第一个样式表</p>
+
+  <p class="ziti5">var rules=ss.cssRules?ss.cssRules:ss.rules;//得到样式表规则</p>
+
+  <p class="ziti5">for(var i=0;i＜rules.length;i++){//遍历这些规则</p>
+
+  <p class="ziti5">var rule=rules[i];</p>
+
+  <p class="ziti5">if(!rule.selectorText)continue;//跳过@import和非样式规则</p>
+
+  <p class="ziti5">var selector=rule.selectorText;//选择器</p>
+
+  <p class="ziti5">var ruleText=rule.style.cssText;//文本形式的样式</p>
+
+  <p class="ziti5">//如果规则应用在h1元素上，也将其应用到h2元素上</p>
+
+  <p class="ziti5">//注意：仅当选择器在字面上为"h1"时这才起作用</p>
+
+  <p class="ziti5">if(selector=="h1"){</p>
+
+  <p class="ziti5">if(ss.insertRule)ss.insertRule("h2{"+ruleText+"}",rules.length);</p>
+
+  <p class="ziti5">else if(ss.addRule)ss.addRule("h2",ruleText,rules.length);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//如果规则设置了text-decoration属性，则将其删除</p>
+
+  <p class="ziti5">if(rule.style.textDecoration){</p>
+
+  <p class="ziti5">if(ss.deleteRule)ss.deleteRule(i);</p>
+
+  <p class="ziti5">else if(ss.removeRule)ss.removeRule(i);</p>
+
+  <p class="ziti5">i--;//调整循环索引，因为以上的规则i+1现在即为规则i</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <h4 class="p5" id="heading_id_24">16.6.3　创建新样式表</h4>
+
+  <p class="ziti3">最后，创建整个新样式表并将其添加到文档是中可能的。在大多数浏览器中，可以用标准的DOM技术：只要创建一个全新的＜style＞元素，将其插入到文档的头部，然后用其innerHTML属性来设置样式表内容。但是在IE 8以及更早版本中，CSSStyleSheet对象通过非标准方法document.createStyleSheet()来创建，其样式文本用cssText属性值来指定。示例说明如例16-6所示。</p>
+
+  <p class="ziti3">例16-6：创建一个新样式表</p>
+  <hr class="calibre4"/>
+
+  <p class="ziti5">//对文档添加一个样式表，用指定的样式填充它</p>
+
+  <p class="ziti5">//styles参数可能是字符组或对象。如果它是字符串，就把它作为样式表的文本</p>
+
+  <p class="ziti5">//如果它是对象，将每个定义样式规则的每个属性添加到样式表中</p>
+
+  <p class="ziti5">//属性名即为选择器，其值即为对应的样式</p>
+
+  <p class="ziti5">function addStyles(styles){//首先，创建一个新样式表</p>
+
+  <p class="ziti5">var styleElt,styleSheet;</p>
+
+  <p class="ziti5">if(document.createStyleSheet){//如果定义了IE的API，即可使用它</p>
+
+  <p class="ziti5">styleSheet=document.createStyleSheet();</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else{</p>
+
+  <p class="ziti5">var head=document.getElementsByTagName("head")[0]</p>
+
+  <p class="ziti5">styleElt=document.createElement("style");//新的＜style＞元素</p>
+
+  <p class="ziti5">head.appendChild(styleElt);//把它插入＜head＞中</p>
+
+  <p class="ziti5">//现在，新的样式表应该是最后一个</p>
+
+  <p class="ziti5">styleSheet=document.styleSheets[document.styleSheets.length-1]</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">//现在向其中插入样式</p>
+
+  <p class="ziti5">if(typeof styles==="string"){//参数是样式表文本</p>
+
+  <p class="ziti5">if(styleElt)styleElt.innerHTML=styles;</p>
+
+  <p class="ziti5">else styleSheet.cssText=styles;//IE API</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else{//参数是待插入的单独的规则的对象</p>
+
+  <p class="ziti5">var i=0;</p>
+
+  <p class="ziti5">for(selector in styles){</p>
+
+  <p class="ziti5">if(styleSheet.insertRule){</p>
+
+  <p class="ziti5">var rule=selector+"{"+styles[selector]+"}";</p>
+
+  <p class="ziti5">styleSheet.insertRule(rule,i++);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">else{</p>
+
+  <p class="ziti5">styleSheet.addRule(selector,styles[selector],i++);</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+
+  <p class="ziti5">}</p>
+  <hr class="calibre4"/>
+
+  <div class="fnote">
+    <a id="ch1-back" href="part0025.html#ch1" class="pcalibre calibre1">[1]</a>例如，可参照Eric Meyer的《CSS:The Definitive Guide》（O'Reilly）。
+  </div>
+</body></html>
